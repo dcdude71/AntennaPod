@@ -39,6 +39,10 @@ public abstract class DownloadServiceInterface {
      */
     public abstract void download(Context context, FeedItem item);
 
+    public void downloadWithoutEnqueue(Context context, FeedItem item) {
+        download(context, item);
+    }
+
     public abstract void cancel(Context context, FeedMedia media);
 
     public abstract void cancelAll(Context context);

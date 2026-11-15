@@ -54,7 +54,8 @@ public class AutomaticDownloadAlgorithm {
                 boolean autoDownloadQueueEnabled = UserPreferences.isEnableAutodownloadQueue();
                 final List<FeedItem> newItems = DBReader.getAutoDownloadCandidates(
                         globalAutoDownloadEnabled, autoDownloadQueueEnabled);
-                final List<FeedItem> candidates = new ArrayList<>(PlaylistReader.getAutoDownloadEpisodes());
+                final List<FeedItem> playlistEpisodes = PlaylistReader.getAutoDownloadEpisodes();
+                final List<FeedItem> candidates = new ArrayList<>(playlistEpisodes);
 
                 for (FeedItem newItem : newItems) {
                     FeedPreferences feedPrefs = newItem.getFeed().getPreferences();
@@ -99,7 +100,11 @@ public class AutomaticDownloadAlgorithm {
                     Log.d(TAG, "Enqueueing " + itemsToDownload.size() + " items for download");
 
                     for (FeedItem episode : itemsToDownload) {
-                        DownloadServiceInterface.get().download(context, episode);
+                        if (playlistEpisodes.contains(episode)) {
+                            DownloadServiceInterface.get().downloadWithoutEnqueue(context, episode);
+                        } else {
+                            DownloadServiceInterface.get().download(context, episode);
+                        }
                     }
                 }
             }
