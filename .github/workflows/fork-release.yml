@@ -41,7 +41,15 @@ jobs:
       - name: Publish GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "$GITHUB_REF_NAME" "AntennaPod-Fork-${GITHUB_REF_NAME}.apk" --title "$GITHUB_REF_NAME" --generate-notes
+        run: |
+          PREVIOUS_TAG=$(gh release view --json tagName --jq .tagName 2>/dev/null || true)
+          if [ -n "$PREVIOUS_TAG" ]; then
+            gh release create "$GITHUB_REF_NAME" "AntennaPod-Fork-${GITHUB_REF_NAME}.apk" --title "$GITHUB_REF_NAME" \
+              --generate-notes --notes-start-tag "$PREVIOUS_TAG"
+          else
+            gh release create "$GITHUB_REF_NAME" "AntennaPod-Fork-${GITHUB_REF_NAME}.apk" --title "$GITHUB_REF_NAME" \
+              --generate-notes
+          fi
       - name: Remove keystore
         if: always()
         run: rm -f "$RUNNER_TEMP/release.keystore"
