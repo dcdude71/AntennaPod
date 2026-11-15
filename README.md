@@ -24,7 +24,12 @@ The playlist updates itself as new episodes come in and as you listen. Press pla
 
 Example: a "Morning" playlist with the 2 most recent episodes of a news podcast (priority 1), then the next unplayed episode of a series you are catching up on (priority 2).
 
-Ideas for later include automatic downloads for playlists and showing playlists in Android Auto. No promises on timing.
+Each playlist can also download its episodes automatically, following your usual download settings. These downloads are not added to the queue, and episodes in a playlist are kept when the app cleans up downloads to make room.
+
+Showing playlists in Android Auto is an idea for later. No promises on timing.
+
+### Skip ad button
+Many podcasts play ads of about the same length. In a podcast's settings, set an "Ad skip time" (for example 30 seconds). The player then shows a "Skip ad" button for that podcast that jumps ahead by that amount, separate from the regular fast-forward button.
 
 ### Installs next to the official app
 The fork uses its own package name (`com.stephane.antennapod`) and shows up as "AntennaPod Fork", so it can be installed alongside the official AntennaPod. The two apps do not share data. To try the fork with your podcasts, use "Database export" in AntennaPod (Settings → Backup & restore), then "Database import" in the fork.
