@@ -1,0 +1,92 @@
+package de.danoeh.antennapod.ui.screen.playback.audio;
+
+import android.content.Context;
+import android.graphics.Outline;
+import android.graphics.Typeface;
+import android.util.TypedValue;
+import android.view.Gravity;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewOutlineProvider;
+import android.widget.LinearLayout;
+
+import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.preference.PreferenceManager;
+
+import de.danoeh.antennapod.R;
+import de.danoeh.antennapod.databinding.CoverFragmentBinding;
+import de.danoeh.antennapod.ui.screen.playback.SleepTimerDialog;
+
+public final class PlayerStyle {
+    public static final String PREF_PLAYER_STYLE = "prefPlayerStyle";
+    private static final String STYLE_CLASSIC = "classic";
+    private static final int MAX_COVER_SIZE_DP = 260;
+    private static final int COVER_CORNER_RADIUS_DP = 16;
+    private static final float TRACK_SCALE = 2f;
+
+    private PlayerStyle() {
+    }
+
+    public static boolean isModern(@NonNull Context context) {
+        return !STYLE_CLASSIC.equals(PreferenceManager.getDefaultSharedPreferences(context)
+                .getString(PREF_PLAYER_STYLE, "modern"));
+    }
+
+    @LayoutRes
+    static int getPlayerLayout(boolean modern) {
+        return modern ? R.layout.audioplayer_fragment_modern : R.layout.audioplayer_fragment;
+    }
+
+    static void setupPlayer(@NonNull AudioPlayerFragment fragment, @NonNull View root) {
+        View sleepButton = root.findViewById(R.id.butSleepTimer);
+        if (sleepButton == null) {
+            return;
+        }
+        ChapterSeekBar seekBar = root.findViewById(R.id.sbPosition);
+        seekBar.setTrackScale(TRACK_SCALE);
+        sleepButton.setOnClickListener(v ->
+                new SleepTimerDialog().show(fragment.getChildFragmentManager(), "SleepTimerDialog"));
+        root.findViewById(R.id.butShownotes).setOnClickListener(v ->
+                fragment.scrollToPage(AudioPlayerFragment.POS_DESCRIPTION, true));
+    }
+
+    static void styleCover(@NonNull CoverFragmentBinding binding) {
+        Context context = binding.getRoot().getContext();
+        ConstraintLayout.LayoutParams coverParams =
+                (ConstraintLayout.LayoutParams) binding.imgvCover.getLayoutParams();
+        coverParams.matchConstraintMaxWidth = dp(context, MAX_COVER_SIZE_DP);
+        coverParams.matchConstraintMaxHeight = dp(context, MAX_COVER_SIZE_DP);
+        binding.imgvCover.setLayoutParams(coverParams);
+        final float radius = dp(context, COVER_CORNER_RADIUS_DP);
+        binding.imgvCover.setOutlineProvider(new ViewOutlineProvider() {
+            @Override
+            public void getOutline(View view, Outline outline) {
+                outline.setRoundRect(0, 0, view.getWidth(), view.getHeight(), radius);
+            }
+        });
+        binding.imgvCover.setClipToOutline(true);
+
+        ViewGroup textContainer = binding.coverFragmentTextContainer;
+        int padding = dp(context, 16);
+        textContainer.setPadding(padding, 0, padding, 0);
+        textContainer.removeView(binding.txtvEpisodeTitle);
+        textContainer.addView(binding.txtvEpisodeTitle, 0);
+
+        binding.txtvEpisodeTitle.setGravity(Gravity.START);
+        binding.txtvEpisodeTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
+        binding.txtvEpisodeTitle.setTypeface(binding.txtvEpisodeTitle.getTypeface(), Typeface.BOLD);
+        ((LinearLayout.LayoutParams) binding.txtvEpisodeTitle.getLayoutParams()).bottomMargin = 0;
+
+        binding.txtvPodcastTitle.setGravity(Gravity.START);
+        binding.txtvPodcastTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+        ((LinearLayout.LayoutParams) binding.txtvPodcastTitle.getLayoutParams()).bottomMargin = dp(context, 8);
+
+        binding.openDescription.setVisibility(View.GONE);
+    }
+
+    private static int dp(Context context, int value) {
+        return Math.round(value * context.getResources().getDisplayMetrics().density);
+    }
+}

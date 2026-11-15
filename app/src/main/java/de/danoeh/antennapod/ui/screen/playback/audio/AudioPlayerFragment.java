@@ -108,6 +108,7 @@ public class AudioPlayerFragment extends Fragment implements
 
     private FeedMedia currentMedia;
     private volatile int adSkipSeconds;
+    private boolean modernStyle;
     private Disposable disposable;
     private boolean showTimeLeft;
     private boolean seekedToChapterStart = false;
@@ -118,7 +119,8 @@ public class AudioPlayerFragment extends Fragment implements
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        View root = inflater.inflate(R.layout.audioplayer_fragment, container, false);
+        modernStyle = PlayerStyle.isModern(requireContext());
+        View root = inflater.inflate(PlayerStyle.getPlayerLayout(modernStyle), container, false);
         root.setOnTouchListener((v, event) -> true); // Avoid clicks going through player to fragments below
         toolbar = root.findViewById(R.id.toolbar);
         toolbar.setTitle("");
@@ -149,6 +151,7 @@ public class AudioPlayerFragment extends Fragment implements
 
         setupLengthTextView();
         setupControlButtons();
+        PlayerStyle.setupPlayer(this, root);
         final ImageButton butPlaybackSpeed = root.findViewById(R.id.butPlaybackSpeed);
         butPlaybackSpeed.setOnClickListener(v -> new VariableSpeedDialog().show(getChildFragmentManager(), null));
         sbPosition.setOnSeekBarChangeListener(this);
@@ -391,6 +394,9 @@ public class AudioPlayerFragment extends Fragment implements
         EventBus.getDefault().register(this);
         txtvRev.setText(NumberFormat.getInstance().format(UserPreferences.getRewindSecs()));
         txtvFF.setText(NumberFormat.getInstance().format(UserPreferences.getFastForwardSecs()));
+        if (modernStyle != PlayerStyle.isModern(requireContext())) {
+            requireActivity().recreate();
+        }
     }
 
     @Override

@@ -1114,4 +1114,9 @@
     <string name="feed_ad_skip_off">Off. Set a time to show a \"Skip ad\" button in the player.</string>
     <string name="feed_ad_skip_message">The \"Skip ad\" button in the player jumps ahead by this many seconds. Use 0 to hide the button.</string>
     <string name="skip_ad_label">Skip ad (%1$d s)</string>
+    <string name="player_sleep_label">Sleep</string>
+    <string name="player_next_label">Next</string>
+    <string name="pref_player_style_title">Player style</string>
+    <string name="player_style_modern">Modern</string>
+    <string name="player_style_classic">Classic</string>
 </resources>

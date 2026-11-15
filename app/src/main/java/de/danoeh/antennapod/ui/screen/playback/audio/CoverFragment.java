@@ -111,6 +111,9 @@ public class CoverFragment extends Fragment {
                 new ChaptersFragment().show(getChildFragmentManager(), ChaptersFragment.TAG));
         viewBinding.butPrevChapter.setOnClickListener(v -> seekToPrevChapter());
         viewBinding.butNextChapter.setOnClickListener(v -> seekToNextChapter());
+        if (PlayerStyle.isModern(requireContext())) {
+            PlayerStyle.styleCover(viewBinding);
+        }
         return viewBinding.getRoot();
     }
 

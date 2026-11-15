@@ -48,6 +48,11 @@ public class ChapterSeekBar extends androidx.appcompat.widget.AppCompatSeekBar {
         paintProgressPrimary.setColor(ThemeUtils.getColorFromAttr(getContext(), R.attr.colorPrimary));
     }
 
+    public void setTrackScale(float scale) {
+        density = getResources().getDisplayMetrics().density * scale;
+        invalidate();
+    }
+
     /**
      * Sets the relative positions of the chapter dividers.
      * @param dividerPos of the chapter dividers relative to the duration of the media.
