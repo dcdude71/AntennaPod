@@ -57,6 +57,7 @@ import de.danoeh.antennapod.playback.service.internal.ClockSleepTimer;
 import de.danoeh.antennapod.playback.service.internal.EpisodeSleepTimer;
 import de.danoeh.antennapod.storage.database.DBReader;
 import de.danoeh.antennapod.storage.database.DBWriter;
+import de.danoeh.antennapod.storage.database.PlaylistPlayback;
 import de.danoeh.antennapod.storage.preferences.PlaybackPreferences;
 import de.danoeh.antennapod.storage.preferences.SleepTimerPreferences;
 import de.danoeh.antennapod.storage.preferences.SleepTimerType;
@@ -93,6 +94,7 @@ public class Media3PlaybackService extends MediaLibraryService {
     private Disposable mediaLoaderDisposable;
     private Disposable positionObserverDisposable;
     private Disposable queueLoaderDisposable;
+    private volatile boolean playingFromPlaylist = false;
     private Disposable chapterArtworkDisposable;
     private int lastChapterArtworkIndex = -1;
     private long lastPositionSaveTime = 0;
@@ -576,6 +578,8 @@ public class Media3PlaybackService extends MediaLibraryService {
                         updateDatabaseAfterPlayback(DBReader.getFeedMedia(previousMediaId), -1, false, false, true);
                     }
                     FeedMedia media = DBReader.getFeedMedia(mediaId);
+                    playingFromPlaylist = media.getItem() != null
+                            && PlaylistPlayback.isPlayingFromPlaylist(this, media.getItem());
                     ChapterUtils.loadChapters(media, this, false);
                     return media;
                 })
@@ -586,7 +590,8 @@ public class Media3PlaybackService extends MediaLibraryService {
                                 return;
                             }
                             media.setPosition((int) player.getCurrentPosition());
-                            if (media.getItem() != null && !media.getItem().isTagged(FeedItem.TAG_QUEUE)) {
+                            if (media.getItem() != null && !media.getItem().isTagged(FeedItem.TAG_QUEUE)
+                                    && !playingFromPlaylist) {
                                 DBWriter.addQueueItem(this, media.getItem());
                             }
                             switchToPlayable(media);
@@ -883,7 +888,7 @@ public class Media3PlaybackService extends MediaLibraryService {
         }
         int startPosition = playbackStartPosition;
         queueLoaderDisposable = Maybe.fromCallable(() -> {
-            FeedItem nextItem = DBReader.getNextInQueue(item);
+            FeedItem nextItem = PlaylistPlayback.getNextItem(this, item, wasSkipped);
             boolean hasNext = nextItem != null && nextItem.getMedia() != null;
             updateDatabaseAfterPlayback(media, startPosition, ended, wasSkipped, hasNext);
             if (hasNext) {

@@ -11,7 +11,9 @@ import org.robolectric.RuntimeEnvironment;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import de.danoeh.antennapod.model.feed.Feed;
 import de.danoeh.antennapod.model.feed.FeedItem;
@@ -155,6 +157,27 @@ public class PlaylistDatabaseTest {
                 series.getItems().get(1).getId(), series.getItems().get(2).getId());
         assertEquals(expected, ids(episodes));
         assertEquals(news.getId(), episodes.get(0).getFeed().getId());
+    }
+
+    @Test
+    public void testExcludedEpisodesExtendOldestWindow() throws Exception {
+        Feed series = createFeed(5);
+        Feed news = createFeed(5);
+        long playlistId = PlaylistWriter.createPlaylist(new Playlist("P")).get();
+        PlaylistRule seriesRule = new PlaylistRule(playlistId, series.getId());
+        seriesRule.setEpisodeCount(1);
+        seriesRule.setPickFrom(PlaylistRule.PickFrom.OLDEST);
+        PlaylistWriter.addRule(seriesRule).get();
+        PlaylistRule newsRule = new PlaylistRule(playlistId, news.getId());
+        newsRule.setEpisodeCount(1);
+        newsRule.setPriority(2);
+        PlaylistWriter.addRule(newsRule).get();
+
+        Set<Long> excluded = new HashSet<>();
+        excluded.add(series.getItems().get(0).getId());
+        excluded.add(news.getItems().get(4).getId());
+        List<Long> expected = List.of(series.getItems().get(1).getId(), news.getItems().get(4).getId());
+        assertEquals(expected, ids(PlaylistReader.getEpisodes(playlistId, excluded)));
     }
 
     private Feed createFeed(int numEpisodes) {

@@ -66,10 +66,9 @@ public final class PlaylistEngine {
         }
 
         final boolean newestFirst = rule.getPlayOrder() == PlaylistRule.PlayOrder.NEWEST_FIRST;
-        Collections.sort(picks, (a, b) -> {
-            int result = Long.compare(pubDateMillis(a), pubDateMillis(b));
-            return newestFirst ? -result : result;
-        });
+        Collections.sort(picks, (a, b) -> newestFirst
+                ? Long.compare(pubDateMillis(b), pubDateMillis(a))
+                : Long.compare(pubDateMillis(a), pubDateMillis(b)));
         return picks;
     }
 

@@ -17,12 +17,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.danoeh.antennapod.R;
+import de.danoeh.antennapod.actionbutton.ItemActionButton;
+import de.danoeh.antennapod.actionbutton.PlayActionButton;
+import de.danoeh.antennapod.actionbutton.StreamActionButton;
 import de.danoeh.antennapod.activity.MainActivity;
 import de.danoeh.antennapod.event.FeedItemEvent;
 import de.danoeh.antennapod.event.PlaylistEvent;
 import de.danoeh.antennapod.model.feed.FeedItem;
 import de.danoeh.antennapod.model.feed.FeedItemFilter;
 import de.danoeh.antennapod.model.playlist.Playlist;
+import de.danoeh.antennapod.storage.database.PlaylistPlayback;
 import de.danoeh.antennapod.storage.database.PlaylistReader;
 import de.danoeh.antennapod.storage.database.PlaylistWriter;
 import de.danoeh.antennapod.ui.common.ConfirmationDialog;
@@ -53,7 +57,7 @@ public class PlaylistEpisodesFragment extends EpisodesListFragment {
     @NonNull
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View root = super.onCreateView(inflater, container, savedInstanceState);
+        final View root = super.onCreateView(inflater, container, savedInstanceState);
         toolbar.inflateMenu(R.menu.playlist_episodes);
         toolbar.setTitle(R.string.playlists_label);
         emptyView.setIcon(R.drawable.ic_playlist_play);
@@ -65,7 +69,10 @@ public class PlaylistEpisodesFragment extends EpisodesListFragment {
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         int itemId = item.getItemId();
-        if (itemId == R.id.playlist_edit_rules) {
+        if (itemId == R.id.playlist_play) {
+            playPlaylist();
+            return true;
+        } else if (itemId == R.id.playlist_edit_rules) {
             ((MainActivity) requireActivity()).loadChildFragment(PlaylistRulesFragment.newInstance(playlistId));
             return true;
         } else if (itemId == R.id.playlist_rename) {
@@ -84,6 +91,17 @@ public class PlaylistEpisodesFragment extends EpisodesListFragment {
         return super.onMenuItemClick(item);
     }
 
+    private void playPlaylist() {
+        if (episodes.isEmpty() || episodes.get(0).getMedia() == null) {
+            return;
+        }
+        FeedItem first = episodes.get(0);
+        PlaylistPlayback.start(requireContext(), playlistId);
+        ItemActionButton button = first.getMedia().isDownloaded()
+                ? new PlayActionButton(first) : new StreamActionButton(first);
+        button.onClick(requireContext());
+    }
+
     private void confirmDelete() {
         Playlist current = playlist;
         if (current == null) {
@@ -94,6 +112,9 @@ public class PlaylistEpisodesFragment extends EpisodesListFragment {
             @Override
             public void onConfirmButtonPressed(DialogInterface dialog) {
                 dialog.dismiss();
+                if (PlaylistPlayback.getActivePlaylist(requireContext()) == playlistId) {
+                    PlaylistPlayback.stop(requireContext());
+                }
                 PlaylistWriter.deletePlaylist(playlistId);
                 getParentFragmentManager().popBackStack();
             }

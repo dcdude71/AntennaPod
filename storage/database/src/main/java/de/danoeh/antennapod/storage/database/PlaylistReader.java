@@ -4,9 +4,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import de.danoeh.antennapod.model.feed.Feed;
 import de.danoeh.antennapod.model.feed.FeedItem;
@@ -55,6 +57,11 @@ public final class PlaylistReader {
 
     @NonNull
     public static List<FeedItem> getEpisodes(long playlistId) {
+        return getEpisodes(playlistId, Collections.emptySet());
+    }
+
+    @NonNull
+    public static List<FeedItem> getEpisodes(long playlistId, @NonNull final Set<Long> excludedOldestIds) {
         List<PlaylistRule> rules = getRules(playlistId);
         if (rules.isEmpty()) {
             return new ArrayList<>();
@@ -82,9 +89,16 @@ public final class PlaylistReader {
                 if (feed == null) {
                     return new ArrayList<>();
                 }
-                return DBReader.getFeedItemList(feed,
+                int fetchLimit = limit == Integer.MAX_VALUE ? limit : limit + excludedOldestIds.size();
+                List<FeedItem> result = new ArrayList<>();
+                for (FeedItem item : DBReader.getFeedItemList(feed,
                         new FeedItemFilter(FeedItemFilter.HAS_MEDIA, FeedItemFilter.UNPLAYED),
-                        SortOrder.DATE_OLD_NEW, 0, limit);
+                        SortOrder.DATE_OLD_NEW, 0, fetchLimit)) {
+                    if (result.size() < limit && !excludedOldestIds.contains(item.getId())) {
+                        result.add(item);
+                    }
+                }
+                return result;
             }
         });
     }
