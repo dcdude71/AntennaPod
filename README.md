@@ -1,44 +1,57 @@
-# AntennaPod
+# AntennaPod Fork
 
-[![GitHub check runs](https://img.shields.io/github/actions/workflow/status/AntennaPod/AntennaPod/checks.yml?branch=develop)](https://github.com/AntennaPod/AntennaPod/actions/workflows/checks.yml?query=branch%3Adevelop)
-[![License: GPL v3](https://img.shields.io/github/license/AntennaPod/AntennaPod)](https://www.gnu.org/licenses/gpl-3.0)
-[![GitHub Release](https://img.shields.io/github/v/release/AntennaPod/AntennaPod)](https://github.com/AntennaPod/AntennaPod/releases)
-[![https://img.shields.io/github/commits-since/AntennaPod/AntennaPod/latest/develop](https://img.shields.io/github/commits-since/AntennaPod/AntennaPod/latest/develop)](https://github.com/AntennaPod/AntennaPod/commits/develop/)
-[![Translations on Weblate](https://hosted.weblate.org/widget/antennapod/app/svg-badge.svg?native=1)](https://hosted.weblate.org/engage/antennapod/)
-[![Good first issue](https://img.shields.io/github/issues-search?query=repo%3AAntennaPod%2FAntennaPod%20is%3Aopen%20is%3Aissue%20label%3A%22Good%20first%20issue%22&label=Good%20first%20issue&labelColor=grey&color=%235F1984)](https://github.com/AntennaPod/AntennaPod/labels/Good%20first%20issue)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![GitHub Release](https://img.shields.io/github/v/release/stephanemoulec/AntennaPod)](https://github.com/stephanemoulec/AntennaPod/releases)
 
-This is the official repository of AntennaPod, the easy-to-use, flexible and open-source podcast manager for Android.
+This is a personal fork of [AntennaPod](https://github.com/AntennaPod/AntennaPod), the easy-to-use, flexible and open-source podcast manager for Android. I keep it close to upstream and add a few features I wanted for my own listening.
 
-[<img src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png"
-      alt="Get it on Google Play"
-      height="70">](https://play.google.com/store/apps/details?id=de.danoeh.antennapod)
-[<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png"
-      alt="Get it on F-Droid"
-      height="70">](https://f-droid.org/app/de.danoeh.antennapod)
+**This is not the official AntennaPod app**, and it is not affiliated with or endorsed by the AntennaPod team. If you are looking for AntennaPod, you will be much happier with the official version:
 
-<img src="https://raw.githubusercontent.com/AntennaPod/StoreMetadata/main/listings/en-US/graphics/phone-screenshots/00.png" alt="Screenshot 0" height="200"> <img src="https://raw.githubusercontent.com/AntennaPod/StoreMetadata/main/listings/en-US/graphics/phone-screenshots/01.png" alt="Screenshot 1" height="200"> <img src="https://raw.githubusercontent.com/AntennaPod/StoreMetadata/main/listings/en-US/graphics/phone-screenshots/02.png" alt="Screenshot 2" height="200"> <img src="https://raw.githubusercontent.com/AntennaPod/StoreMetadata/main/listings/en-US/graphics/phone-screenshots/03.png" alt="Screenshot 3" height="200"> <img src="https://raw.githubusercontent.com/AntennaPod/StoreMetadata/main/listings/en-US/graphics/phone-screenshots/04.png" alt="Screenshot 4" height="200"> <img src="https://raw.githubusercontent.com/AntennaPod/StoreMetadata/main/listings/en-US/graphics/phone-screenshots/05.png" alt="Screenshot 5" height="200">
+- Website: [antennapod.org](https://antennapod.org/)
+- [Google Play](https://play.google.com/store/apps/details?id=de.danoeh.antennapod) · [F-Droid](https://f-droid.org/app/de.danoeh.antennapod) · [GitHub](https://github.com/AntennaPod/AntennaPod)
 
+## What's different in this fork
 
-## Feedback
-You can use the [AntennaPod Forum](https://forum.antennapod.org/) for discussions about the app or just podcasting in general.
+### Rule-based playlists
+Next to the regular queue, you can create any number of playlists. A playlist is built from rules, one per podcast:
 
-Bug reports and feature requests can be submitted [here](https://github.com/AntennaPod/AntennaPod/issues) (please read the [instructions](https://github.com/AntennaPod/AntennaPod/blob/develop/CONTRIBUTING.md) on how to report a bug and how to submit a feature request first!).
+- **How many episodes:** all unplayed episodes, or a limit (for example 3)
+- **Which ones:** the most recent episodes, or the oldest unplayed ones
+- **Play order:** oldest first or newest first
+- **Priority (1-10):** priority 1 podcasts play first, then priority 2, and so on. Podcasts with the same priority follow the order of the rules, which you can change by dragging.
 
-We also hold regular community calls to discuss anything AntennaPod-related. [Come join the next call](https://forum.antennapod.org/t/monthly-community-call/1869)!
+The playlist updates itself as new episodes come in and as you listen. Press play on a playlist and it plays through its episodes and stops at the end, without touching your queue. Starting any other episode takes you back to the normal queue.
 
-## Help to test AntennaPod
-AntennaPod has many users and we don't want them to run into trouble when we add a new feature. It's important that we have a significant group test our app, so that we know all possible combinations of phones, Android versions and use cases work as expected. Check out our wiki on how to join our [Beta testing program](https://antennapod.org/documentation/general/beta)! If a bug is reported during the beta period, chances are high that it will be fixed before the upcoming stable version. If it is reported later, fixing might take another full beta cycle. So definitely let us know if something is not right.
+Example: a "Morning" playlist with the 2 most recent episodes of a news podcast (priority 1), then the next unplayed episode of a series you are catching up on (priority 2).
+
+Ideas for later include automatic downloads for playlists and showing playlists in Android Auto. No promises on timing.
+
+### Installs next to the official app
+The fork uses its own package name (`com.stephane.antennapod`) and shows up as "AntennaPod Fork", so it can be installed alongside the official AntennaPod. The two apps do not share data. To try the fork with your podcasts, use "Database export" in AntennaPod (Settings → Backup & restore), then "Database import" in the fork.
+
+## Installing
+
+Signed APKs are published on the [Releases page](https://github.com/stephanemoulec/AntennaPod/releases). The easiest way to install and stay up to date is [Obtainium](https://github.com/ImranR98/Obtainium): add `https://github.com/stephanemoulec/AntennaPod` as an app source.
+
+## Please read: what to expect
+
+This is mainly a personal project, maintained in my spare time and shaped by how I like to listen to podcasts. A few honest notes:
+
+- Features may change, or disappear, as I experiment.
+- Comments, issues and suggestions are very welcome here, but I may not get to them quickly, and some may never be addressed.
+- Please don't report problems with this fork to the AntennaPod team. Their issue tracker is for the official app.
+- The fork is provided as is, without any warranty. Use it at your own risk, and keep backups of your data.
+
+If you need something dependable, the official AntennaPod is the way to go. Thank you for understanding!
+
+## Credits
+
+All the hard work behind this app comes from the [AntennaPod](https://github.com/AntennaPod/AntennaPod) team, its contributors and translators. This fork only adds a few things on top. If you enjoy the app, consider supporting the original project at [antennapod.org](https://antennapod.org/).
 
 ## License
 
-AntennaPod is licensed under the GNU General Public License (GPL-3.0). You can find the license text in the [LICENSE](https://github.com/AntennaPod/AntennaPod/blob/develop/LICENSE) file.
+Like AntennaPod, this fork is licensed under the GNU General Public License (GPL-3.0). You can find the license text in the [LICENSE](LICENSE) file. The source code of every release is available in this repository.
 
-## Translating AntennaPod
+## Building
 
-If you want to translate AntennaPod into another language, you can visit our [Weblate page](https://hosted.weblate.org/projects/antennapod/).
-
-
-## Building AntennaPod
-
-You can build AntennaPod just like any other Android project. Refer to the [instructions](https://github.com/AntennaPod/AntennaPod/blob/develop/CONTRIBUTING.md) for more details.
-
+You can build the app like any other Android project, for example with `./gradlew :app:assembleDebug`. See [CONTRIBUTING.md](CONTRIBUTING.md) for more details on the project structure (written for upstream AntennaPod).
