@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/playlist_edit_rules"
+        android:icon="@drawable/ic_pencil"
+        android:title="@string/playlist_edit_rules"
+        custom:showAsAction="always" />
+
+    <item
+        android:id="@+id/playlist_rename"
+        android:title="@string/playlist_rename"
+        custom:showAsAction="never" />
+
+    <item
+        android:id="@+id/playlist_delete"
+        android:title="@string/playlist_delete"
+        custom:showAsAction="never" />
+
+    <item
+        android:id="@+id/refresh_item"
+        android:title="@string/refresh_label"
+        android:menuCategory="container"
+        custom:showAsAction="never" />
+
+</menu>

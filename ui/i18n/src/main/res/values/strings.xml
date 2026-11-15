@@ -1067,4 +1067,45 @@
     <string name="wearos_play_on_phone" tools:ignore="UnusedResources">Play on phone</string>
     <string name="wearos_browse_phone" tools:ignore="UnusedResources">Browse phone</string>
     <string name="wearos_open_on_phone" tools:ignore="UnusedResources">Open on phone</string>
+    <string name="playlists_label">Playlists</string>
+    <string name="playlists_label_short">Playlists</string>
+    <string name="playlist_new">New playlist</string>
+    <string name="playlist_rename">Rename playlist</string>
+    <string name="playlist_delete">Delete playlist</string>
+    <string name="playlist_delete_confirm">Delete the playlist \"%1$s\"? Your podcasts and episodes are not affected.</string>
+    <string name="playlist_edit_rules">Edit rules</string>
+    <string name="playlist_empty_title">No playlists yet</string>
+    <string name="playlist_empty_message">Create a playlist, then add podcasts to it. For each podcast, you choose which episodes go in and in which order.</string>
+    <string name="playlist_episodes_empty_title">Nothing to play</string>
+    <string name="playlist_episodes_empty_message">This playlist has no unplayed episodes right now. Edit its rules to add podcasts.</string>
+    <string name="playlist_rules_empty_title">No podcasts yet</string>
+    <string name="playlist_rules_empty_message">Add a podcast and choose which of its episodes go into this playlist.</string>
+    <string name="playlist_add_podcast">Add podcast</string>
+    <string name="playlist_choose_podcast">Choose a podcast</string>
+    <string name="playlist_rule_episodes">Episodes</string>
+    <string name="playlist_rule_all_episodes">All unplayed episodes</string>
+    <string name="playlist_rule_limit">Limit to</string>
+    <string name="playlist_rule_pick_from">Pick from</string>
+    <string name="playlist_rule_most_recent">Most recent</string>
+    <string name="playlist_rule_oldest">Oldest unplayed</string>
+    <string name="playlist_rule_play_order">Play order</string>
+    <string name="playlist_rule_oldest_first">Oldest first</string>
+    <string name="playlist_rule_newest_first">Newest first</string>
+    <string name="playlist_rule_priority">Priority (1 = highest)</string>
+    <string name="playlist_rule_priority_value">Priority: %1$d (1 = highest)</string>
+    <string name="playlist_rule_summary">%1$s · %2$s · %3$s</string>
+    <string name="playlist_rule_summary_all">All unplayed</string>
+    <plurals name="playlist_rule_summary_most_recent">
+        <item quantity="one">Most recent episode</item>
+        <item quantity="other">%d most recent</item>
+    </plurals>
+    <plurals name="playlist_rule_summary_oldest">
+        <item quantity="one">Oldest unplayed episode</item>
+        <item quantity="other">%d oldest unplayed</item>
+    </plurals>
+    <string name="playlist_rule_summary_priority">Priority %1$d</string>
+    <plurals name="playlist_num_podcasts">
+        <item quantity="one">%d podcast</item>
+        <item quantity="other">%d podcasts</item>
+    </plurals>
 </resources>

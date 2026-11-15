@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="24dp"
+        android:paddingTop="16dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/playlist_rule_episodes"
+            android:textAppearance="@style/TextAppearance.Material3.TitleSmall" />
+
+        <RadioGroup
+            android:id="@+id/countGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RadioButton
+                android:id="@+id/countAll"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/playlist_rule_all_episodes" />
+
+            <RadioButton
+                android:id="@+id/countLimit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/playlist_rule_limit" />
+
+        </RadioGroup>
+
+        <EditText
+            android:id="@+id/countInput"
+            android:layout_width="96dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:hint="@string/playlist_rule_episodes"
+            android:importantForAutofill="no"
+            android:inputType="number"
+            android:maxLength="3" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/playlist_rule_pick_from"
+            android:textAppearance="@style/TextAppearance.Material3.TitleSmall" />
+
+        <RadioGroup
+            android:id="@+id/pickFromGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RadioButton
+                android:id="@+id/pickMostRecent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/playlist_rule_most_recent" />
+
+            <RadioButton
+                android:id="@+id/pickOldest"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/playlist_rule_oldest" />
+
+        </RadioGroup>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/playlist_rule_play_order"
+            android:textAppearance="@style/TextAppearance.Material3.TitleSmall" />
+
+        <RadioGroup
+            android:id="@+id/playOrderGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RadioButton
+                android:id="@+id/playOldestFirst"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/playlist_rule_oldest_first" />
+
+            <RadioButton
+                android:id="@+id/playNewestFirst"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/playlist_rule_newest_first" />
+
+        </RadioGroup>
+
+        <TextView
+            android:id="@+id/priorityLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/playlist_rule_priority"
+            android:textAppearance="@style/TextAppearance.Material3.TitleSmall" />
+
+        <com.google.android.material.slider.Slider
+            android:id="@+id/prioritySlider"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/playlist_rule_priority"
+            android:stepSize="1"
+            android:valueFrom="1"
+            android:valueTo="10" />
+
+    </LinearLayout>
+
+</ScrollView>
