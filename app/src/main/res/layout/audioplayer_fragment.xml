@@ -139,7 +139,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:visibility="gone"
-                app:icon="@drawable/ic_fast_forward"
+                app:icon="@drawable/ic_fast_forward_24dp"
                 tools:text="Skip ad (30 s)"
                 tools:visibility="visible" />
 

@@ -58,6 +58,7 @@ import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.activity.MainActivity;
 import de.danoeh.antennapod.ui.common.Converter;
 import de.danoeh.antennapod.ui.screen.feed.preferences.SkipPreferenceDialog;
+import de.danoeh.antennapod.event.FeedAdSkipEvent;
 import de.danoeh.antennapod.event.FeedItemEvent;
 import de.danoeh.antennapod.event.PlayerErrorEvent;
 import de.danoeh.antennapod.event.PlayerStatusEvent;
@@ -364,6 +365,11 @@ public class AudioPlayerFragment extends Fragment implements
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onPlayerStatusEvent(PlayerStatusEvent event) {
+        loadMediaInfo(false);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onFeedAdSkipChanged(FeedAdSkipEvent event) {
         loadMediaInfo(false);
     }
 

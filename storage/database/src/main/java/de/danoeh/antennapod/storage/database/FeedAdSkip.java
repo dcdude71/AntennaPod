@@ -1,5 +1,9 @@
 package de.danoeh.antennapod.storage.database;
 
+import org.greenrobot.eventbus.EventBus;
+
+import de.danoeh.antennapod.event.FeedAdSkipEvent;
+
 public final class FeedAdSkip {
 
     private FeedAdSkip() {
@@ -23,5 +27,6 @@ public final class FeedAdSkip {
         } finally {
             adapter.close();
         }
+        EventBus.getDefault().post(new FeedAdSkipEvent(feedId));
     }
 }
