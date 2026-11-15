@@ -38,6 +38,7 @@ import de.danoeh.antennapod.model.feed.VolumeAdaptionSetting;
 import de.danoeh.antennapod.net.download.serviceinterface.FeedUpdateManager;
 import de.danoeh.antennapod.storage.database.DBReader;
 import de.danoeh.antennapod.storage.database.DBWriter;
+import de.danoeh.antennapod.storage.database.FeedAdSkip;
 import de.danoeh.antennapod.storage.database.FeedDatabaseWriter;
 import de.danoeh.antennapod.storage.preferences.UserPreferences;
 import de.danoeh.antennapod.ui.preferences.screen.synchronization.AuthenticationDialog;
@@ -66,6 +67,7 @@ public class FeedSettingsPreferenceFragment extends PreferenceFragmentCompat {
     private static final String PREF_NEW_EPISODES_ACTION = "feedNewEpisodesAction";
     private static final String PREF_FEED_PLAYBACK_SPEED = "feedPlaybackSpeed";
     private static final String PREF_AUTO_SKIP = "feedAutoSkip";
+    private static final String PREF_AD_SKIP = "feedAdSkip";
     private static final String PREF_NOTIFICATION = "episodeNotification";
     private static final String PREF_RENAME = "rename";
     private static final String PREF_TAGS = "tags";
@@ -75,6 +77,7 @@ public class FeedSettingsPreferenceFragment extends PreferenceFragmentCompat {
     private Feed feed;
     private Disposable disposable;
     private FeedPreferences feedPreferences;
+    private int adSkipSeconds;
 
     public static FeedSettingsPreferenceFragment newInstance(long feedId) {
         FeedSettingsPreferenceFragment fragment = new FeedSettingsPreferenceFragment();
@@ -125,6 +128,7 @@ public class FeedSettingsPreferenceFragment extends PreferenceFragmentCompat {
         long feedId = getArguments().getLong(EXTRA_FEED_ID);
         disposable = Maybe.create((MaybeOnSubscribe<Feed>) emitter -> {
             Feed feed = DBReader.getFeed(feedId, false, 0, 0);
+            adSkipSeconds = FeedAdSkip.getSeconds(feedId);
             if (feed != null) {
                 emitter.onSuccess(feed);
             } else {
@@ -141,6 +145,7 @@ public class FeedSettingsPreferenceFragment extends PreferenceFragmentCompat {
                     updateAutoDeleteSummary();
                     updateAutoDownloadEnabledSummary();
                     updateNewEpisodesActionSummary();
+                    updateAdSkipSummary();
 
                     findPreference(PREF_RECONNECT_LOCAL_FOLDER).setVisible(feed.isLocalFeed());
                     if (feed.isLocalFeed()) {
@@ -162,6 +167,16 @@ public class FeedSettingsPreferenceFragment extends PreferenceFragmentCompat {
         }
     }
 
+    private void updateAdSkipSummary() {
+        Preference preference = findPreference(PREF_AD_SKIP);
+        if (adSkipSeconds > 0) {
+            preference.setSummary(getResources().getQuantityString(
+                    R.plurals.time_seconds_quantified, adSkipSeconds, adSkipSeconds));
+        } else {
+            preference.setSummary(R.string.feed_ad_skip_off);
+        }
+    }
+
     private void setupPreferences() {
         findPreference(PREF_AUTO_SKIP).setOnPreferenceClickListener(preference -> {
             new FeedPreferenceSkipDialog(getContext(),
@@ -176,6 +191,13 @@ public class FeedSettingsPreferenceFragment extends PreferenceFragmentCompat {
                                     feedPreferences.getFeedSkipEnding(), feed.getId()));
                 }
             }.show();
+            return false;
+        });
+        findPreference(PREF_AD_SKIP).setOnPreferenceClickListener(preference -> {
+            FeedAdSkipDialog.show(getContext(), feed.getId(), adSkipSeconds, seconds -> {
+                adSkipSeconds = seconds;
+                updateAdSkipSummary();
+            });
             return false;
         });
         findPreference(PREF_FEED_PLAYBACK_SPEED).setOnPreferenceClickListener(this::showPlaybackSpeedDialog);

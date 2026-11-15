@@ -34,6 +34,12 @@
             android:summary="@string/pref_feed_skip_sum"
             android:title="@string/pref_feed_skip" />
 
+        <Preference
+            android:icon="@drawable/ic_fast_forward"
+            android:key="feedAdSkip"
+            android:summary="@string/feed_ad_skip_off"
+            android:title="@string/feed_ad_skip" />
+
         <de.danoeh.antennapod.ui.screen.feed.preferences.VolumeAdaptationPreference
             android:defaultValue="off"
             android:entries="@array/spnVolumeAdaptationItems"

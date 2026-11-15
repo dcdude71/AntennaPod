@@ -409,6 +409,10 @@ public class PodDBAdapter {
         return new PlaylistDbAdapter(db);
     }
 
+    FeedAdSkipDbAdapter getFeedAdSkipDbAdapter() {
+        return new FeedAdSkipDbAdapter(db);
+    }
+
     /**
      * <p>Resets all database connections to ensure new database connections for
      * the next test case. Call method only for unit tests.</p>
@@ -965,6 +969,7 @@ public class PodDBAdapter {
             db.delete(TABLE_NAME_DOWNLOAD_LOG, KEY_FEEDFILE + "=? AND " + KEY_FEEDFILETYPE + "=?",
                     new String[]{String.valueOf(feed.getId()), String.valueOf(Feed.FEEDFILETYPE_FEED)});
             getPlaylistDbAdapter().deleteRulesOfFeed(feed.getId());
+            getFeedAdSkipDbAdapter().deleteFeed(feed.getId());
 
             db.delete(TABLE_NAME_FEEDS, KEY_ID + "=?",
                     new String[]{String.valueOf(feed.getId())});
@@ -1623,6 +1628,7 @@ public class PodDBAdapter {
         @Override
         public void onOpen(final SQLiteDatabase db) {
             PlaylistDbAdapter.createTables(db);
+            FeedAdSkipDbAdapter.createTables(db);
         }
     }
 }

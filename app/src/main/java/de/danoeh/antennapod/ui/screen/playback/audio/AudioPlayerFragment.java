@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
@@ -30,6 +31,7 @@ import de.danoeh.antennapod.playback.service.PlaybackServiceInterface;
 import de.danoeh.antennapod.playback.service.PlaybackServiceStarter;
 import de.danoeh.antennapod.storage.database.DBReader;
 import de.danoeh.antennapod.storage.database.DBWriter;
+import de.danoeh.antennapod.storage.database.FeedAdSkip;
 import de.danoeh.antennapod.storage.preferences.PlaybackPreferences;
 import de.danoeh.antennapod.ui.appstartintent.MainActivityStarter;
 import de.danoeh.antennapod.ui.appstartintent.MediaButtonStarter;
@@ -97,12 +99,14 @@ public class AudioPlayerFragment extends Fragment implements
     private ImageButton butFF;
     private TextView txtvFF;
     private ImageButton butSkip;
+    private Button butAdSkip;
     private MaterialToolbar toolbar;
     private ProgressBar progressIndicator;
     private CardView cardViewSeek;
     private TextView txtvSeek;
 
     private FeedMedia currentMedia;
+    private volatile int adSkipSeconds;
     private Disposable disposable;
     private boolean showTimeLeft;
     private boolean seekedToChapterStart = false;
@@ -137,6 +141,7 @@ public class AudioPlayerFragment extends Fragment implements
         butFF = root.findViewById(R.id.butFF);
         txtvFF = root.findViewById(R.id.txtvFF);
         butSkip = root.findViewById(R.id.butSkip);
+        butAdSkip = root.findViewById(R.id.butAdSkip);
         progressIndicator = root.findViewById(R.id.progLoading);
         cardViewSeek = root.findViewById(R.id.cardViewSeek);
         txtvSeek = root.findViewById(R.id.txtvSeek);
@@ -247,6 +252,23 @@ public class AudioPlayerFragment extends Fragment implements
                     SkipPreferenceDialog.SkipDirection.SKIP_FORWARD, txtvFF);
             return false;
         });
+        butAdSkip.setOnClickListener(v -> {
+            final FeedMedia media = currentMedia;
+            final int skipMillis = adSkipSeconds * 1000;
+            if (BuildConfig.USE_MEDIA3_PLAYBACK_SERVICE) {
+                PlaybackController.bindToMedia3Service(getContext(), controller -> {
+                    if (controller.getCurrentMediaItem() != null) {
+                        controller.seekTo(controller.getCurrentPosition() + skipMillis);
+                    } else if (media != null) {
+                        seekWithoutPlaybackService(media,
+                                Math.min(media.getDuration(), media.getPosition() + skipMillis));
+                    }
+                });
+            } else {
+                PlaybackController.bindToService(getActivity(), playbackService ->
+                        playbackService.seekTo(playbackService.getCurrentPosition() + skipMillis));
+            }
+        });
         butSkip.setOnClickListener(v -> {
             if (BuildConfig.USE_MEDIA3_PLAYBACK_SERVICE) {
                 PlaybackController.bindToMedia3Service(getContext(), MediaController::seekToNextMediaItem);
@@ -305,6 +327,7 @@ public class AudioPlayerFragment extends Fragment implements
         disposable = Maybe.<FeedMedia>create(emitter -> {
             FeedMedia media = DBReader.getFeedMedia(PlaybackPreferences.getCurrentlyPlayingFeedMediaId());
             if (media != null) {
+                adSkipSeconds = media.getItem() == null ? 0 : FeedAdSkip.getSeconds(media.getItem().getFeedId());
                 if (includingChapters) {
                     ChapterUtils.loadChapters(media, getContext(), false);
                 }
@@ -335,6 +358,8 @@ public class AudioPlayerFragment extends Fragment implements
         boolean isPlaying = PlaybackServiceInterface.isPlaying
                 && PlaybackPreferences.getCurrentPlayerStatus() == PlaybackPreferences.PLAYER_STATUS_PLAYING;
         butPlay.setIsShowPlay(!isPlaying);
+        butAdSkip.setVisibility(adSkipSeconds > 0 ? View.VISIBLE : View.GONE);
+        butAdSkip.setText(getString(R.string.skip_ad_label, adSkipSeconds));
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
