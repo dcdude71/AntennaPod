@@ -1,7 +1,9 @@
 package de.danoeh.antennapod.ui.screen.playlist;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -10,11 +12,14 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import io.reactivex.rxjava3.core.Completable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Future;
 
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.actionbutton.ItemActionButton;
@@ -26,6 +31,7 @@ import de.danoeh.antennapod.event.PlaylistEvent;
 import de.danoeh.antennapod.model.feed.FeedItem;
 import de.danoeh.antennapod.model.feed.FeedItemFilter;
 import de.danoeh.antennapod.model.playlist.Playlist;
+import de.danoeh.antennapod.net.download.serviceinterface.AutoDownloadManager;
 import de.danoeh.antennapod.storage.database.PlaylistPlayback;
 import de.danoeh.antennapod.storage.database.PlaylistReader;
 import de.danoeh.antennapod.storage.database.PlaylistWriter;
@@ -74,6 +80,20 @@ public class PlaylistEpisodesFragment extends EpisodesListFragment {
             return true;
         } else if (itemId == R.id.playlist_edit_rules) {
             ((MainActivity) requireActivity()).loadChildFragment(PlaylistRulesFragment.newInstance(playlistId));
+            return true;
+        } else if (itemId == R.id.playlist_auto_download) {
+            Playlist current = playlist;
+            if (current != null) {
+                current.setAutoDownload(!current.isAutoDownload());
+                item.setChecked(current.isAutoDownload());
+                Context context = requireContext().getApplicationContext();
+                Future<?> update = PlaylistWriter.updatePlaylist(current);
+                if (current.isAutoDownload()) {
+                    Completable.fromFuture(update).subscribeOn(Schedulers.io()).subscribe(
+                            () -> AutoDownloadManager.getInstance().autodownloadUndownloadedItems(context),
+                            error -> Log.e(TAG, Log.getStackTraceString(error)));
+                }
+            }
             return true;
         } else if (itemId == R.id.playlist_rename) {
             Playlist current = playlist;
@@ -126,6 +146,7 @@ public class PlaylistEpisodesFragment extends EpisodesListFragment {
         Playlist current = playlist;
         if (current != null) {
             toolbar.setTitle(current.getName());
+            toolbar.getMenu().findItem(R.id.playlist_auto_download).setChecked(current.isAutoDownload());
         }
     }
 

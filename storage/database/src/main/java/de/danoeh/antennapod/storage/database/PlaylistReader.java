@@ -6,6 +6,7 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -58,6 +59,32 @@ public final class PlaylistReader {
     @NonNull
     public static List<FeedItem> getEpisodes(long playlistId) {
         return getEpisodes(playlistId, Collections.emptySet());
+    }
+
+    @NonNull
+    public static List<FeedItem> getAutoDownloadEpisodes() {
+        List<FeedItem> episodes = new ArrayList<>();
+        for (Playlist playlist : getPlaylists()) {
+            if (playlist.isAutoDownload()) {
+                for (FeedItem item : getEpisodes(playlist.getId())) {
+                    if (!episodes.contains(item)) {
+                        episodes.add(item);
+                    }
+                }
+            }
+        }
+        return episodes;
+    }
+
+    @NonNull
+    public static Set<Long> getEpisodeIdsInPlaylists() {
+        Set<Long> ids = new HashSet<>();
+        for (Playlist playlist : getPlaylists()) {
+            for (FeedItem item : getEpisodes(playlist.getId())) {
+                ids.add(item.getId());
+            }
+        }
+        return ids;
     }
 
     @NonNull

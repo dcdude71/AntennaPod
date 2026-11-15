@@ -15,6 +15,7 @@ import de.danoeh.antennapod.model.feed.FeedItemFilter;
 import de.danoeh.antennapod.model.feed.FeedPreferences;
 import de.danoeh.antennapod.net.download.serviceinterface.DownloadServiceInterface;
 import de.danoeh.antennapod.storage.database.DBReader;
+import de.danoeh.antennapod.storage.database.PlaylistReader;
 import de.danoeh.antennapod.storage.preferences.UserPreferences;
 import de.danoeh.antennapod.net.common.NetworkUtils;
 
@@ -53,14 +54,14 @@ public class AutomaticDownloadAlgorithm {
                 boolean autoDownloadQueueEnabled = UserPreferences.isEnableAutodownloadQueue();
                 final List<FeedItem> newItems = DBReader.getAutoDownloadCandidates(
                         globalAutoDownloadEnabled, autoDownloadQueueEnabled);
-                final List<FeedItem> candidates = new ArrayList<>();
+                final List<FeedItem> candidates = new ArrayList<>(PlaylistReader.getAutoDownloadEpisodes());
 
                 for (FeedItem newItem : newItems) {
                     FeedPreferences feedPrefs = newItem.getFeed().getPreferences();
                     boolean shouldAdd = (autoDownloadQueueEnabled && newItem.isTagged(FeedItem.TAG_QUEUE))
                             || (feedPrefs.isAutoDownload(globalAutoDownloadEnabled)
                             && feedPrefs.getFilter().shouldAutoDownload(newItem));
-                    if (shouldAdd) {
+                    if (shouldAdd && !candidates.contains(newItem)) {
                         candidates.add(newItem);
                     }
                 }

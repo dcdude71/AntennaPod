@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Set;
 
 import de.danoeh.antennapod.model.feed.FeedItem;
+import de.danoeh.antennapod.net.download.serviceinterface.AutoDownloadManager;
 
 public final class PlaylistPlayback {
     public static final long NO_PLAYLIST = 0;
@@ -69,6 +70,7 @@ public final class PlaylistPlayback {
         if (next == null) {
             stop(context);
         }
+        AutoDownloadManager.getInstance().autodownloadUndownloadedItems(context);
         return next;
     }
 

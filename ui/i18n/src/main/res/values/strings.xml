@@ -1074,6 +1074,7 @@
     <string name="playlist_delete">Delete playlist</string>
     <string name="playlist_delete_confirm">Delete the playlist \"%1$s\"? Your podcasts and episodes are not affected.</string>
     <string name="playlist_edit_rules">Edit rules</string>
+    <string name="playlist_auto_download">Auto-download episodes</string>
     <string name="playlist_play">Play playlist</string>
     <string name="playlist_empty_title">No playlists yet</string>
     <string name="playlist_empty_message">Create a playlist, then add podcasts to it. For each podcast, you choose which episodes go in and in which order.</string>

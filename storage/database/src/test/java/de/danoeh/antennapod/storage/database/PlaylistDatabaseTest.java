@@ -180,6 +180,29 @@ public class PlaylistDatabaseTest {
         assertEquals(expected, ids(PlaylistReader.getEpisodes(playlistId, excluded)));
     }
 
+    @Test
+    public void testAutoDownloadAndProtectedEpisodes() throws Exception {
+        Feed news = createFeed(3);
+        Feed series = createFeed(3);
+        Playlist autoPlaylist = new Playlist("Auto");
+        autoPlaylist.setAutoDownload(true);
+        long autoId = PlaylistWriter.createPlaylist(autoPlaylist).get();
+        PlaylistRule newsRule = new PlaylistRule(autoId, news.getId());
+        newsRule.setEpisodeCount(1);
+        PlaylistWriter.addRule(newsRule).get();
+        long manualId = PlaylistWriter.createPlaylist(new Playlist("Manual")).get();
+        PlaylistRule seriesRule = new PlaylistRule(manualId, series.getId());
+        seriesRule.setEpisodeCount(1);
+        seriesRule.setPickFrom(PlaylistRule.PickFrom.OLDEST);
+        PlaylistWriter.addRule(seriesRule).get();
+
+        assertEquals(List.of(news.getItems().get(2).getId()), ids(PlaylistReader.getAutoDownloadEpisodes()));
+        Set<Long> expected = new HashSet<>();
+        expected.add(news.getItems().get(2).getId());
+        expected.add(series.getItems().get(0).getId());
+        assertEquals(expected, PlaylistReader.getEpisodeIdsInPlaylists());
+    }
+
     private Feed createFeed(int numEpisodes) {
         Feed feed = new Feed("url-" + System.nanoTime(), null, "Feed");
         feed.setItems(new ArrayList<>());
