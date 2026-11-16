@@ -51,12 +51,6 @@ To keep a playlist from filling your storage, every rule in a playlist with auto
 
 The fork also fixes a problem where automatic downloads could stop altogether once more episodes were downloaded than the episode limit allows.
 
-#### Playlists on foldables and big screens
-On a wide screen (an unfolded Fold, a tablet, or a phone in landscape), the Playlists tab shows your playlists on the left and the selected playlist's episodes on the right. Tap the pencil to edit a playlist: its rules move to the left and a live preview of the episodes appears on the right, updating as you change rules (newly added episodes are briefly highlighted). On a narrow screen, the rules screen shows how many episodes the playlist currently has.
-
-#### Episode details beside the list
-On a wide screen, tapping an episode anywhere (Inbox, Queue, Episodes, Downloads, Home, a podcast's page) opens its details on the right while the list stays on the left. Close them with ✕ or Back; switching tabs closes them too. Fold the phone and the episode goes full screen.
-
 #### Playlists in Android Auto
 In a playlist's menu (⋮), **Show in Android Auto** adds it to a **Playlists** folder in Android Auto, right after "Continue listening". It is on for new playlists; playlists created before this version start with it off. Starting an episode from that folder plays the playlist, just like on the phone.
 
@@ -66,8 +60,13 @@ Many podcasts play ads of about the same length. In a podcast's settings, set an
 ### A modern player
 The full-screen player has a new look: smaller artwork, a bold episode title, and large, well-spaced controls (rewind, play, fast-forward) with speed, sleep timer, next episode and shownotes in a labeled row below. Prefer the original? Switch back any time in Settings → User interface → Player style → Classic.
 
-#### On foldables and big screens
-With the modern player on a wide screen (an unfolded Pixel Fold or Galaxy Z Fold, a tablet, or a phone in landscape), the show notes appear next to the artwork and controls instead of behind the Shownotes button. Half-fold the phone on a table and the player switches to tabletop mode: artwork on the top half, big controls on the bottom half. It rearranges itself as you fold and unfold.
+### Made for foldables and big screens
+On a wide screen (an unfolded Pixel Fold or Galaxy Z Fold, a tablet, or a phone in landscape), the app uses the extra room. Everything rearranges itself as you fold and unfold, and you stay where you were.
+
+- **Player:** with the modern player, the show notes sit next to the artwork and controls instead of behind the Shownotes button.
+- **Tabletop mode:** half-fold the phone on a table (held sideways) and the player puts the artwork on the top half and big controls on the bottom half.
+- **Playlists:** your playlists on the left, the selected playlist's episodes on the right. Tap the pencil to edit: the rules move to the left and a live preview on the right updates as you change them (newly added episodes are briefly highlighted). On a narrow screen, the rules screen shows how many episodes the playlist currently has.
+- **Episode details beside the list:** tapping an episode anywhere (Inbox, Queue, Episodes, Downloads, Home, a podcast's page) opens its details on the right while the list stays on the left. Close them with ✕ or Back. Fold the phone and the episode goes full screen.
 
 ### Settings added by this fork
 | Setting | Where | Options |
