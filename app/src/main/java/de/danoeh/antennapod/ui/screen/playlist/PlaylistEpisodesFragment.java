@@ -191,7 +191,21 @@ public class PlaylistEpisodesFragment extends EpisodesListFragment {
     @Override
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        if (!preview && getParentFragment() == null && !isHidden() && isResumed()
+        if (isResumed()) {
+            returnToPanesIfWide();
+        }
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (!hidden) {
+            returnToPanesIfWide();
+        }
+    }
+
+    private void returnToPanesIfWide() {
+        if (!preview && getParentFragment() == null && !isHidden()
                 && PlaylistPanes.isWide(requireContext())) {
             PlaylistPanes.setSelected(requireContext(), playlistId);
             getParentFragmentManager().popBackStack();

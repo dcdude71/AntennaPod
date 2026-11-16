@@ -54,5 +54,11 @@ Settings → User interface → Player style: Modern (default) or Classic (upstr
 - Upstream `NestedScrollableHost` was changed so it works outside a ViewPager2 and no longer cancels its first frame (cancelling froze the unfold animation: `BLASTSyncEngine` sync timeout).
 - Testing needs the real phone: folded, unfolded, half-folded and flat again.
 
+## Playlists on wide screens
+- `PlaylistsFragment` (layout `playlist_panes.xml`): ≥ 600dp wide → list (360dp) + selected playlist (`PlaylistEpisodesFragment` as a child in `detailPane`). Selection is remembered in prefs (`PlaylistPanes`).
+- Pencil opens `PlaylistEditFragment` (always, also when narrow): `PlaylistRulesFragment` on the left, `PlaylistEpisodesFragment.newPreviewInstance` on the right when wide. Preview tints newly added episodes for 2 s. Narrow: rules toolbar subtitle "Preview: N episodes".
+- Fold with two panes → selected playlist full screen (Back = list). A full-screen playlist that becomes visible on a wide screen (unfold, or Back from the editor) pops itself so the two panes show it.
+- All fork-only files; no upstream changes.
+
 ## Working preferences
 - Ask design questions as a short numbered list with a recommendation per item, and let the answer come back as plain text (not a multiple-choice picker); answers often add nuance the options don't cover.
