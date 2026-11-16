@@ -1,5 +1,7 @@
 package de.danoeh.antennapod.ui.screen.playlist;
 
+import android.content.res.Configuration;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,6 +12,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.graphics.ColorUtils;
 import androidx.core.util.Pair;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -37,6 +40,7 @@ import de.danoeh.antennapod.storage.database.PlaylistPlayback;
 import de.danoeh.antennapod.storage.database.PlaylistReader;
 import de.danoeh.antennapod.storage.database.PlaylistWriter;
 import de.danoeh.antennapod.ui.common.EmptyViewHandler;
+import de.danoeh.antennapod.ui.common.ThemeUtils;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.disposables.Disposable;
@@ -45,18 +49,27 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 public class PlaylistsFragment extends Fragment implements Toolbar.OnMenuItemClickListener {
     public static final String TAG = "PlaylistsFragment";
     private static final String KEY_UP_ARROW = "up_arrow";
+    private static final int SELECTED_ALPHA = 0x2e;
 
     private PlaylistAdapter adapter;
     private EmptyViewHandler emptyView;
     private Disposable disposable;
     private Disposable playDisposable;
     private boolean displayUpArrow;
+    private View listPane;
+    private View paneDivider;
+    private View detailPane;
+    private boolean wide;
+    private long selectedId = PlaylistPanes.NO_PLAYLIST;
 
     @NonNull
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.playlist_list_fragment, container, false);
+        View root = inflater.inflate(R.layout.playlist_panes, container, false);
+        listPane = root.findViewById(R.id.listPane);
+        paneDivider = root.findViewById(R.id.paneDivider);
+        detailPane = root.findViewById(R.id.detailPane);
         MaterialToolbar toolbar = root.findViewById(R.id.toolbar);
         toolbar.setTitle(R.string.playlists_label);
         toolbar.inflateMenu(R.menu.playlists);
@@ -77,7 +90,64 @@ public class PlaylistsFragment extends Fragment implements Toolbar.OnMenuItemCli
         emptyView.setTitle(R.string.playlist_empty_title);
         emptyView.setMessage(R.string.playlist_empty_message);
         emptyView.attachToRecyclerView(recyclerView);
+        wide = PlaylistPanes.isWide(requireContext());
+        selectedId = PlaylistPanes.getSelected(requireContext());
+        applyPanes(false);
         return root;
+    }
+
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        boolean nowWide = PlaylistPanes.isWide(requireContext());
+        if (getView() == null || nowWide == wide) {
+            return;
+        }
+        wide = nowWide;
+        applyPanes(true);
+        adapter.notifyDataSetChanged();
+    }
+
+    private void applyPanes(boolean sizeChanged) {
+        PlaylistPanes.layoutPanes(listPane, paneDivider, detailPane, wide);
+        if (wide) {
+            showDetail(selectedId);
+            return;
+        }
+        Fragment detail = getChildFragmentManager().findFragmentById(R.id.detailPane);
+        if (detail != null) {
+            getChildFragmentManager().beginTransaction().remove(detail).commit();
+        }
+        if (sizeChanged && !isHidden() && selectedId != PlaylistPanes.NO_PLAYLIST) {
+            ((MainActivity) requireActivity()).loadChildFragment(PlaylistEpisodesFragment.newInstance(selectedId));
+        }
+    }
+
+    private void showDetail(long playlistId) {
+        Fragment detail = getChildFragmentManager().findFragmentById(R.id.detailPane);
+        if (playlistId == PlaylistPanes.NO_PLAYLIST) {
+            if (detail != null) {
+                getChildFragmentManager().beginTransaction().remove(detail).commit();
+            }
+            return;
+        }
+        if (detail instanceof PlaylistEpisodesFragment
+                && ((PlaylistEpisodesFragment) detail).getPlaylistId() == playlistId) {
+            return;
+        }
+        getChildFragmentManager().beginTransaction()
+                .replace(R.id.detailPane, PlaylistEpisodesFragment.newInstance(playlistId))
+                .commit();
+    }
+
+    private void select(long playlistId) {
+        selectedId = playlistId;
+        PlaylistPanes.setSelected(requireContext(), playlistId);
+    }
+
+    void onSelectedPlaylistDeleted() {
+        select(PlaylistPanes.NO_PLAYLIST);
+        showDetail(PlaylistPanes.NO_PLAYLIST);
     }
 
     @Override
@@ -168,7 +238,26 @@ public class PlaylistsFragment extends Fragment implements Toolbar.OnMenuItemCli
                 .subscribe(result -> {
                     adapter.setItems(result);
                     emptyView.updateVisibility();
+                    if (wide) {
+                        selectExistingPlaylist(result);
+                    }
                 }, error -> Log.e(TAG, Log.getStackTraceString(error)));
+    }
+
+    private void selectExistingPlaylist(List<Pair<Playlist, Integer>> playlists) {
+        long firstId = PlaylistPanes.NO_PLAYLIST;
+        for (Pair<Playlist, Integer> item : playlists) {
+            if (item.first.getId() == selectedId) {
+                showDetail(selectedId);
+                return;
+            }
+            if (firstId == PlaylistPanes.NO_PLAYLIST) {
+                firstId = item.first.getId();
+            }
+        }
+        select(firstId);
+        showDetail(firstId);
+        adapter.notifyDataSetChanged();
     }
 
     private class PlaylistAdapter extends ReorderableListAdapter<Pair<Playlist, Integer>> {
@@ -178,12 +267,21 @@ public class PlaylistsFragment extends Fragment implements Toolbar.OnMenuItemCli
             holder.title.setText(item.first.getName());
             holder.subtitle.setText(getResources().getQuantityString(
                     R.plurals.playlist_num_podcasts, item.second, item.second));
+            boolean selected = wide && item.first.getId() == selectedId;
+            holder.itemView.setForeground(selected ? new ColorDrawable(ColorUtils.setAlphaComponent(
+                    ThemeUtils.getColorFromAttr(requireContext(), R.attr.colorPrimary), SELECTED_ALPHA)) : null);
         }
 
         @Override
         void onItemClick(@NonNull Pair<Playlist, Integer> item) {
-            ((MainActivity) requireActivity()).loadChildFragment(
-                    PlaylistEpisodesFragment.newInstance(item.first.getId()));
+            select(item.first.getId());
+            if (wide) {
+                showDetail(selectedId);
+                notifyDataSetChanged();
+            } else {
+                ((MainActivity) requireActivity()).loadChildFragment(
+                        PlaylistEpisodesFragment.newInstance(item.first.getId()));
+            }
         }
 
         @Override

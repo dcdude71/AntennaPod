@@ -1074,6 +1074,15 @@
     <string name="playlist_delete">Delete playlist</string>
     <string name="playlist_delete_confirm">Delete the playlist \"%1$s\"? Your podcasts and episodes are not affected.</string>
     <string name="playlist_edit_rules">Edit rules</string>
+    <string name="playlist_preview">Preview</string>
+    <plurals name="playlist_preview_summary">
+        <item quantity="one">%d episode · updates as you edit</item>
+        <item quantity="other">%d episodes · updates as you edit</item>
+    </plurals>
+    <plurals name="playlist_rules_preview_summary">
+        <item quantity="one">Preview: %d episode</item>
+        <item quantity="other">Preview: %d episodes</item>
+    </plurals>
     <string name="playlist_auto_download">Auto-download episodes</string>
     <string name="playlist_play">Play playlist</string>
     <string name="playlists_play_from_top">Play playlists from the top</string>

@@ -2,7 +2,11 @@ package de.danoeh.antennapod.ui.screen.playlist;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.Configuration;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -48,12 +52,19 @@ import de.danoeh.antennapod.ui.episodeslist.EpisodesListFragment;
 public class PlaylistEpisodesFragment extends EpisodesListFragment {
     public static final String TAG = "PlaylistEpisodesFragment";
     private static final String ARG_PLAYLIST_ID = "playlist_id";
+    private static final String ARG_PREVIEW = "preview";
+    private static final long JUST_ADDED_MILLIS = 2000;
+    private static final int JUST_ADDED_COLOR = 0x5543A047;
 
     private long playlistId;
     private volatile Playlist playlist;
     private volatile int episodeCount;
     private volatile boolean hasUnlimitedRule;
     private volatile Set<Long> ruleFeedIds = Collections.emptySet();
+    private boolean preview;
+    private volatile Set<Long> previousEpisodeIds;
+    private volatile Set<Long> justAddedIds = Collections.emptySet();
+    private final Handler handler = new Handler(Looper.getMainLooper());
 
     public static PlaylistEpisodesFragment newInstance(long playlistId) {
         PlaylistEpisodesFragment fragment = new PlaylistEpisodesFragment();
@@ -63,18 +74,33 @@ public class PlaylistEpisodesFragment extends EpisodesListFragment {
         return fragment;
     }
 
+    public static PlaylistEpisodesFragment newPreviewInstance(long playlistId) {
+        PlaylistEpisodesFragment fragment = newInstance(playlistId);
+        fragment.requireArguments().putBoolean(ARG_PREVIEW, true);
+        return fragment;
+    }
+
+    long getPlaylistId() {
+        return playlistId;
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         playlistId = requireArguments().getLong(ARG_PLAYLIST_ID);
+        preview = requireArguments().getBoolean(ARG_PREVIEW);
     }
 
     @NonNull
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View root = super.onCreateView(inflater, container, savedInstanceState);
-        toolbar.inflateMenu(R.menu.playlist_episodes);
-        toolbar.setTitle(R.string.playlists_label);
+        if (preview) {
+            toolbar.setTitle(R.string.playlist_preview);
+        } else {
+            toolbar.inflateMenu(R.menu.playlist_episodes);
+            toolbar.setTitle(R.string.playlists_label);
+        }
         emptyView.setIcon(R.drawable.ic_playlist_play);
         emptyView.setTitle(R.string.playlist_episodes_empty_title);
         emptyView.setMessage(R.string.playlist_episodes_empty_message);
@@ -88,7 +114,7 @@ public class PlaylistEpisodesFragment extends EpisodesListFragment {
             playPlaylist();
             return true;
         } else if (itemId == R.id.playlist_edit_rules) {
-            ((MainActivity) requireActivity()).loadChildFragment(PlaylistRulesFragment.newInstance(playlistId));
+            ((MainActivity) requireActivity()).loadChildFragment(PlaylistEditFragment.newInstance(playlistId));
             return true;
         } else if (itemId == R.id.playlist_auto_download) {
             Playlist current = playlist;
@@ -149,7 +175,7 @@ public class PlaylistEpisodesFragment extends EpisodesListFragment {
                 .setMessage(R.string.playlist_auto_download_needs_limit_message)
                 .setPositiveButton(R.string.playlist_edit_rules, (dialog, which) ->
                         ((MainActivity) requireActivity()).loadChildFragment(
-                                PlaylistRulesFragment.newInstance(playlistId)))
+                                PlaylistEditFragment.newInstance(playlistId)))
                 .setNegativeButton(R.string.cancel_label, null)
                 .show();
     }
@@ -157,6 +183,25 @@ public class PlaylistEpisodesFragment extends EpisodesListFragment {
     @Override
     protected void onEpisodeBound(EpisodeItemViewHolder holder) {
         holder.secondaryActionButton.setVisibility(View.GONE);
+        FeedItem item = holder.getFeedItem();
+        boolean justAdded = item != null && justAddedIds.contains(item.getId());
+        holder.itemView.setForeground(justAdded ? new ColorDrawable(JUST_ADDED_COLOR) : null);
+    }
+
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if (!preview && getParentFragment() == null && !isHidden() && isResumed()
+                && PlaylistPanes.isWide(requireContext())) {
+            PlaylistPanes.setSelected(requireContext(), playlistId);
+            getParentFragmentManager().popBackStack();
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        handler.removeCallbacksAndMessages(null);
+        super.onDestroy();
     }
 
     private void confirmDelete() {
@@ -173,13 +218,22 @@ public class PlaylistEpisodesFragment extends EpisodesListFragment {
                     PlaylistPlayback.stop(requireContext());
                 }
                 PlaylistWriter.deletePlaylist(playlistId);
-                getParentFragmentManager().popBackStack();
+                if (getParentFragment() instanceof PlaylistsFragment) {
+                    ((PlaylistsFragment) getParentFragment()).onSelectedPlaylistDeleted();
+                } else {
+                    getParentFragmentManager().popBackStack();
+                }
             }
         }.createNewDialog().show();
     }
 
     @Override
     protected void updateToolbar() {
+        if (preview) {
+            toolbar.setSubtitle(getResources().getQuantityString(
+                    R.plurals.playlist_preview_summary, episodeCount, episodeCount));
+            return;
+        }
         Playlist current = playlist;
         if (current != null) {
             toolbar.setTitle(current.getName());
@@ -232,7 +286,31 @@ public class PlaylistEpisodesFragment extends EpisodesListFragment {
         ruleFeedIds = feedIds;
         List<FeedItem> items = PlaylistReader.getEpisodes(playlistId);
         episodeCount = items.size();
+        if (preview) {
+            Set<Long> ids = new HashSet<>();
+            for (FeedItem item : items) {
+                ids.add(item.getId());
+            }
+            Set<Long> previous = previousEpisodeIds;
+            previousEpisodeIds = ids;
+            if (previous != null) {
+                Set<Long> added = new HashSet<>(ids);
+                added.removeAll(previous);
+                if (!added.isEmpty()) {
+                    justAddedIds = added;
+                    handler.removeCallbacksAndMessages(null);
+                    handler.postDelayed(this::clearJustAdded, JUST_ADDED_MILLIS);
+                }
+            }
+        }
         return items;
+    }
+
+    private void clearJustAdded() {
+        justAddedIds = Collections.emptySet();
+        if (isAdded()) {
+            loadItems();
+        }
     }
 
     @NonNull

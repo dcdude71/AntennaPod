@@ -59,6 +59,9 @@ public class PlaylistRulesFragment extends Fragment implements Toolbar.OnMenuIte
     private Disposable disposable;
     private final Map<Long, Feed> feeds = new HashMap<>();
     private volatile boolean autoDownload;
+    private volatile String playlistName = "";
+    private volatile int episodeCount;
+    private MaterialToolbar toolbar;
 
     public static PlaylistRulesFragment newInstance(long playlistId) {
         PlaylistRulesFragment fragment = new PlaylistRulesFragment();
@@ -79,7 +82,7 @@ public class PlaylistRulesFragment extends Fragment implements Toolbar.OnMenuIte
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.playlist_list_fragment, container, false);
-        MaterialToolbar toolbar = root.findViewById(R.id.toolbar);
+        toolbar = root.findViewById(R.id.toolbar);
         toolbar.setTitle(R.string.playlist_edit_rules);
         toolbar.inflateMenu(R.menu.playlist_rules);
         toolbar.setOnMenuItemClickListener(this);
@@ -141,6 +144,8 @@ public class PlaylistRulesFragment extends Fragment implements Toolbar.OnMenuIte
             }
             Playlist playlist = PlaylistReader.getPlaylist(playlistId);
             autoDownload = playlist != null && playlist.isAutoDownload();
+            playlistName = playlist != null ? playlist.getName() : "";
+            episodeCount = PlaylistReader.getEpisodes(playlistId).size();
             return new Pair<>(feedMap, PlaylistReader.getRules(playlistId));
         })
                 .subscribeOn(Schedulers.io())
@@ -150,7 +155,21 @@ public class PlaylistRulesFragment extends Fragment implements Toolbar.OnMenuIte
                     feeds.putAll(result.first);
                     adapter.setItems(result.second);
                     emptyView.updateVisibility();
+                    updateSubtitle();
                 }, error -> Log.e(TAG, Log.getStackTraceString(error)));
+    }
+
+    void updateSubtitle() {
+        if (toolbar == null) {
+            return;
+        }
+        Fragment parent = getParentFragment();
+        if (parent instanceof PlaylistEditFragment && ((PlaylistEditFragment) parent).isPreviewShown()) {
+            toolbar.setSubtitle(playlistName);
+        } else {
+            toolbar.setSubtitle(getResources().getQuantityString(
+                    R.plurals.playlist_rules_preview_summary, episodeCount, episodeCount));
+        }
     }
 
     private void showPodcastPicker() {
