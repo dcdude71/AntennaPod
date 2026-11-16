@@ -60,6 +60,9 @@ Many podcasts play ads of about the same length. In a podcast's settings, set an
 ### A modern player
 The full-screen player has a new look: smaller artwork, a bold episode title, and large, well-spaced controls (rewind, play, fast-forward) with speed, sleep timer, next episode and shownotes in a labeled row below. Prefer the original? Switch back any time in Settings → User interface → Player style → Classic.
 
+#### On foldables and big screens
+With the modern player on a wide screen (an unfolded Pixel Fold or Galaxy Z Fold, a tablet, or a phone in landscape), the show notes appear next to the artwork and controls instead of behind the Shownotes button. Half-fold the phone on a table and the player switches to tabletop mode: artwork on the top half, big controls on the bottom half. It rearranges itself as you fold and unfold.
+
 ### Settings added by this fork
 | Setting | Where | Options |
 |---|---|---|

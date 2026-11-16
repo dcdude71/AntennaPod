@@ -7,7 +7,7 @@ Handoff notes for working on this fork (on any machine, with or without Claude C
 - All fork work is on `develop`, rebased on upstream `develop`. The old `fork-setup` and `playlists` branches are gone; their commits are on `develop`.
 - App name: "AntennaPod Mix" (debug: "AntennaPod Mix Debug"), set in `app/build.gradle`. Release APKs are named `AntennaPod-Mix-<tag>.apk`.
 - Application id: `io.github.dcdude71.antennapodmix`, so it installs next to the official app.
-- Releases: push a `v*` tag and `.github/workflows/fork-release.yml` builds and signs the APK. The keystore and passwords are GitHub secrets (`KEYSTORE_BASE64`, `KEYSTORE_PASSWORD`, `KEY_ALIAS`, `KEY_PASSWORD`), so nothing needs to be copied between machines.
+- Releases: push a `v*` tag and `.github/workflows/fork-release.yml` builds and signs the APK. The keystore and passwords are GitHub secrets (`KEYSTORE_BASE64`, `KEYSTORE_PASSWORD`, `KEY_ALIAS`, `KEY_PASSWORD`), so nothing needs to be copied between machines. A tag with a dash (`v0.7.0-beta.1`) is published as a GitHub pre-release; Obtainium users get it only with "Include prereleases" on.
 - `local.properties` and `.idea/` are machine-specific and not committed.
 - Commit as `dcdude71 <dcdude71@users.noreply.github.com>` (set with `git config user.name/user.email` in this repo), never under a real name.
 
@@ -49,7 +49,10 @@ Inspired by Downcast's playlist engine.
 Per-podcast "Ad skip time" in the podcast's settings (fork table via `FeedAdSkip` / `FeedAdSkipDbAdapter`). When set, the player shows a "Skip ad" button that jumps ahead by that amount from the current position, separate from fast-forward.
 
 ## Player style
-Settings → User interface → Player style: Modern (default) or Classic (upstream layout). Modern aims for an Apple Podcasts-like look: small artwork, bold title, big controls. Fork-only files: `PlayerStyle.java`, `audioplayer_fragment_modern.xml`.
+Settings → User interface → Player style: Modern (default) or Classic (upstream layout). Modern aims for an Apple Podcasts-like look: small artwork, bold title, big controls. Fork-only files: `PlayerStyle.java`, `PlayerLayout.java`, `audioplayer_fragment_modern.xml`.
+- Foldables (Modern only, `PlayerLayout`): window ≥ 600dp wide → shownotes in `descriptionPane` beside the controls (pager shows the cover only, Shownotes button hidden). Half-open with a horizontal fold (tabletop, via `androidx.window`) → cover above the fold, controls below; overrides the wide layout. MainActivity handles size changes itself (no recreate), so the layout is re-applied from `AudioPlayerFragment.onConfigurationChanged`.
+- Upstream `NestedScrollableHost` was changed so it works outside a ViewPager2 and no longer cancels its first frame (cancelling froze the unfold animation: `BLASTSyncEngine` sync timeout).
+- Testing needs the real phone: folded, unfolded, half-folded and flat again.
 
 ## Working preferences
 - Ask design questions as a short numbered list with a recommendation per item, and let the answer come back as plain text (not a multiple-choice picker); answers often add nuance the options don't cover.
