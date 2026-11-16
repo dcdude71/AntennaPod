@@ -16,7 +16,7 @@ public class Playlist {
     }
 
     public Playlist(String name) {
-        this(0, name, false, false, 0);
+        this(0, name, false, true, 0);
     }
 
     public long getId() {

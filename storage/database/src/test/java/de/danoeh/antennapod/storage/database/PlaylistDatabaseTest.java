@@ -56,15 +56,16 @@ public class PlaylistDatabaseTest {
         Playlist stored = PlaylistReader.getPlaylist(id);
         assertEquals("Morning", stored.getName());
         assertFalse(stored.isAutoDownload());
+        assertTrue(stored.isShowInAndroidAuto());
 
         stored.setName("Commute");
         stored.setAutoDownload(true);
-        stored.setShowInAndroidAuto(true);
+        stored.setShowInAndroidAuto(false);
         PlaylistWriter.updatePlaylist(stored).get();
         Playlist updated = PlaylistReader.getPlaylist(id);
         assertEquals("Commute", updated.getName());
         assertTrue(updated.isAutoDownload());
-        assertTrue(updated.isShowInAndroidAuto());
+        assertFalse(updated.isShowInAndroidAuto());
 
         PlaylistWriter.addRule(new PlaylistRule(id, 42)).get();
         PlaylistWriter.deletePlaylist(id).get();

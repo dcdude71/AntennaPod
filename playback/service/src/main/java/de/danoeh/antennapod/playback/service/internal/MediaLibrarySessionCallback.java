@@ -411,6 +411,14 @@ public class MediaLibrarySessionCallback implements MediaLibraryService.MediaLib
     public ListenableFuture<LibraryResult<MediaItem>> onGetItem(
             @NonNull MediaLibraryService.MediaLibrarySession session,
             @NonNull MediaSession.ControllerInfo browser, @NonNull String mediaId) {
+        if (PlaylistMediaLibrary.isBrowsableId(mediaId)) {
+            SettableFuture<LibraryResult<MediaItem>> future = SettableFuture.create();
+            Single.fromCallable(() -> PlaylistMediaLibrary.createBrowsableItem(context, mediaId))
+                    .subscribeOn(Schedulers.io())
+                    .subscribe(item -> future.set(LibraryResult.ofItem(item, null)),
+                            future::setException);
+            return future;
+        }
         if (BROWSABLE_MEDIA_IDS.contains(mediaId) || mediaId.startsWith(MediaItemAdapter.MEDIA_ID_FEED_PREFIX)) {
             SettableFuture<LibraryResult<MediaItem>> future = SettableFuture.create();
             Single.fromCallable(() -> createBrowsableMediaItem(mediaId))
@@ -431,14 +439,28 @@ public class MediaLibrarySessionCallback implements MediaLibraryService.MediaLib
         final int pageSize = Math.min(100, pageSizeRequest); // Safety limit when calling application wants too much
         SettableFuture<LibraryResult<ImmutableList<MediaItem>>> future = SettableFuture.create();
 
+        if (PlaylistMediaLibrary.isBrowsableId(parentId)) {
+            Single.fromCallable(() -> PlaylistMediaLibrary.getChildren(context, parentId))
+                    .subscribeOn(Schedulers.io())
+                    .subscribe(items -> future.set(LibraryResult.ofItemList(items, params)),
+                            future::setException);
+            return future;
+        }
         switch (parentId) {
             case MEDIA_ID_ROOT:
-                Single.fromCallable(() -> ImmutableList.of(
-                                createBrowsableMediaItem(MEDIA_ID_CONTINUE_LISTENING),
-                                createBrowsableMediaItem(MEDIA_ID_QUEUE),
-                                createBrowsableMediaItem(MEDIA_ID_DOWNLOADS),
-                                createBrowsableMediaItem(MEDIA_ID_EPISODES),
-                                createBrowsableMediaItem(MEDIA_ID_SUBSCRIPTIONS)))
+                Single.fromCallable(() -> {
+                    ImmutableList.Builder<MediaItem> rootItems = ImmutableList.builder();
+                    rootItems.add(createBrowsableMediaItem(MEDIA_ID_CONTINUE_LISTENING));
+                    if (PlaylistMediaLibrary.hasVisiblePlaylists()) {
+                        rootItems.add(PlaylistMediaLibrary.createBrowsableItem(context,
+                                PlaylistMediaLibrary.MEDIA_ID_PLAYLISTS));
+                    }
+                    rootItems.add(createBrowsableMediaItem(MEDIA_ID_QUEUE),
+                            createBrowsableMediaItem(MEDIA_ID_DOWNLOADS),
+                            createBrowsableMediaItem(MEDIA_ID_EPISODES),
+                            createBrowsableMediaItem(MEDIA_ID_SUBSCRIPTIONS));
+                    return rootItems.build();
+                })
                         .subscribeOn(Schedulers.io())
                         .subscribe(items -> future.set(LibraryResult.ofItemList(items, params)),
                                 future::setException);
@@ -536,7 +558,7 @@ public class MediaLibrarySessionCallback implements MediaLibraryService.MediaLib
         ImmutableList.Builder<MediaItem> builder = ImmutableList.builder();
         for (MediaItem item : mediaItems) {
             try {
-                long mediaId = Long.parseLong(item.mediaId);
+                long mediaId = Long.parseLong(PlaylistMediaLibrary.resolveMediaId(context, item.mediaId));
                 FeedMedia media = DBReader.getFeedMedia(mediaId);
                 if (media == null) {
                     Log.e(TAG, "Media not found for ID: " + mediaId);

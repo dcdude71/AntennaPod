@@ -35,7 +35,7 @@ Phases:
 2. Screens and rule editor: done
 3. Playback: done
 4. Auto-download and cleanup protection: done
-5. Android Auto: not started (test with the Desktop Head Unit). README calls it "an idea for later".
+5. Android Auto: built, not yet tested in a car or the Desktop Head Unit. A "Playlists" folder appears after "Continue listening" when at least one playlist has "Show in Android Auto" ticked (playlist screen ⋮ menu; on by default for new playlists, off for existing ones). Starting an episode from it starts playlist playback. Code: `PlaylistMediaLibrary` plus small hooks in `MediaLibrarySessionCallback`.
 
 Inspired by Downcast's playlist engine.
 
