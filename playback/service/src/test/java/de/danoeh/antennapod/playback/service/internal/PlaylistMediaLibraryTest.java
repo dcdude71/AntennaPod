@@ -14,6 +14,7 @@ import org.robolectric.RuntimeEnvironment;
 import java.util.List;
 
 import de.danoeh.antennapod.model.playlist.Playlist;
+import de.danoeh.antennapod.storage.database.PlaylistPlayback;
 import de.danoeh.antennapod.storage.database.PlaylistWriter;
 import de.danoeh.antennapod.storage.database.PodDBAdapter;
 import de.danoeh.antennapod.storage.preferences.PlaybackPreferences;
@@ -21,6 +22,8 @@ import de.danoeh.antennapod.storage.preferences.UserPreferences;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
@@ -61,8 +64,24 @@ public class PlaylistMediaLibraryTest {
     }
 
     @Test
+    public void testMalformedEpisodeIdDoesNotStartPlaylist() {
+        String[] invalidIds = {"PlaylistEpisode:5", "PlaylistEpisode:5:abc", "PlaylistEpisode:x:12"};
+        for (String id : invalidIds) {
+            try {
+                PlaylistMediaLibrary.resolveMediaId(context, id);
+            } catch (NumberFormatException expected) {
+                continue;
+            }
+            throw new AssertionError("Accepted " + id);
+        }
+        assertEquals(PlaylistPlayback.NO_PLAYLIST, PlaylistPlayback.getActivePlaylist(context));
+        assertEquals("12", PlaylistMediaLibrary.resolveMediaId(context, "PlaylistEpisode:5:12"));
+        assertEquals(5, PlaylistPlayback.getActivePlaylist(context));
+    }
+
+    @Test
     public void testOnlyVisiblePlaylistsAreListed() throws Exception {
-        assertFalse(PlaylistMediaLibrary.hasVisiblePlaylists());
+        assertNull(PlaylistMediaLibrary.createRootItem(context));
 
         Playlist shown = new Playlist("Commute");
         long shownId = PlaylistWriter.createPlaylist(shown).get();
@@ -70,7 +89,7 @@ public class PlaylistMediaLibraryTest {
         hidden.setShowInAndroidAuto(false);
         PlaylistWriter.createPlaylist(hidden).get();
 
-        assertTrue(PlaylistMediaLibrary.hasVisiblePlaylists());
+        assertNotNull(PlaylistMediaLibrary.createRootItem(context));
         List<MediaItem> children = PlaylistMediaLibrary.getChildren(context,
                 PlaylistMediaLibrary.MEDIA_ID_PLAYLISTS);
         assertEquals(1, children.size());

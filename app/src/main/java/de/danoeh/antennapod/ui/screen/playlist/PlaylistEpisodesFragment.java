@@ -20,7 +20,10 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Future;
 
 import de.danoeh.antennapod.R;
@@ -51,6 +54,7 @@ public class PlaylistEpisodesFragment extends EpisodesListFragment {
     private volatile Playlist playlist;
     private volatile int episodeCount;
     private volatile boolean hasUnlimitedRule;
+    private volatile Set<Long> ruleFeedIds = Collections.emptySet();
 
     public static PlaylistEpisodesFragment newInstance(long playlistId) {
         PlaylistEpisodesFragment fragment = new PlaylistEpisodesFragment();
@@ -205,7 +209,13 @@ public class PlaylistEpisodesFragment extends EpisodesListFragment {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onFeedItemChanged(FeedItemEvent event) {
-        loadItems();
+        Set<Long> feedIds = ruleFeedIds;
+        for (FeedItem item : event.items) {
+            if (item != null && feedIds.contains(item.getFeedId())) {
+                loadItems();
+                return;
+            }
+        }
     }
 
     @Override
@@ -223,12 +233,15 @@ public class PlaylistEpisodesFragment extends EpisodesListFragment {
     protected List<FeedItem> loadData() {
         playlist = PlaylistReader.getPlaylist(playlistId);
         boolean unlimited = false;
+        Set<Long> feedIds = new HashSet<>();
         for (PlaylistRule rule : PlaylistReader.getRules(playlistId)) {
             if (rule.getEpisodeCount() == PlaylistRule.ALL_EPISODES) {
                 unlimited = true;
             }
+            feedIds.add(rule.getFeedId());
         }
         hasUnlimitedRule = unlimited;
+        ruleFeedIds = feedIds;
         List<FeedItem> items = PlaylistReader.getEpisodes(playlistId);
         episodeCount = items.size();
         return items;

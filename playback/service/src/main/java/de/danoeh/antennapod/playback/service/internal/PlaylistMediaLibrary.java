@@ -3,6 +3,7 @@ package de.danoeh.antennapod.playback.service.internal;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import androidx.media3.common.MediaItem;
 
@@ -11,7 +12,6 @@ import com.google.common.collect.ImmutableList;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.danoeh.antennapod.model.feed.FeedItem;
 import de.danoeh.antennapod.model.playlist.Playlist;
 import de.danoeh.antennapod.playback.base.MediaItemAdapter;
 import de.danoeh.antennapod.playback.service.R;
@@ -31,18 +31,17 @@ public final class PlaylistMediaLibrary {
     }
 
     @WorkerThread
-    public static boolean hasVisiblePlaylists() {
-        return !getVisiblePlaylists().isEmpty();
+    @Nullable
+    public static MediaItem createRootItem(@NonNull Context context) {
+        int count = getVisiblePlaylists().size();
+        return count == 0 ? null : createPlaylistsItem(context, count);
     }
 
     @WorkerThread
     @NonNull
     public static MediaItem createBrowsableItem(@NonNull Context context, @NonNull String mediaId) {
         if (MEDIA_ID_PLAYLISTS.equals(mediaId)) {
-            int count = getVisiblePlaylists().size();
-            return MediaItemAdapter.from(context, MEDIA_ID_PLAYLISTS, context.getString(R.string.playlists_label),
-                    R.drawable.ic_playlists_black, context.getResources().getQuantityString(
-                            R.plurals.num_playlists, count, count));
+            return createPlaylistsItem(context, getVisiblePlaylists().size());
         }
         Playlist playlist = PlaylistReader.getPlaylist(parsePlaylistId(mediaId));
         if (playlist == null) {
@@ -75,7 +74,12 @@ public final class PlaylistMediaLibrary {
             return mediaId;
         }
         String[] parts = mediaId.substring(PLAYLIST_EPISODE_PREFIX.length()).split(":");
-        PlaylistPlayback.start(context, Long.parseLong(parts[0]));
+        if (parts.length != 2) {
+            throw new NumberFormatException("Invalid playlist episode ID: " + mediaId);
+        }
+        long playlistId = Long.parseLong(parts[0]);
+        Long.parseLong(parts[1]);
+        PlaylistPlayback.start(context, playlistId);
         return parts[1];
     }
 
@@ -89,11 +93,16 @@ public final class PlaylistMediaLibrary {
     }
 
     @NonNull
-    private static MediaItem createPlaylistItem(@NonNull Context context, @NonNull Playlist playlist) {
-        List<FeedItem> episodes = PlaylistReader.getEpisodes(playlist.getId());
-        return MediaItemAdapter.from(context, PLAYLIST_PREFIX + playlist.getId(), playlist.getName(),
+    private static MediaItem createPlaylistsItem(@NonNull Context context, int count) {
+        return MediaItemAdapter.from(context, MEDIA_ID_PLAYLISTS, context.getString(R.string.playlists_label),
                 R.drawable.ic_playlists_black, context.getResources().getQuantityString(
-                        R.plurals.num_episodes, episodes.size(), episodes.size()));
+                        R.plurals.num_playlists, count, count));
+    }
+
+    @NonNull
+    private static MediaItem createPlaylistItem(@NonNull Context context, @NonNull Playlist playlist) {
+        return MediaItemAdapter.from(context, PLAYLIST_PREFIX + playlist.getId(), playlist.getName(),
+                R.drawable.ic_playlists_black, null);
     }
 
     @NonNull

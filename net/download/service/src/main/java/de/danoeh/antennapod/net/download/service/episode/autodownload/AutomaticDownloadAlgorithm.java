@@ -7,8 +7,10 @@ import android.os.BatteryManager;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import de.danoeh.antennapod.model.feed.FeedItem;
 import de.danoeh.antennapod.model.feed.FeedItemFilter;
@@ -55,6 +57,10 @@ public class AutomaticDownloadAlgorithm {
                 final List<FeedItem> newItems = DBReader.getAutoDownloadCandidates(
                         globalAutoDownloadEnabled, autoDownloadQueueEnabled);
                 final List<FeedItem> playlistEpisodes = PlaylistReader.getAutoDownloadEpisodes();
+                final Set<Long> playlistEpisodeIds = new HashSet<>();
+                for (FeedItem episode : playlistEpisodes) {
+                    playlistEpisodeIds.add(episode.getId());
+                }
                 final List<FeedItem> candidates = new ArrayList<>();
 
                 for (FeedItem newItem : newItems) {
@@ -62,7 +68,7 @@ public class AutomaticDownloadAlgorithm {
                     boolean shouldAdd = (autoDownloadQueueEnabled && newItem.isTagged(FeedItem.TAG_QUEUE))
                             || (feedPrefs.isAutoDownload(globalAutoDownloadEnabled)
                             && feedPrefs.getFilter().shouldAutoDownload(newItem));
-                    if (shouldAdd && !playlistEpisodes.contains(newItem)) {
+                    if (shouldAdd && !playlistEpisodeIds.contains(newItem.getId())) {
                         candidates.add(newItem);
                     }
                 }

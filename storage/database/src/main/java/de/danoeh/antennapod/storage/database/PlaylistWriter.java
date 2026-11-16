@@ -29,8 +29,12 @@ public final class PlaylistWriter {
     public static Future<Long> createPlaylist(@NonNull Playlist playlist) {
         return dbExec.submit(() -> {
             PodDBAdapter adapter = PodDBAdapter.getInstance().open();
-            long id = adapter.getPlaylistDbAdapter().insertPlaylist(playlist);
-            adapter.close();
+            long id;
+            try {
+                id = adapter.getPlaylistDbAdapter().insertPlaylist(playlist);
+            } finally {
+                adapter.close();
+            }
             EventBus.getDefault().post(new PlaylistEvent(id));
             return id;
         });
@@ -39,8 +43,11 @@ public final class PlaylistWriter {
     public static Future<?> updatePlaylist(@NonNull Playlist playlist) {
         return dbExec.submit(() -> {
             PodDBAdapter adapter = PodDBAdapter.getInstance().open();
-            adapter.getPlaylistDbAdapter().updatePlaylist(playlist);
-            adapter.close();
+            try {
+                adapter.getPlaylistDbAdapter().updatePlaylist(playlist);
+            } finally {
+                adapter.close();
+            }
             EventBus.getDefault().post(new PlaylistEvent(playlist.getId()));
         });
     }
@@ -48,8 +55,11 @@ public final class PlaylistWriter {
     public static Future<?> deletePlaylist(long playlistId) {
         return dbExec.submit(() -> {
             PodDBAdapter adapter = PodDBAdapter.getInstance().open();
-            adapter.getPlaylistDbAdapter().deletePlaylist(playlistId);
-            adapter.close();
+            try {
+                adapter.getPlaylistDbAdapter().deletePlaylist(playlistId);
+            } finally {
+                adapter.close();
+            }
             EventBus.getDefault().post(new PlaylistEvent(playlistId));
         });
     }
@@ -61,8 +71,11 @@ public final class PlaylistWriter {
         }
         return dbExec.submit(() -> {
             PodDBAdapter adapter = PodDBAdapter.getInstance().open();
-            adapter.getPlaylistDbAdapter().setPlaylistOrder(ids);
-            adapter.close();
+            try {
+                adapter.getPlaylistDbAdapter().setPlaylistOrder(ids);
+            } finally {
+                adapter.close();
+            }
             EventBus.getDefault().post(new PlaylistEvent(ALL_PLAYLISTS));
         });
     }
@@ -70,8 +83,12 @@ public final class PlaylistWriter {
     public static Future<Long> addRule(@NonNull PlaylistRule rule) {
         return dbExec.submit(() -> {
             PodDBAdapter adapter = PodDBAdapter.getInstance().open();
-            long id = adapter.getPlaylistDbAdapter().insertRule(rule);
-            adapter.close();
+            long id;
+            try {
+                id = adapter.getPlaylistDbAdapter().insertRule(rule);
+            } finally {
+                adapter.close();
+            }
             EventBus.getDefault().post(new PlaylistEvent(rule.getPlaylistId()));
             return id;
         });
@@ -80,8 +97,11 @@ public final class PlaylistWriter {
     public static Future<?> updateRule(@NonNull PlaylistRule rule) {
         return dbExec.submit(() -> {
             PodDBAdapter adapter = PodDBAdapter.getInstance().open();
-            adapter.getPlaylistDbAdapter().updateRule(rule);
-            adapter.close();
+            try {
+                adapter.getPlaylistDbAdapter().updateRule(rule);
+            } finally {
+                adapter.close();
+            }
             EventBus.getDefault().post(new PlaylistEvent(rule.getPlaylistId()));
         });
     }
@@ -89,8 +109,11 @@ public final class PlaylistWriter {
     public static Future<?> deleteRule(@NonNull PlaylistRule rule) {
         return dbExec.submit(() -> {
             PodDBAdapter adapter = PodDBAdapter.getInstance().open();
-            adapter.getPlaylistDbAdapter().deleteRule(rule.getId());
-            adapter.close();
+            try {
+                adapter.getPlaylistDbAdapter().deleteRule(rule.getId());
+            } finally {
+                adapter.close();
+            }
             EventBus.getDefault().post(new PlaylistEvent(rule.getPlaylistId()));
         });
     }
@@ -102,8 +125,11 @@ public final class PlaylistWriter {
         }
         return dbExec.submit(() -> {
             PodDBAdapter adapter = PodDBAdapter.getInstance().open();
-            adapter.getPlaylistDbAdapter().setRuleOrder(ids);
-            adapter.close();
+            try {
+                adapter.getPlaylistDbAdapter().setRuleOrder(ids);
+            } finally {
+                adapter.close();
+            }
             EventBus.getDefault().post(new PlaylistEvent(playlistId));
         });
     }

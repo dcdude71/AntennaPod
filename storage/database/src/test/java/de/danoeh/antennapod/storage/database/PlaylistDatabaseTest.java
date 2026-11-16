@@ -204,6 +204,34 @@ public class PlaylistDatabaseTest {
         assertEquals(expected, PlaylistReader.getEpisodeIdsInPlaylists());
     }
 
+    @Test
+    public void testProtectedEpisodesAreCappedPerRule() throws Exception {
+        Feed feed = createFeed(15);
+        long playlistId = PlaylistWriter.createPlaylist(new Playlist("All")).get();
+        PlaylistRule rule = new PlaylistRule(playlistId, feed.getId());
+        rule.setPickFrom(PlaylistRule.PickFrom.OLDEST);
+        PlaylistWriter.addRule(rule).get();
+
+        assertEquals(15, PlaylistReader.getEpisodes(playlistId).size());
+        Set<Long> expected = new HashSet<>();
+        for (int i = 0; i < PlaylistRule.MAX_AUTO_DOWNLOAD_EPISODES; i++) {
+            expected.add(feed.getItems().get(i).getId());
+        }
+        assertEquals(expected, PlaylistReader.getEpisodeIdsInPlaylists());
+        assertEquals(0, PlaylistReader.getDownloadedEpisodeCountInPlaylists());
+
+        PodDBAdapter adapter = PodDBAdapter.getInstance();
+        adapter.open();
+        for (int i : new int[]{0, 1, 14}) {
+            FeedMedia media = feed.getItems().get(i).getMedia();
+            media.setLocalFileUrl("file-" + i);
+            media.setDownloaded(true, 1);
+            adapter.setMedia(media);
+        }
+        adapter.close();
+        assertEquals(2, PlaylistReader.getDownloadedEpisodeCountInPlaylists());
+    }
+
     private Feed createFeed(int numEpisodes) {
         Feed feed = new Feed("url-" + System.nanoTime(), null, "Feed");
         feed.setItems(new ArrayList<>());

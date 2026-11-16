@@ -64,11 +64,13 @@ public final class PlaylistReader {
     @NonNull
     public static List<FeedItem> getAutoDownloadEpisodes() {
         List<FeedItem> episodes = new ArrayList<>();
+        Set<Long> ids = new HashSet<>();
+        Map<Long, Feed> feeds = loadFeeds();
         for (Playlist playlist : getPlaylists()) {
             if (playlist.isAutoDownload()) {
                 for (FeedItem item : getEpisodes(limitForAutoDownload(getRules(playlist.getId())),
-                        Collections.emptySet())) {
-                    if (!episodes.contains(item)) {
+                        Collections.emptySet(), feeds)) {
+                    if (ids.add(item.getId())) {
                         episodes.add(item);
                     }
                 }
@@ -92,14 +94,9 @@ public final class PlaylistReader {
     }
 
     public static int getDownloadedEpisodeCountInPlaylists() {
-        Set<Long> ids = getEpisodeIdsInPlaylists();
-        if (ids.isEmpty()) {
-            return 0;
-        }
         int count = 0;
-        for (FeedItem item : DBReader.getEpisodes(0, Integer.MAX_VALUE,
-                new FeedItemFilter(FeedItemFilter.DOWNLOADED), SortOrder.DATE_NEW_OLD)) {
-            if (ids.contains(item.getId())) {
+        for (FeedItem item : getProtectedEpisodes().values()) {
+            if (item.getMedia() != null && item.getMedia().isDownloaded()) {
                 count++;
             }
         }
@@ -108,29 +105,46 @@ public final class PlaylistReader {
 
     @NonNull
     public static Set<Long> getEpisodeIdsInPlaylists() {
-        Set<Long> ids = new HashSet<>();
+        return getProtectedEpisodes().keySet();
+    }
+
+    @NonNull
+    private static Map<Long, FeedItem> getProtectedEpisodes() {
+        Map<Long, FeedItem> episodes = new HashMap<>();
+        Map<Long, Feed> feeds = loadFeeds();
         for (Playlist playlist : getPlaylists()) {
-            for (FeedItem item : getEpisodes(playlist.getId())) {
-                ids.add(item.getId());
+            for (FeedItem item : getEpisodes(limitForAutoDownload(getRules(playlist.getId())),
+                    Collections.emptySet(), feeds)) {
+                episodes.put(item.getId(), item);
             }
         }
-        return ids;
+        return episodes;
     }
 
     @NonNull
     public static List<FeedItem> getEpisodes(long playlistId, @NonNull final Set<Long> excludedOldestIds) {
-        return getEpisodes(getRules(playlistId), excludedOldestIds);
+        List<PlaylistRule> rules = getRules(playlistId);
+        if (rules.isEmpty()) {
+            return new ArrayList<>();
+        }
+        return getEpisodes(rules, excludedOldestIds, loadFeeds());
+    }
+
+    @NonNull
+    private static Map<Long, Feed> loadFeeds() {
+        Map<Long, Feed> feeds = new HashMap<>();
+        for (Feed feed : DBReader.getFeedList()) {
+            feeds.put(feed.getId(), feed);
+        }
+        return feeds;
     }
 
     @NonNull
     private static List<FeedItem> getEpisodes(@NonNull List<PlaylistRule> rules,
-                                              @NonNull final Set<Long> excludedOldestIds) {
+                                              @NonNull final Set<Long> excludedOldestIds,
+                                              @NonNull final Map<Long, Feed> feeds) {
         if (rules.isEmpty()) {
             return new ArrayList<>();
-        }
-        final Map<Long, Feed> feeds = new HashMap<>();
-        for (Feed feed : DBReader.getFeedList()) {
-            feeds.put(feed.getId(), feed);
         }
         return PlaylistEngine.computeEpisodes(rules, new PlaylistEngine.EpisodeSource() {
             @NonNull

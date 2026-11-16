@@ -169,8 +169,9 @@ public class PlaylistDbAdapter {
     }
 
     private int nextPosition(String table, @Nullable Long playlistId) {
-        String where = playlistId == null ? "" : " WHERE " + KEY_PLAYLIST + "=" + playlistId;
-        try (Cursor cursor = db.rawQuery("SELECT MAX(" + KEY_POSITION + ") FROM " + table + where, null)) {
+        String where = playlistId == null ? "" : " WHERE " + KEY_PLAYLIST + "=?";
+        String[] args = playlistId == null ? null : new String[]{String.valueOf(playlistId)};
+        try (Cursor cursor = db.rawQuery("SELECT MAX(" + KEY_POSITION + ") FROM " + table + where, args)) {
             if (cursor.moveToFirst() && !cursor.isNull(0)) {
                 return cursor.getInt(0) + 1;
             }

@@ -451,9 +451,9 @@ public class MediaLibrarySessionCallback implements MediaLibraryService.MediaLib
                 Single.fromCallable(() -> {
                     ImmutableList.Builder<MediaItem> rootItems = ImmutableList.builder();
                     rootItems.add(createBrowsableMediaItem(MEDIA_ID_CONTINUE_LISTENING));
-                    if (PlaylistMediaLibrary.hasVisiblePlaylists()) {
-                        rootItems.add(PlaylistMediaLibrary.createBrowsableItem(context,
-                                PlaylistMediaLibrary.MEDIA_ID_PLAYLISTS));
+                    MediaItem playlistsItem = PlaylistMediaLibrary.createRootItem(context);
+                    if (playlistsItem != null) {
+                        rootItems.add(playlistsItem);
                     }
                     rootItems.add(createBrowsableMediaItem(MEDIA_ID_QUEUE),
                             createBrowsableMediaItem(MEDIA_ID_DOWNLOADS),
