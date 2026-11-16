@@ -9,6 +9,7 @@ Handoff notes for working on this fork (on any machine, with or without Claude C
 - Application id: `io.github.dcdude71.antennapodmix`, so it installs next to the official app.
 - Releases: push a `v*` tag and `.github/workflows/fork-release.yml` builds and signs the APK. The keystore and passwords are GitHub secrets (`KEYSTORE_BASE64`, `KEYSTORE_PASSWORD`, `KEY_ALIAS`, `KEY_PASSWORD`), so nothing needs to be copied between machines. A tag with a dash (`v0.7.0-beta.1`) is published as a GitHub pre-release; Obtainium users get it only with "Include prereleases" on.
 - `local.properties` and `.idea/` are machine-specific and not committed.
+- Upstream's `Checks` and `Copilot Setup Steps` workflows are disabled on the fork (GitHub → Actions; their emulator tests expect upstream's UI). Before a release, run `./gradlew checkstyle lint` plus the module tests locally, and upstream's XML formatter on layouts: `find . -wholename "*/res/layout/*.xml" | xargs java -jar android-xml-formatter.jar` (1.1.0, from github.com/ByteHamster/android-xml-formatter); it must leave no diff.
 - Commit as `dcdude71 <dcdude71@users.noreply.github.com>` (set with `git config user.name/user.email` in this repo), never under a real name.
 
 ## Keep the diff against upstream small
