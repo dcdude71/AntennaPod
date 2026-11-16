@@ -25,6 +25,7 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
+import android.view.ViewParent;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 
@@ -101,11 +102,11 @@ public class NestedScrollableHost extends FrameLayout {
         getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
             @Override
             public boolean onPreDraw() {
-                View v = (View) getParent();
-                while (v != null && !(v instanceof ViewPager2) || isntSameDirection(v)) {
-                    v = (View) v.getParent();
+                ViewParent v = getParent();
+                while (v instanceof View && (!(v instanceof ViewPager2) || isntSameDirection((View) v))) {
+                    v = v.getParent();
                 }
-                parentViewPager = (ViewPager2) v;
+                parentViewPager = v instanceof ViewPager2 ? (ViewPager2) v : null;
 
                 getViewTreeObserver().removeOnPreDrawListener(this);
                 return false;
