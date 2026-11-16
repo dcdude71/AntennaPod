@@ -157,3 +157,7 @@ if (project.hasProperty("antennaPodPlayPublisherCredentials")) {
 if (project.hasProperty("forkVersionName")) {
     android.defaultConfig.versionName = project.property("forkVersionName")
 }
+
+dependencies {
+    implementation "androidx.window:window-java:1.3.0"
+}

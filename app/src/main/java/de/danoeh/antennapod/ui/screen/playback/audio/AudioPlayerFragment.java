@@ -1,5 +1,6 @@
 package de.danoeh.antennapod.ui.screen.playback.audio;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -171,6 +172,7 @@ public class AudioPlayerFragment extends Fragment implements
                 });
             }
         });
+        PlayerStyle.setupLayout(this, root);
 
         return root;
     }
@@ -397,12 +399,20 @@ public class AudioPlayerFragment extends Fragment implements
         if (modernStyle != PlayerStyle.isModern(requireContext())) {
             requireActivity().recreate();
         }
+        PlayerStyle.onStart(this);
+    }
+
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        PlayerStyle.updateLayout(this);
     }
 
     @Override
     public void onStop() {
         super.onStop();
         progressIndicator.setVisibility(View.GONE);
+        PlayerStyle.onStop(this);
         EventBus.getDefault().unregister(this);
         if (disposable != null) {
             disposable.dispose();
@@ -608,6 +618,7 @@ public class AudioPlayerFragment extends Fragment implements
 
     private static class AudioPlayerPagerAdapter extends FragmentStateAdapter {
         private static final String TAG = "AudioPlayerPagerAdapter";
+        private int itemCount = NUM_CONTENT_FRAGMENTS;
 
         public AudioPlayerPagerAdapter(@NonNull Fragment fragment) {
             super(fragment);
@@ -629,7 +640,16 @@ public class AudioPlayerFragment extends Fragment implements
 
         @Override
         public int getItemCount() {
-            return NUM_CONTENT_FRAGMENTS;
+            return itemCount;
+        }
+    }
+
+    void setCoverOnly(boolean coverOnly) {
+        AudioPlayerPagerAdapter adapter = (AudioPlayerPagerAdapter) pager.getAdapter();
+        int count = coverOnly ? 1 : NUM_CONTENT_FRAGMENTS;
+        if (adapter != null && adapter.itemCount != count) {
+            adapter.itemCount = count;
+            adapter.notifyDataSetChanged();
         }
     }
 

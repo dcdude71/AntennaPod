@@ -43,13 +43,15 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           PREVIOUS_TAG=$(gh release view --json tagName --jq .tagName 2>/dev/null || true)
+          EXTRA_ARGS=()
           if [ -n "$PREVIOUS_TAG" ]; then
-            gh release create "$GITHUB_REF_NAME" "AntennaPod-Mix-${GITHUB_REF_NAME}.apk" --title "$GITHUB_REF_NAME" \
-              --generate-notes --notes-start-tag "$PREVIOUS_TAG"
-          else
-            gh release create "$GITHUB_REF_NAME" "AntennaPod-Mix-${GITHUB_REF_NAME}.apk" --title "$GITHUB_REF_NAME" \
-              --generate-notes
+            EXTRA_ARGS+=(--notes-start-tag "$PREVIOUS_TAG")
           fi
+          if [[ "$GITHUB_REF_NAME" == *-* ]]; then
+            EXTRA_ARGS+=(--prerelease)
+          fi
+          gh release create "$GITHUB_REF_NAME" "AntennaPod-Mix-${GITHUB_REF_NAME}.apk" --title "$GITHUB_REF_NAME" \
+            --generate-notes "${EXTRA_ARGS[@]}"
       - name: Remove keystore
         if: always()
         run: rm -f "$RUNNER_TEMP/release.keystore"

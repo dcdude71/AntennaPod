@@ -12,6 +12,7 @@ import android.widget.LinearLayout;
 
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.preference.PreferenceManager;
 
@@ -50,6 +51,46 @@ public final class PlayerStyle {
                 new SleepTimerDialog().show(fragment.getChildFragmentManager(), "SleepTimerDialog"));
         root.findViewById(R.id.butShownotes).setOnClickListener(v ->
                 fragment.scrollToPage(AudioPlayerFragment.POS_DESCRIPTION, true));
+    }
+
+    static void setupLayout(@NonNull AudioPlayerFragment fragment, @NonNull View root) {
+        if (root.findViewById(R.id.descriptionPane) == null) {
+            return;
+        }
+        PlayerLayout layout = new PlayerLayout(fragment, root);
+        root.setTag(R.id.playerBody, layout);
+        layout.apply();
+    }
+
+    static void updateLayout(@NonNull AudioPlayerFragment fragment) {
+        PlayerLayout layout = getLayout(fragment);
+        if (layout != null) {
+            layout.apply();
+        }
+    }
+
+    static void onStart(@NonNull AudioPlayerFragment fragment) {
+        PlayerLayout layout = getLayout(fragment);
+        if (layout != null) {
+            layout.start();
+        }
+    }
+
+    static void onStop(@NonNull AudioPlayerFragment fragment) {
+        PlayerLayout layout = getLayout(fragment);
+        if (layout != null) {
+            layout.stop();
+        }
+    }
+
+    @Nullable
+    private static PlayerLayout getLayout(@NonNull AudioPlayerFragment fragment) {
+        View root = fragment.getView();
+        if (root == null) {
+            return null;
+        }
+        Object layout = root.getTag(R.id.playerBody);
+        return layout instanceof PlayerLayout ? (PlayerLayout) layout : null;
     }
 
     static void styleCover(@NonNull CoverFragmentBinding binding) {
