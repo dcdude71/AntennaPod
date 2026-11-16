@@ -37,17 +37,17 @@ jobs:
             -PreleaseKeyAlias="$KEY_ALIAS" \
             -PreleaseKeyPassword="$KEY_PASSWORD"
       - name: Rename APK
-        run: cp app/build/outputs/apk/free/release/app-free-release.apk "AntennaPod-Fork-${GITHUB_REF_NAME}.apk"
+        run: cp app/build/outputs/apk/free/release/app-free-release.apk "AntennaPod-Mix-${GITHUB_REF_NAME}.apk"
       - name: Publish GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           PREVIOUS_TAG=$(gh release view --json tagName --jq .tagName 2>/dev/null || true)
           if [ -n "$PREVIOUS_TAG" ]; then
-            gh release create "$GITHUB_REF_NAME" "AntennaPod-Fork-${GITHUB_REF_NAME}.apk" --title "$GITHUB_REF_NAME" \
+            gh release create "$GITHUB_REF_NAME" "AntennaPod-Mix-${GITHUB_REF_NAME}.apk" --title "$GITHUB_REF_NAME" \
               --generate-notes --notes-start-tag "$PREVIOUS_TAG"
           else
-            gh release create "$GITHUB_REF_NAME" "AntennaPod-Fork-${GITHUB_REF_NAME}.apk" --title "$GITHUB_REF_NAME" \
+            gh release create "$GITHUB_REF_NAME" "AntennaPod-Mix-${GITHUB_REF_NAME}.apk" --title "$GITHUB_REF_NAME" \
               --generate-notes
           fi
       - name: Remove keystore

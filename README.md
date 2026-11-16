@@ -1,9 +1,9 @@
-# AntennaPod Fork
+# AntennaPod Mix
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![GitHub Release](https://img.shields.io/github/v/release/stephanemoulec/AntennaPod)](https://github.com/stephanemoulec/AntennaPod/releases)
 
-This is a personal fork of [AntennaPod](https://github.com/AntennaPod/AntennaPod), the easy-to-use, flexible and open-source podcast manager for Android. I keep it close to upstream and add a few features I wanted for my own listening.
+AntennaPod Mix is a personal fork of [AntennaPod](https://github.com/AntennaPod/AntennaPod), the easy-to-use, flexible and open-source podcast manager for Android. I keep it close to upstream and add a few features I wanted for my own listening.
 
 **This is not the official AntennaPod app**, and it is not affiliated with or endorsed by the AntennaPod team. If you are looking for AntennaPod, you will be much happier with the official version:
 
@@ -49,7 +49,8 @@ To keep a playlist from filling your storage, every rule in a playlist with auto
 
 This version also fixes a problem where automatic downloads could stop altogether once more episodes were downloaded than the episode limit allows.
 
-Showing playlists in Android Auto is an idea for later. No promises on timing.
+#### Playlists in Android Auto
+In a playlist's menu (⋮), **Show in Android Auto** adds it to a **Playlists** folder in Android Auto, right after "Continue listening". It is on for new playlists; playlists created before this version start with it off. Starting an episode from that folder plays the playlist, just like on the phone.
 
 ### Skip ad button
 Many podcasts play ads of about the same length. In a podcast's settings, set an "Ad skip time" (for example 30 seconds). The player then shows a "Skip ad" button for that podcast that jumps ahead by that amount, separate from the regular fast-forward button.
@@ -64,11 +65,12 @@ The full-screen player has a new look: smaller artwork, a bold episode title, an
 | Player style | Settings → User interface | Modern (default) · Classic |
 | Ad skip time | A podcast's settings | Number of seconds, 0 to hide the button |
 | Auto-download episodes | A playlist's menu (⋮) | On · Off |
+| Show in Android Auto | A playlist's menu (⋮) | On (default for new playlists) · Off |
 
 Tip: if auto-downloaded episodes from your podcasts land in the queue and you would rather they didn't, turn off Settings → Playback → **Enqueue downloaded** (a standard AntennaPod setting).
 
 ### Installs next to the official app
-The fork uses its own package name (`com.stephane.antennapod`) and shows up as "AntennaPod Fork", so it can be installed alongside the official AntennaPod. The two apps do not share data. To try the fork with your podcasts, use "Database export" in AntennaPod (Settings → Backup & restore), then "Database import" in the fork.
+The fork uses its own package name (`com.stephane.antennapod`) and shows up as "AntennaPod Mix", so it can be installed alongside the official AntennaPod. The two apps do not share data. To try the fork with your podcasts, use "Database export" in AntennaPod (Settings → Backup & restore), then "Database import" in the fork.
 
 ## Installing
 

@@ -5,6 +5,7 @@ Handoff notes for working on this fork (on any machine, with or without Claude C
 ## Repo setup
 - Fork: `stephanemoulec/AntennaPod` (`origin`). Upstream: `AntennaPod/AntennaPod` (add it as `upstream`).
 - All fork work is on `develop`, rebased on upstream `develop`. The old `fork-setup` and `playlists` branches are gone; their commits are on `develop`.
+- App name: "AntennaPod Mix" (debug: "AntennaPod Mix Debug"), set in `app/build.gradle`. Release APKs are named `AntennaPod-Mix-<tag>.apk`.
 - Application id: `com.stephane.antennapod`, so it installs next to the official app.
 - Releases: push a `v*` tag and `.github/workflows/fork-release.yml` builds and signs the APK. The keystore and passwords are GitHub secrets (`KEYSTORE_BASE64`, `KEYSTORE_PASSWORD`, `KEY_ALIAS`, `KEY_PASSWORD`), so nothing needs to be copied between machines.
 - `local.properties` and `.idea/` are machine-specific and not committed.
