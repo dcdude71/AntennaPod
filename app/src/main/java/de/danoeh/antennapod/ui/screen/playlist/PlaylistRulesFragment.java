@@ -37,6 +37,7 @@ import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.activity.MainActivity;
 import de.danoeh.antennapod.event.PlaylistEvent;
 import de.danoeh.antennapod.model.feed.Feed;
+import de.danoeh.antennapod.model.playlist.Playlist;
 import de.danoeh.antennapod.model.playlist.PlaylistRule;
 import de.danoeh.antennapod.storage.database.DBReader;
 import de.danoeh.antennapod.storage.database.PlaylistReader;
@@ -57,6 +58,7 @@ public class PlaylistRulesFragment extends Fragment implements Toolbar.OnMenuIte
     private EmptyViewHandler emptyView;
     private Disposable disposable;
     private final Map<Long, Feed> feeds = new HashMap<>();
+    private volatile boolean autoDownload;
 
     public static PlaylistRulesFragment newInstance(long playlistId) {
         PlaylistRulesFragment fragment = new PlaylistRulesFragment();
@@ -137,6 +139,8 @@ public class PlaylistRulesFragment extends Fragment implements Toolbar.OnMenuIte
             for (Feed feed : DBReader.getFeedList()) {
                 feedMap.put(feed.getId(), feed);
             }
+            Playlist playlist = PlaylistReader.getPlaylist(playlistId);
+            autoDownload = playlist != null && playlist.isAutoDownload();
             return new Pair<>(feedMap, PlaylistReader.getRules(playlistId));
         })
                 .subscribeOn(Schedulers.io())
@@ -167,7 +171,7 @@ public class PlaylistRulesFragment extends Fragment implements Toolbar.OnMenuIte
                 .setItems(titles, (dialog, which) -> {
                     Feed feed = subscribed.get(which);
                     PlaylistRuleDialog.show(requireContext(), feed.getTitle(),
-                            new PlaylistRule(playlistId, feed.getId()), PlaylistWriter::addRule);
+                            new PlaylistRule(playlistId, feed.getId()), autoDownload, PlaylistWriter::addRule);
                 })
                 .setNegativeButton(R.string.cancel_label, null)
                 .show();
@@ -195,7 +199,7 @@ public class PlaylistRulesFragment extends Fragment implements Toolbar.OnMenuIte
         void onItemClick(@NonNull PlaylistRule rule) {
             Feed feed = feeds.get(rule.getFeedId());
             PlaylistRuleDialog.show(requireContext(), feed != null ? feed.getTitle() : "",
-                    rule, PlaylistWriter::updateRule);
+                    rule, autoDownload, PlaylistWriter::updateRule);
         }
 
         @Override

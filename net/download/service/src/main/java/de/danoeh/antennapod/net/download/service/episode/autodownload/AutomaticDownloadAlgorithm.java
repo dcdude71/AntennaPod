@@ -55,32 +55,28 @@ public class AutomaticDownloadAlgorithm {
                 final List<FeedItem> newItems = DBReader.getAutoDownloadCandidates(
                         globalAutoDownloadEnabled, autoDownloadQueueEnabled);
                 final List<FeedItem> playlistEpisodes = PlaylistReader.getAutoDownloadEpisodes();
-                final List<FeedItem> candidates = new ArrayList<>(playlistEpisodes);
+                final List<FeedItem> candidates = new ArrayList<>();
 
                 for (FeedItem newItem : newItems) {
                     FeedPreferences feedPrefs = newItem.getFeed().getPreferences();
                     boolean shouldAdd = (autoDownloadQueueEnabled && newItem.isTagged(FeedItem.TAG_QUEUE))
                             || (feedPrefs.isAutoDownload(globalAutoDownloadEnabled)
                             && feedPrefs.getFilter().shouldAutoDownload(newItem));
-                    if (shouldAdd && !candidates.contains(newItem)) {
+                    if (shouldAdd && !playlistEpisodes.contains(newItem)) {
                         candidates.add(newItem);
                     }
                 }
 
                 // filter items that are not auto downloadable
-                Iterator<FeedItem> it = candidates.iterator();
-                while (it.hasNext()) {
-                    FeedItem item = it.next();
-                    if (!item.isAutoDownloadEnabled()
-                            || item.isDownloaded()
-                            || !item.hasMedia()
-                            || item.getFeed().isLocalFeed()) {
-                        it.remove();
-                    }
+                removeNotAutoDownloadable(candidates);
+                removeNotAutoDownloadable(playlistEpisodes);
+                for (FeedItem episode : playlistEpisodes) {
+                    DownloadServiceInterface.get().downloadWithoutEnqueue(context, episode);
                 }
 
                 int autoDownloadableEpisodes = candidates.size();
                 int downloadedEpisodes = DBReader.getTotalEpisodeCount(new FeedItemFilter(FeedItemFilter.DOWNLOADED));
+                downloadedEpisodes -= PlaylistReader.getDownloadedEpisodeCountInPlaylists();
                 downloadedEpisodes += DownloadServiceInterface.get().getNumberOfActiveDownloads(context);
                 int deletedEpisodes = EpisodeCleanupAlgorithmFactory.build()
                         .makeRoomForEpisodes(context, autoDownloadableEpisodes);
@@ -94,21 +90,31 @@ public class AutomaticDownloadAlgorithm {
                 } else {
                     episodeSpaceLeft = episodeCacheSize - (downloadedEpisodes - deletedEpisodes);
                 }
+                episodeSpaceLeft = Math.max(0, Math.min(episodeSpaceLeft, autoDownloadableEpisodes));
 
                 List<FeedItem> itemsToDownload = candidates.subList(0, episodeSpaceLeft);
                 if (!itemsToDownload.isEmpty()) {
                     Log.d(TAG, "Enqueueing " + itemsToDownload.size() + " items for download");
 
                     for (FeedItem episode : itemsToDownload) {
-                        if (playlistEpisodes.contains(episode)) {
-                            DownloadServiceInterface.get().downloadWithoutEnqueue(context, episode);
-                        } else {
-                            DownloadServiceInterface.get().download(context, episode);
-                        }
+                        DownloadServiceInterface.get().download(context, episode);
                     }
                 }
             }
         };
+    }
+
+    private static void removeNotAutoDownloadable(List<FeedItem> items) {
+        Iterator<FeedItem> it = items.iterator();
+        while (it.hasNext()) {
+            FeedItem item = it.next();
+            if (!item.isAutoDownloadEnabled()
+                    || item.isDownloaded()
+                    || !item.hasMedia()
+                    || item.getFeed().isLocalFeed()) {
+                it.remove();
+            }
+        }
     }
 
     /**

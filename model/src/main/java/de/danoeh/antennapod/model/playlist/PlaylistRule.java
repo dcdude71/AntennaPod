@@ -4,6 +4,7 @@ public class PlaylistRule {
     public static final int ALL_EPISODES = 0;
     public static final int MIN_PRIORITY = 1;
     public static final int MAX_PRIORITY = 10;
+    public static final int MAX_AUTO_DOWNLOAD_EPISODES = 10;
 
     public enum PickFrom {
         MOST_RECENT(0),

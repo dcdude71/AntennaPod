@@ -4,6 +4,7 @@ import android.content.Context;
 
 import de.danoeh.antennapod.model.feed.FeedItemFilter;
 import de.danoeh.antennapod.storage.database.DBReader;
+import de.danoeh.antennapod.storage.database.PlaylistReader;
 import de.danoeh.antennapod.storage.preferences.UserPreferences;
 
 public abstract class EpisodeCleanupAlgorithm {
@@ -53,7 +54,8 @@ public abstract class EpisodeCleanupAlgorithm {
     int getNumEpisodesToCleanup(final int amountOfRoomNeeded) {
         if (amountOfRoomNeeded >= 0
                 && UserPreferences.getEpisodeCacheSize() != UserPreferences.EPISODE_CACHE_SIZE_UNLIMITED) {
-            int downloadedEpisodes = DBReader.getTotalEpisodeCount(new FeedItemFilter(FeedItemFilter.DOWNLOADED));
+            int downloadedEpisodes = DBReader.getTotalEpisodeCount(new FeedItemFilter(FeedItemFilter.DOWNLOADED))
+                    - PlaylistReader.getDownloadedEpisodeCountInPlaylists();
             if (downloadedEpisodes + amountOfRoomNeeded >= UserPreferences
                     .getEpisodeCacheSize()) {
 

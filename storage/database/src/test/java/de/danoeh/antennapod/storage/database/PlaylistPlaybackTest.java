@@ -3,15 +3,18 @@ package de.danoeh.antennapod.storage.database;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import de.danoeh.antennapod.model.feed.FeedItem;
+import de.danoeh.antennapod.model.playlist.PlaylistRule;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class PlaylistPlaybackTest {
 
@@ -39,6 +42,37 @@ public class PlaylistPlaybackTest {
     public void testNoNextAtEndOfPlaylist() {
         assertNull(PlaylistPlayback.getNextEpisode(episodes(1), 1, new HashSet<>()));
         assertNull(PlaylistPlayback.getNextEpisode(new ArrayList<>(), 1, new HashSet<>()));
+    }
+
+    @Test
+    public void testFollowingPlaylistsComeAfterCurrent() {
+        assertEquals(Arrays.asList(30L, 40L),
+                PlaylistPlayback.getFollowingPlaylistIds(Arrays.asList(10L, 20L, 30L, 40L), 20L));
+    }
+
+    @Test
+    public void testNoFollowingPlaylistAfterLast() {
+        assertTrue(PlaylistPlayback.getFollowingPlaylistIds(Arrays.asList(10L, 20L), 20L).isEmpty());
+    }
+
+    @Test
+    public void testNoFollowingPlaylistWhenCurrentIsDeleted() {
+        assertTrue(PlaylistPlayback.getFollowingPlaylistIds(Arrays.asList(10L, 20L), 99L).isEmpty());
+    }
+
+    @Test
+    public void testAutoDownloadLimitsAllAndLargeCounts() {
+        List<PlaylistRule> rules = Arrays.asList(rule(PlaylistRule.ALL_EPISODES), rule(25), rule(4));
+        List<PlaylistRule> limited = PlaylistReader.limitForAutoDownload(rules);
+        assertEquals(PlaylistRule.MAX_AUTO_DOWNLOAD_EPISODES, limited.get(0).getEpisodeCount());
+        assertEquals(PlaylistRule.MAX_AUTO_DOWNLOAD_EPISODES, limited.get(1).getEpisodeCount());
+        assertEquals(4, limited.get(2).getEpisodeCount());
+        assertEquals(PlaylistRule.ALL_EPISODES, rules.get(0).getEpisodeCount());
+    }
+
+    private static PlaylistRule rule(int count) {
+        return new PlaylistRule(1, 1, 1, count, PlaylistRule.PickFrom.OLDEST,
+                PlaylistRule.PlayOrder.OLDEST_FIRST, PlaylistRule.MIN_PRIORITY, 0);
     }
 
     private static List<FeedItem> episodes(long... ids) {

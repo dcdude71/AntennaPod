@@ -6,13 +6,16 @@ import android.content.SharedPreferences;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import de.danoeh.antennapod.model.feed.FeedItem;
+import de.danoeh.antennapod.model.playlist.Playlist;
 import de.danoeh.antennapod.net.download.serviceinterface.AutoDownloadManager;
+import de.danoeh.antennapod.storage.preferences.PlaylistPreferences;
 
 public final class PlaylistPlayback {
     public static final long NO_PLAYLIST = 0;
@@ -67,11 +70,40 @@ public final class PlaylistPlayback {
         }
         FeedItem next = getNextEpisode(PlaylistReader.getEpisodes(playlistId, skippedIds),
                 current.getId(), skippedIds);
+        if (next == null && PlaylistPreferences.shouldContinueWithNextPlaylist(context)) {
+            next = startNextPlaylist(context, playlistId, current.getId());
+        }
         if (next == null) {
             stop(context);
         }
         AutoDownloadManager.getInstance().autodownloadUndownloadedItems(context);
         return next;
+    }
+
+    @Nullable
+    private static FeedItem startNextPlaylist(@NonNull Context context, long playlistId, long currentId) {
+        List<Long> playlistIds = new ArrayList<>();
+        for (Playlist playlist : PlaylistReader.getPlaylists()) {
+            playlistIds.add(playlist.getId());
+        }
+        for (long nextPlaylistId : getFollowingPlaylistIds(playlistIds, playlistId)) {
+            FeedItem first = getNextEpisode(PlaylistReader.getEpisodes(nextPlaylistId), currentId,
+                    Collections.emptySet());
+            if (first != null) {
+                start(context, nextPlaylistId);
+                return first;
+            }
+        }
+        return null;
+    }
+
+    @NonNull
+    static List<Long> getFollowingPlaylistIds(@NonNull List<Long> playlistIds, long playlistId) {
+        int index = playlistIds.indexOf(playlistId);
+        if (index < 0) {
+            return new ArrayList<>();
+        }
+        return new ArrayList<>(playlistIds.subList(index + 1, playlistIds.size()));
     }
 
     @Nullable

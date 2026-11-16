@@ -12,6 +12,8 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
 import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import org.greenrobot.eventbus.Subscribe;
@@ -24,6 +26,7 @@ import java.util.concurrent.Future;
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.actionbutton.ItemActionButton;
 import de.danoeh.antennapod.actionbutton.PlayActionButton;
+import de.danoeh.antennapod.actionbutton.PlayLocalActionButton;
 import de.danoeh.antennapod.actionbutton.StreamActionButton;
 import de.danoeh.antennapod.activity.MainActivity;
 import de.danoeh.antennapod.event.FeedItemEvent;
@@ -31,11 +34,13 @@ import de.danoeh.antennapod.event.PlaylistEvent;
 import de.danoeh.antennapod.model.feed.FeedItem;
 import de.danoeh.antennapod.model.feed.FeedItemFilter;
 import de.danoeh.antennapod.model.playlist.Playlist;
+import de.danoeh.antennapod.model.playlist.PlaylistRule;
 import de.danoeh.antennapod.net.download.serviceinterface.AutoDownloadManager;
 import de.danoeh.antennapod.storage.database.PlaylistPlayback;
 import de.danoeh.antennapod.storage.database.PlaylistReader;
 import de.danoeh.antennapod.storage.database.PlaylistWriter;
 import de.danoeh.antennapod.ui.common.ConfirmationDialog;
+import de.danoeh.antennapod.ui.episodeslist.EpisodeItemViewHolder;
 import de.danoeh.antennapod.ui.episodeslist.EpisodesListFragment;
 
 public class PlaylistEpisodesFragment extends EpisodesListFragment {
@@ -45,6 +50,7 @@ public class PlaylistEpisodesFragment extends EpisodesListFragment {
     private long playlistId;
     private volatile Playlist playlist;
     private volatile int episodeCount;
+    private volatile boolean hasUnlimitedRule;
 
     public static PlaylistEpisodesFragment newInstance(long playlistId) {
         PlaylistEpisodesFragment fragment = new PlaylistEpisodesFragment();
@@ -83,6 +89,10 @@ public class PlaylistEpisodesFragment extends EpisodesListFragment {
             return true;
         } else if (itemId == R.id.playlist_auto_download) {
             Playlist current = playlist;
+            if (current != null && !current.isAutoDownload() && hasUnlimitedRule) {
+                showAutoDownloadNeedsLimitDialog();
+                return true;
+            }
             if (current != null) {
                 current.setAutoDownload(!current.isAutoDownload());
                 item.setChecked(current.isAutoDownload());
@@ -120,6 +130,33 @@ public class PlaylistEpisodesFragment extends EpisodesListFragment {
         ItemActionButton button = first.getMedia().isDownloaded()
                 ? new PlayActionButton(first) : new StreamActionButton(first);
         button.onClick(requireContext());
+    }
+
+    private void showAutoDownloadNeedsLimitDialog() {
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.playlist_auto_download_needs_limit_title)
+                .setMessage(R.string.playlist_auto_download_needs_limit_message)
+                .setPositiveButton(R.string.playlist_edit_rules, (dialog, which) ->
+                        ((MainActivity) requireActivity()).loadChildFragment(
+                                PlaylistRulesFragment.newInstance(playlistId)))
+                .setNegativeButton(R.string.cancel_label, null)
+                .show();
+    }
+
+    @Override
+    protected void onEpisodeBound(EpisodeItemViewHolder holder) {
+        FeedItem item = holder.getFeedItem();
+        if (item == null || item.getMedia() == null) {
+            return;
+        }
+        ItemActionButton button = ItemActionButton.forItem(item);
+        if (button instanceof PlayActionButton || button instanceof StreamActionButton
+                || button instanceof PlayLocalActionButton) {
+            holder.secondaryActionButton.setOnClickListener(v -> {
+                PlaylistPlayback.start(v.getContext(), playlistId);
+                button.onClick(v.getContext());
+            });
+        }
     }
 
     private void confirmDelete() {
@@ -176,6 +213,13 @@ public class PlaylistEpisodesFragment extends EpisodesListFragment {
     @Override
     protected List<FeedItem> loadData() {
         playlist = PlaylistReader.getPlaylist(playlistId);
+        boolean unlimited = false;
+        for (PlaylistRule rule : PlaylistReader.getRules(playlistId)) {
+            if (rule.getEpisodeCount() == PlaylistRule.ALL_EPISODES) {
+                unlimited = true;
+            }
+        }
+        hasUnlimitedRule = unlimited;
         List<FeedItem> items = PlaylistReader.getEpisodes(playlistId);
         episodeCount = items.size();
         return items;

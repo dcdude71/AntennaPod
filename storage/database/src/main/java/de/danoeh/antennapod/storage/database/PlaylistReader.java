@@ -66,7 +66,8 @@ public final class PlaylistReader {
         List<FeedItem> episodes = new ArrayList<>();
         for (Playlist playlist : getPlaylists()) {
             if (playlist.isAutoDownload()) {
-                for (FeedItem item : getEpisodes(playlist.getId())) {
+                for (FeedItem item : getEpisodes(limitForAutoDownload(getRules(playlist.getId())),
+                        Collections.emptySet())) {
                     if (!episodes.contains(item)) {
                         episodes.add(item);
                     }
@@ -74,6 +75,35 @@ public final class PlaylistReader {
             }
         }
         return episodes;
+    }
+
+    @NonNull
+    static List<PlaylistRule> limitForAutoDownload(@NonNull List<PlaylistRule> rules) {
+        List<PlaylistRule> limited = new ArrayList<>();
+        for (PlaylistRule rule : rules) {
+            int count = rule.getEpisodeCount();
+            if (count == PlaylistRule.ALL_EPISODES || count > PlaylistRule.MAX_AUTO_DOWNLOAD_EPISODES) {
+                count = PlaylistRule.MAX_AUTO_DOWNLOAD_EPISODES;
+            }
+            limited.add(new PlaylistRule(rule.getId(), rule.getPlaylistId(), rule.getFeedId(), count,
+                    rule.getPickFrom(), rule.getPlayOrder(), rule.getPriority(), rule.getPosition()));
+        }
+        return limited;
+    }
+
+    public static int getDownloadedEpisodeCountInPlaylists() {
+        Set<Long> ids = getEpisodeIdsInPlaylists();
+        if (ids.isEmpty()) {
+            return 0;
+        }
+        int count = 0;
+        for (FeedItem item : DBReader.getEpisodes(0, Integer.MAX_VALUE,
+                new FeedItemFilter(FeedItemFilter.DOWNLOADED), SortOrder.DATE_NEW_OLD)) {
+            if (ids.contains(item.getId())) {
+                count++;
+            }
+        }
+        return count;
     }
 
     @NonNull
@@ -89,7 +119,12 @@ public final class PlaylistReader {
 
     @NonNull
     public static List<FeedItem> getEpisodes(long playlistId, @NonNull final Set<Long> excludedOldestIds) {
-        List<PlaylistRule> rules = getRules(playlistId);
+        return getEpisodes(getRules(playlistId), excludedOldestIds);
+    }
+
+    @NonNull
+    private static List<FeedItem> getEpisodes(@NonNull List<PlaylistRule> rules,
+                                              @NonNull final Set<Long> excludedOldestIds) {
         if (rules.isEmpty()) {
             return new ArrayList<>();
         }

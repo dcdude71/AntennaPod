@@ -20,11 +20,34 @@ Next to the regular queue, you can create any number of playlists. A playlist is
 - **Play order:** oldest first or newest first
 - **Priority (1-10):** priority 1 podcasts play first, then priority 2, and so on. Podcasts with the same priority follow the order of the rules, which you can change by dragging.
 
-The playlist updates itself as new episodes come in and as you listen. Press play on a playlist and it plays through its episodes and stops at the end, without touching your queue. Starting any other episode takes you back to the normal queue.
+The playlist updates itself as new episodes come in and as you listen.
 
 Example: a "Morning" playlist with the 2 most recent episodes of a news podcast (priority 1), then the next unplayed episode of a series you are catching up on (priority 2).
 
-Each playlist can also download its episodes automatically, following your usual download settings. These downloads are not added to the queue, and episodes in a playlist are kept when the app cleans up downloads to make room.
+#### How to use playlists
+1. Open the **Playlists** tab and tap **+** to create a playlist.
+2. Tap the playlist, then the **pencil** (Edit rules) and **Add podcast**. Choose how many episodes, which ones, the play order and the priority. Swipe a rule away to remove it, or drag it to reorder.
+3. Back on the playlist, press the **play** button at the top to play it from the start, or the play button of any episode to start the playlist from that episode.
+
+When an episode ends, the next one comes from the playlist, never from your queue, and playing from a playlist never adds episodes to the queue. Starting an episode from anywhere else (the queue, the inbox, a podcast page) takes you back to the normal queue.
+
+When a playlist runs out, the app moves on to the next playlist in the order of your Playlists tab, skipping empty ones. You can change this in Settings → Playback → **At the end of a playlist**:
+
+- **Continue with the next playlist** (default)
+- **Stop**
+
+Either way, playback never falls back to the queue.
+
+#### Automatic downloads for playlists
+In a playlist's menu (⋮), turn on **Auto-download episodes** to keep its episodes downloaded, following your usual download settings (Wi-Fi only, battery, and so on). These downloads:
+
+- are not added to the queue,
+- are kept when the app cleans up downloads to make room,
+- do not count toward the episode limit in Settings → Downloads → Automatic download. That limit is left entirely to your podcasts' own automatic downloads.
+
+To keep a playlist from filling your storage, every rule in a playlist with auto-download needs a number of episodes, up to 10 per podcast. "All unplayed episodes" is not available there. If a playlist already uses it, the app asks you to edit its rules before turning on auto-download.
+
+This version also fixes a problem where automatic downloads could stop altogether once more episodes were downloaded than the episode limit allows.
 
 Showing playlists in Android Auto is an idea for later. No promises on timing.
 
@@ -33,6 +56,16 @@ Many podcasts play ads of about the same length. In a podcast's settings, set an
 
 ### A modern player
 The full-screen player has a new look: smaller artwork, a bold episode title, and large, well-spaced controls (rewind, play, fast-forward) with speed, sleep timer, next episode and shownotes in a labeled row below. Prefer the original? Switch back any time in Settings → User interface → Player style → Classic.
+
+### Settings added by this fork
+| Setting | Where | Options |
+|---|---|---|
+| At the end of a playlist | Settings → Playback | Continue with the next playlist (default) · Stop |
+| Player style | Settings → User interface | Modern (default) · Classic |
+| Ad skip time | A podcast's settings | Number of seconds, 0 to hide the button |
+| Auto-download episodes | A playlist's menu (⋮) | On · Off |
+
+Tip: if auto-downloaded episodes from your podcasts land in the queue and you would rather they didn't, turn off Settings → Playback → **Enqueue downloaded** (a standard AntennaPod setting).
 
 ### Installs next to the official app
 The fork uses its own package name (`com.stephane.antennapod`) and shows up as "AntennaPod Fork", so it can be installed alongside the official AntennaPod. The two apps do not share data. To try the fork with your podcasts, use "Database export" in AntennaPod (Settings → Backup & restore), then "Database import" in the fork.

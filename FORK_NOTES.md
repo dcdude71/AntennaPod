@@ -21,8 +21,13 @@ Approved design (open to adjustment once used in practice):
 - Playlist = name + rules + auto-download + show in Android Auto.
 - Rule = podcast, count (0 = all), pick from most recent / oldest, play order oldest / newest first, priority 1-10. Same priority: rule order (drag to reorder).
 - "Most recent N" = the N newest episodes, only the unplayed ones among them (does not walk into the back catalog). "Oldest N" = the next N unplayed.
-- The playlist is recalculated live after each episode. Playback stops at the end of the playlist. Playing from a playlist never adds to the queue; starting any other episode goes back to the normal queue.
+- The playlist is recalculated live after each episode. Playing from a playlist never adds to the queue; starting any other episode goes back to the normal queue.
+- Playlist mode starts from the toolbar "Play playlist" button and from the play button of any episode row in the playlist screen (hook: `EpisodesListFragment.onEpisodeBound`). Playing from the episode details page does not start playlist mode.
+- At the end of a playlist: setting `prefPlaylistEndAction` (Settings → Playback), "Continue with the next playlist" (default, follows Playlists tab order, skips empty ones, stops after the last) or "Stop". Never falls back to the queue. Read via `PlaylistPreferences`.
 - Playlist auto-downloads follow the normal download settings, never enqueue, and playlist episodes are protected from download cleanup.
+- Playlist downloads do not count toward the global episode limit (`AutomaticDownloadAlgorithm`, `EpisodeCleanupAlgorithm.getNumEpisodesToCleanup`). To keep them bounded, rules in an auto-download playlist need a count of 1-10 (`PlaylistRule.MAX_AUTO_DOWNLOAD_EPISODES`); the rule dialog disables "All" and the auto-download toggle refuses while an "All" rule exists. `PlaylistReader.limitForAutoDownload` caps legacy rules anyway.
+- Fixed (also an upstream bug): when downloaded episodes exceeded the episode limit, `episodeSpaceLeft` went negative and `subList` threw inside an executor, silently skipping all auto-downloads. Now clamped to 0.
+- Upstream clears an episode's auto-download flag after its first successful download (`MediaDownloadedHandler`) or a cancelled download, so a deleted episode is never auto-downloaded again. This applies to playlist downloads too.
 - Code: `model/.../playlist/`, `storage/database/.../Playlist*` (DbAdapter, Engine, Reader, Writer, Playback), `app/.../ui/screen/playlist/`. Tests in `storage/database/src/test/.../Playlist*Test.java`.
 
 Phases:
@@ -33,6 +38,10 @@ Phases:
 5. Android Auto: not started (test with the Desktop Head Unit). README calls it "an idea for later".
 
 Inspired by Downcast's playlist engine.
+
+## Testing on a device
+- Debug build: `./gradlew --console=plain :app:installPlayDebug`, then `adb shell monkey -p com.stephane.antennapod.debug -c android.intent.category.LAUNCHER 1` (AGENTS.md's launch command uses the upstream package name and does not work here).
+- The debug app is separate from the release app. Import a database export to test with real podcasts. Downloaded files from the release app are not readable by the debug app, so reset `FeedMedia.downloaded`/`file_url` in the imported copy (`adb exec-out run-as com.stephane.antennapod.debug cat databases/Antennapod.db`, edit with sqlite3, push back with `run-as ... sh -c 'cat > databases/Antennapod.db'` while the app is force-stopped).
 
 ## Skip ad
 Per-podcast "Ad skip time" in the podcast's settings (fork table via `FeedAdSkip` / `FeedAdSkipDbAdapter`). When set, the player shows a "Skip ad" button that jumps ahead by that amount from the current position, separate from fast-forward.

@@ -190,6 +190,13 @@ public abstract class EpisodesListFragment extends Fragment
                 FeedItemMenuHandler.onPrepareMenu(floatingSelectMenu.getMenu(), getSelectedItems());
                 floatingSelectMenu.updateItemVisibility();
             }
+
+            @Override
+            protected void afterBindViewHolder(EpisodeItemViewHolder holder, int pos) {
+                if (!inActionMode()) {
+                    onEpisodeBound(holder);
+                }
+            }
         };
         listAdapter.setOnSelectModeListener(this);
         recyclerView.setAdapter(listAdapter);
@@ -437,6 +444,9 @@ public abstract class EpisodesListFragment extends Fragment
     protected abstract String getFragmentTag();
 
     protected void updateToolbar() {
+    }
+
+    protected void onEpisodeBound(EpisodeItemViewHolder holder) {
     }
 
     protected void onItemsFirstLoaded() {

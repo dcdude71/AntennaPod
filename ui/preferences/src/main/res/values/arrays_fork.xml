@@ -8,4 +8,12 @@
         <item>modern</item>
         <item>classic</item>
     </string-array>
+    <string-array name="playlist_end_action_titles">
+        <item>@string/pref_playlist_end_action_next_playlist</item>
+        <item>@string/pref_playlist_end_action_stop</item>
+    </string-array>
+    <string-array name="playlist_end_action_values" translatable="false">
+        <item>next_playlist</item>
+        <item>stop</item>
+    </string-array>
 </resources>

@@ -2,6 +2,7 @@ package de.danoeh.antennapod.ui.screen.playlist;
 
 import android.content.Context;
 import android.view.LayoutInflater;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 
@@ -21,12 +22,20 @@ final class PlaylistRuleDialog {
     private PlaylistRuleDialog() {
     }
 
-    static void show(Context context, String title, PlaylistRule rule, Callback callback) {
+    static void show(Context context, String title, PlaylistRule rule, boolean autoDownload, Callback callback) {
         PlaylistRuleDialogBinding binding = PlaylistRuleDialogBinding.inflate(LayoutInflater.from(context));
 
-        boolean all = rule.getEpisodeCount() == PlaylistRule.ALL_EPISODES;
+        boolean all = rule.getEpisodeCount() == PlaylistRule.ALL_EPISODES && !autoDownload;
+        int maxLimit = autoDownload ? PlaylistRule.MAX_AUTO_DOWNLOAD_EPISODES : Integer.MAX_VALUE;
+        if (autoDownload) {
+            binding.countAll.setEnabled(false);
+            binding.autoDownloadHint.setVisibility(View.VISIBLE);
+            binding.autoDownloadHint.setText(context.getString(R.string.playlist_rule_auto_download_limit,
+                    PlaylistRule.MAX_AUTO_DOWNLOAD_EPISODES));
+        }
         binding.countGroup.check(all ? R.id.countAll : R.id.countLimit);
-        binding.countInput.setText(String.valueOf(all ? DEFAULT_LIMIT : rule.getEpisodeCount()));
+        binding.countInput.setText(String.valueOf(all || rule.getEpisodeCount() == PlaylistRule.ALL_EPISODES
+                ? DEFAULT_LIMIT : Math.min(rule.getEpisodeCount(), maxLimit)));
         setLimitEnabled(binding, !all);
         binding.countGroup.setOnCheckedChangeListener((group, checkedId) ->
                 setLimitEnabled(binding, checkedId == R.id.countLimit));
@@ -49,7 +58,7 @@ final class PlaylistRuleDialog {
                 .setView(binding.getRoot())
                 .setPositiveButton(android.R.string.ok, (dialog, which) -> {
                     rule.setEpisodeCount(binding.countLimit.isChecked()
-                            ? parseLimit(binding.countInput.getText().toString())
+                            ? Math.min(parseLimit(binding.countInput.getText().toString()), maxLimit)
                             : PlaylistRule.ALL_EPISODES);
                     rule.setPickFrom(binding.pickOldest.isChecked()
                             ? PlaylistRule.PickFrom.OLDEST : PlaylistRule.PickFrom.MOST_RECENT);
