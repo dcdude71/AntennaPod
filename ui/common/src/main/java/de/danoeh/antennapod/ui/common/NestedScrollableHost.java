@@ -109,7 +109,7 @@ public class NestedScrollableHost extends FrameLayout {
                 parentViewPager = v instanceof ViewPager2 ? (ViewPager2) v : null;
 
                 getViewTreeObserver().removeOnPreDrawListener(this);
-                return false;
+                return true;
             }
         });
     }
