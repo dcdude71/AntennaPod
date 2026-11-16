@@ -46,7 +46,7 @@ public final class EpisodeDetailPane {
         View mainView = activity.findViewById(R.id.main_content_view);
         ViewGroup parent = (ViewGroup) mainView.getParent();
         int index = parent.indexOfChild(mainView);
-        ViewGroup.LayoutParams mainParams = mainView.getLayoutParams();
+        final ViewGroup.LayoutParams mainParams = mainView.getLayoutParams();
         parent.removeViewAt(index);
 
         LinearLayout wrapper = new LinearLayout(activity);

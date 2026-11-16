@@ -54,6 +54,9 @@ The fork also fixes a problem where automatic downloads could stop altogether on
 #### Playlists on foldables and big screens
 On a wide screen (an unfolded Fold, a tablet, or a phone in landscape), the Playlists tab shows your playlists on the left and the selected playlist's episodes on the right. Tap the pencil to edit a playlist: its rules move to the left and a live preview of the episodes appears on the right, updating as you change rules (newly added episodes are briefly highlighted). On a narrow screen, the rules screen shows how many episodes the playlist currently has.
 
+#### Episode details beside the list
+On a wide screen, tapping an episode anywhere (Inbox, Queue, Episodes, Downloads, Home, a podcast's page) opens its details on the right while the list stays on the left. Close them with ✕ or Back; switching tabs closes them too. Fold the phone and the episode goes full screen.
+
 #### Playlists in Android Auto
 In a playlist's menu (⋮), **Show in Android Auto** adds it to a **Playlists** folder in Android Auto, right after "Continue listening". It is on for new playlists; playlists created before this version start with it off. Starting an episode from that folder plays the playlist, just like on the phone.
 

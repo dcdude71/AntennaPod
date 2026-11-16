@@ -60,5 +60,11 @@ Settings → User interface → Player style: Modern (default) or Classic (upstr
 - Fold with two panes → selected playlist full screen (Back = list). A full-screen playlist that becomes visible on a wide screen (unfold, or Back from the editor) pops itself so the two panes show it.
 - All fork-only files; no upstream changes.
 
+## Episode details pane (wide screens)
+- `EpisodeDetailPane` (fork-only) wraps `main_content_view` at runtime in a horizontal LinearLayout with a right-hand `episodeDetailPane` container (ids in `values/ids_fork.xml`), so upstream layout files stay untouched. It mirrors the main view's bottom margin (mini player).
+- Hooks in `MainActivity`: `install` after `setContentView`, `show` at the top of `loadChildFragment` (intercepts `ItemPagerFragment` when ≥ 600dp), `close` in `loadFragment` (tab switch), `onConfigurationChanged` (folding moves the episode to full screen).
+- In the pane the toolbar's back arrow becomes ✕; Back closes the pane (its callback is re-registered on open so it wins over MainActivity's).
+- Known edge: `ItemFragment` pops the activity back stack if the episode no longer exists; in the pane that also steps the list back once.
+
 ## Working preferences
 - Ask design questions as a short numbered list with a recommendation per item, and let the answer come back as plain text (not a multiple-choice picker); answers often add nuance the options don't cover.
