@@ -29,7 +29,6 @@ import java.util.concurrent.Future;
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.actionbutton.ItemActionButton;
 import de.danoeh.antennapod.actionbutton.PlayActionButton;
-import de.danoeh.antennapod.actionbutton.PlayLocalActionButton;
 import de.danoeh.antennapod.actionbutton.StreamActionButton;
 import de.danoeh.antennapod.activity.MainActivity;
 import de.danoeh.antennapod.event.FeedItemEvent;
@@ -157,18 +156,7 @@ public class PlaylistEpisodesFragment extends EpisodesListFragment {
 
     @Override
     protected void onEpisodeBound(EpisodeItemViewHolder holder) {
-        FeedItem item = holder.getFeedItem();
-        if (item == null || item.getMedia() == null) {
-            return;
-        }
-        ItemActionButton button = ItemActionButton.forItem(item);
-        if (button instanceof PlayActionButton || button instanceof StreamActionButton
-                || button instanceof PlayLocalActionButton) {
-            holder.secondaryActionButton.setOnClickListener(v -> {
-                PlaylistPlayback.start(v.getContext(), playlistId);
-                button.onClick(v.getContext());
-            });
-        }
+        holder.secondaryActionButton.setVisibility(View.GONE);
     }
 
     private void confirmDelete() {

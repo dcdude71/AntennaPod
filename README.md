@@ -27,7 +27,9 @@ Example: a "Morning" playlist with the 2 most recent episodes of a news podcast 
 #### How to use playlists
 1. Open the **Playlists** tab and tap **+** to create a playlist.
 2. Tap the playlist, then the **pencil** (Edit rules) and **Add podcast**. Choose how many episodes, which ones, the play order and the priority. Swipe a rule away to remove it, or drag it to reorder.
-3. Back on the playlist, press the **play** button at the top to play it from the start, or the play button of any episode to start the playlist from that episode.
+3. Back on the playlist, press the **play** button at the top to play it from the start. To play everything, press **play** at the top of the Playlists tab: it starts with your first playlist that has episodes.
+
+Playlists play from the top only. To hear one particular episode, open its podcast and play it from there (that uses the normal queue).
 
 When an episode ends, the next one comes from the playlist, never from your queue, and playing from a playlist never adds episodes to the queue. Starting an episode from anywhere else (the queue, the inbox, a podcast page) takes you back to the normal queue.
 

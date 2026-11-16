@@ -25,9 +25,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.danoeh.antennapod.R;
+import de.danoeh.antennapod.actionbutton.ItemActionButton;
+import de.danoeh.antennapod.actionbutton.PlayActionButton;
+import de.danoeh.antennapod.actionbutton.StreamActionButton;
 import de.danoeh.antennapod.activity.MainActivity;
+import de.danoeh.antennapod.event.MessageEvent;
 import de.danoeh.antennapod.event.PlaylistEvent;
+import de.danoeh.antennapod.model.feed.FeedItem;
 import de.danoeh.antennapod.model.playlist.Playlist;
+import de.danoeh.antennapod.storage.database.PlaylistPlayback;
 import de.danoeh.antennapod.storage.database.PlaylistReader;
 import de.danoeh.antennapod.storage.database.PlaylistWriter;
 import de.danoeh.antennapod.ui.common.EmptyViewHandler;
@@ -43,6 +49,7 @@ public class PlaylistsFragment extends Fragment implements Toolbar.OnMenuItemCli
     private PlaylistAdapter adapter;
     private EmptyViewHandler emptyView;
     private Disposable disposable;
+    private Disposable playDisposable;
     private boolean displayUpArrow;
 
     @NonNull
@@ -87,6 +94,9 @@ public class PlaylistsFragment extends Fragment implements Toolbar.OnMenuItemCli
         if (disposable != null) {
             disposable.dispose();
         }
+        if (playDisposable != null) {
+            playDisposable.dispose();
+        }
     }
 
     @Override
@@ -97,12 +107,44 @@ public class PlaylistsFragment extends Fragment implements Toolbar.OnMenuItemCli
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
+        if (item.getItemId() == R.id.playlists_play_from_top) {
+            playFromTop();
+            return true;
+        }
         if (item.getItemId() == R.id.playlist_new) {
             PlaylistNameDialog.show(requireContext(), R.string.playlist_new, "",
                     name -> PlaylistWriter.createPlaylist(new Playlist(name)));
             return true;
         }
         return false;
+    }
+
+    private void playFromTop() {
+        if (playDisposable != null) {
+            playDisposable.dispose();
+        }
+        playDisposable = Observable.fromCallable(() -> {
+            for (Playlist playlist : PlaylistReader.getPlaylists()) {
+                List<FeedItem> episodes = PlaylistReader.getEpisodes(playlist.getId());
+                if (!episodes.isEmpty() && episodes.get(0).getMedia() != null) {
+                    return new Pair<>(playlist.getId(), episodes.get(0));
+                }
+            }
+            return new Pair<Long, FeedItem>(PlaylistPlayback.NO_PLAYLIST, null);
+        })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(result -> {
+                    FeedItem first = result.second;
+                    if (first == null) {
+                        EventBus.getDefault().post(new MessageEvent(getString(R.string.playlists_nothing_to_play)));
+                        return;
+                    }
+                    PlaylistPlayback.start(requireContext(), result.first);
+                    ItemActionButton button = first.getMedia().isDownloaded()
+                            ? new PlayActionButton(first) : new StreamActionButton(first);
+                    button.onClick(requireContext());
+                }, error -> Log.e(TAG, Log.getStackTraceString(error)));
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
