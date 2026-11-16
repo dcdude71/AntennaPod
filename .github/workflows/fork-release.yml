@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   release:
-    if: github.repository == 'stephanemoulec/AntennaPod'
+    if: github.repository == 'dcdude71/AntennaPod'
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:

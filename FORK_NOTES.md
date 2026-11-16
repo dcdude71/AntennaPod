@@ -3,12 +3,13 @@
 Handoff notes for working on this fork (on any machine, with or without Claude Code). Upstream `AGENTS.md` still applies.
 
 ## Repo setup
-- Fork: `stephanemoulec/AntennaPod` (`origin`). Upstream: `AntennaPod/AntennaPod` (add it as `upstream`).
+- Fork: `dcdude71/AntennaPod` (`origin`). Upstream: `AntennaPod/AntennaPod` (add it as `upstream`).
 - All fork work is on `develop`, rebased on upstream `develop`. The old `fork-setup` and `playlists` branches are gone; their commits are on `develop`.
 - App name: "AntennaPod Mix" (debug: "AntennaPod Mix Debug"), set in `app/build.gradle`. Release APKs are named `AntennaPod-Mix-<tag>.apk`.
-- Application id: `com.stephane.antennapod`, so it installs next to the official app.
+- Application id: `io.github.dcdude71.antennapodmix`, so it installs next to the official app.
 - Releases: push a `v*` tag and `.github/workflows/fork-release.yml` builds and signs the APK. The keystore and passwords are GitHub secrets (`KEYSTORE_BASE64`, `KEYSTORE_PASSWORD`, `KEY_ALIAS`, `KEY_PASSWORD`), so nothing needs to be copied between machines.
 - `local.properties` and `.idea/` are machine-specific and not committed.
+- Commit as `dcdude71 <dcdude71@users.noreply.github.com>` (set with `git config user.name/user.email` in this repo), never under a real name.
 
 ## Keep the diff against upstream small
 The fork is rebased on upstream regularly, so:
@@ -41,8 +42,8 @@ Phases:
 Inspired by Downcast's playlist engine.
 
 ## Testing on a device
-- Debug build: `./gradlew --console=plain :app:installPlayDebug`, then `adb shell monkey -p com.stephane.antennapod.debug -c android.intent.category.LAUNCHER 1` (AGENTS.md's launch command uses the upstream package name and does not work here).
-- The debug app is separate from the release app. Import a database export to test with real podcasts. Downloaded files from the release app are not readable by the debug app, so reset `FeedMedia.downloaded`/`file_url` in the imported copy (`adb exec-out run-as com.stephane.antennapod.debug cat databases/Antennapod.db`, edit with sqlite3, push back with `run-as ... sh -c 'cat > databases/Antennapod.db'` while the app is force-stopped).
+- Debug build: `./gradlew --console=plain :app:installPlayDebug`, then `adb shell monkey -p io.github.dcdude71.antennapodmix.debug -c android.intent.category.LAUNCHER 1` (AGENTS.md's launch command uses the upstream package name and does not work here).
+- The debug app is separate from the release app. Import a database export to test with real podcasts. Downloaded files from the release app are not readable by the debug app, so reset `FeedMedia.downloaded`/`file_url` in the imported copy (`adb exec-out run-as io.github.dcdude71.antennapodmix.debug cat databases/Antennapod.db`, edit with sqlite3, push back with `run-as ... sh -c 'cat > databases/Antennapod.db'` while the app is force-stopped).
 
 ## Skip ad
 Per-podcast "Ad skip time" in the podcast's settings (fork table via `FeedAdSkip` / `FeedAdSkipDbAdapter`). When set, the player shows a "Skip ad" button that jumps ahead by that amount from the current position, separate from fast-forward.

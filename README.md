@@ -1,7 +1,7 @@
 # AntennaPod Mix
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![GitHub Release](https://img.shields.io/github/v/release/stephanemoulec/AntennaPod)](https://github.com/stephanemoulec/AntennaPod/releases)
+[![GitHub Release](https://img.shields.io/github/v/release/dcdude71/AntennaPod)](https://github.com/dcdude71/AntennaPod/releases)
 
 AntennaPod Mix is a personal fork of [AntennaPod](https://github.com/AntennaPod/AntennaPod), the easy-to-use, flexible and open-source podcast manager for Android. I keep it close to upstream and add a few features I wanted for my own listening.
 
@@ -70,11 +70,11 @@ The full-screen player has a new look: smaller artwork, a bold episode title, an
 Tip: if auto-downloaded episodes from your podcasts land in the queue and you would rather they didn't, turn off Settings → Playback → **Enqueue downloaded** (a standard AntennaPod setting).
 
 ### Installs next to the official app
-The fork uses its own package name (`com.stephane.antennapod`) and shows up as "AntennaPod Mix", so it can be installed alongside the official AntennaPod. The two apps do not share data. To try the fork with your podcasts, use "Database export" in AntennaPod (Settings → Backup & restore), then "Database import" in the fork.
+The fork uses its own package name (`io.github.dcdude71.antennapodmix`) and shows up as "AntennaPod Mix", so it can be installed alongside the official AntennaPod. The two apps do not share data. To try the fork with your podcasts, use "Database export" in AntennaPod (Settings → Backup & restore), then "Database import" in the fork.
 
 ## Installing
 
-Signed APKs are published on the [Releases page](https://github.com/stephanemoulec/AntennaPod/releases). The easiest way to install and stay up to date is [Obtainium](https://github.com/ImranR98/Obtainium): add `https://github.com/stephanemoulec/AntennaPod` as an app source.
+Signed APKs are published on the [Releases page](https://github.com/dcdude71/AntennaPod/releases). The easiest way to install and stay up to date is [Obtainium](https://github.com/ImranR98/Obtainium): add `https://github.com/dcdude71/AntennaPod` as an app source.
 
 The release APK has been scanned by Google Play Protect, which found no issues. Because it does not come from the Play Store, Android asks you to allow installs from the app you install it with (Obtainium or your browser).
 
