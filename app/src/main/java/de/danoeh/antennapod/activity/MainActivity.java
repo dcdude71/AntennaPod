@@ -74,6 +74,7 @@ import de.danoeh.antennapod.ui.screen.drawer.NavigationNames;
 import de.danoeh.antennapod.ui.screen.episode.ItemPagerFragment;
 import de.danoeh.antennapod.ui.screen.feed.FeedItemlistFragment;
 import de.danoeh.antennapod.ui.screen.home.HomeFragment;
+import de.danoeh.antennapod.ui.screen.episode.EpisodeDetailPane;
 import de.danoeh.antennapod.ui.screen.playback.audio.AudioPlayerFragment;
 import de.danoeh.antennapod.ui.screen.playlist.PlaylistsFragment;
 import de.danoeh.antennapod.ui.screen.preferences.PreferenceActivity;
@@ -126,6 +127,7 @@ public class MainActivity extends CastEnabledActivity implements NavigationToolb
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+        EpisodeDetailPane.install(this);
         checkFirstLaunch();
 
         drawerLayout = findViewById(R.id.drawer_layout);
@@ -470,6 +472,7 @@ public class MainActivity extends CastEnabledActivity implements NavigationToolb
     }
 
     public void loadFragment(String tag, Bundle args) {
+        EpisodeDetailPane.close(this);
         NavDrawerFragment.saveLastNavFragment(this, tag);
         if (bottomNavigation != null) {
             bottomNavigation.updateSelectedItem(tag);
@@ -508,6 +511,9 @@ public class MainActivity extends CastEnabledActivity implements NavigationToolb
 
     public void loadChildFragment(Fragment fragment, String navigationTag) {
         Objects.requireNonNull(fragment);
+        if (EpisodeDetailPane.show(this, fragment)) {
+            return;
+        }
         if (navigationTag != null && bottomNavigation != null) {
             bottomNavigation.updateSelectedItem(navigationTag);
         }
@@ -543,6 +549,7 @@ public class MainActivity extends CastEnabledActivity implements NavigationToolb
             drawerToggle.onConfigurationChanged(newConfig);
         }
         setNavDrawerSize();
+        EpisodeDetailPane.onConfigurationChanged(this);
 
         @StyleRes int requiredTheme = ThemeSwitcher.getNoTitleTheme(this);
         if (requiredTheme != lastTheme) {

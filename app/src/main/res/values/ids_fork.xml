@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="episodeDetailPane" type="id" />
+    <item name="episodeDetailPaneDivider" type="id" />
+    <item name="episodeDetailPaneWrapper" type="id" />
+</resources>
