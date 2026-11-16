@@ -47,7 +47,7 @@ In a playlist's menu (⋮), turn on **Auto-download episodes** to keep its episo
 
 To keep a playlist from filling your storage, every rule in a playlist with auto-download needs a number of episodes, up to 10 per podcast. "All unplayed episodes" is not available there. If a playlist already uses it, the app asks you to edit its rules before turning on auto-download.
 
-This version also fixes a problem where automatic downloads could stop altogether once more episodes were downloaded than the episode limit allows.
+The fork also fixes a problem where automatic downloads could stop altogether once more episodes were downloaded than the episode limit allows.
 
 #### Playlists in Android Auto
 In a playlist's menu (⋮), **Show in Android Auto** adds it to a **Playlists** folder in Android Auto, right after "Continue listening". It is on for new playlists; playlists created before this version start with it off. Starting an episode from that folder plays the playlist, just like on the phone.
@@ -75,6 +75,8 @@ The fork uses its own package name (`com.stephane.antennapod`) and shows up as "
 ## Installing
 
 Signed APKs are published on the [Releases page](https://github.com/stephanemoulec/AntennaPod/releases). The easiest way to install and stay up to date is [Obtainium](https://github.com/ImranR98/Obtainium): add `https://github.com/stephanemoulec/AntennaPod` as an app source.
+
+The release APK has been scanned by Google Play Protect, which found no issues. Because it does not come from the Play Store, Android asks you to allow installs from the app you install it with (Obtainium or your browser).
 
 ## Please read: what to expect
 
