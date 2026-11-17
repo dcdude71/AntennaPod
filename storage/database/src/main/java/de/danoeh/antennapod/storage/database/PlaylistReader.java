@@ -19,6 +19,9 @@ import de.danoeh.antennapod.model.playlist.Playlist;
 import de.danoeh.antennapod.model.playlist.PlaylistRule;
 
 public final class PlaylistReader {
+    private static final int MIN_PAGE_SIZE = 50;
+    private static final int MAX_SCANNED_EPISODES = 2000;
+
 
     private PlaylistReader() {
     }
@@ -69,7 +72,7 @@ public final class PlaylistReader {
         for (Playlist playlist : getPlaylists()) {
             if (playlist.isAutoDownload()) {
                 for (FeedItem item : getEpisodes(limitForAutoDownload(getRules(playlist.getId())),
-                        Collections.emptySet(), feeds)) {
+                        Collections.emptySet(), feeds, false)) {
                     if (ids.add(item.getId())) {
                         episodes.add(item);
                     }
@@ -114,7 +117,7 @@ public final class PlaylistReader {
         Map<Long, Feed> feeds = loadFeeds();
         for (Playlist playlist : getPlaylists()) {
             for (FeedItem item : getEpisodes(limitForAutoDownload(getRules(playlist.getId())),
-                    Collections.emptySet(), feeds)) {
+                    Collections.emptySet(), feeds, false)) {
                 episodes.put(item.getId(), item);
             }
         }
@@ -127,7 +130,9 @@ public final class PlaylistReader {
         if (rules.isEmpty()) {
             return new ArrayList<>();
         }
-        return getEpisodes(rules, excludedOldestIds, loadFeeds());
+        Playlist playlist = getPlaylist(playlistId);
+        boolean downloadedOnly = playlist != null && playlist.isDownloadedOnly();
+        return getEpisodes(rules, excludedOldestIds, loadFeeds(), downloadedOnly);
     }
 
     @NonNull
@@ -142,7 +147,8 @@ public final class PlaylistReader {
     @NonNull
     private static List<FeedItem> getEpisodes(@NonNull List<PlaylistRule> rules,
                                               @NonNull final Set<Long> excludedOldestIds,
-                                              @NonNull final Map<Long, Feed> feeds) {
+                                              @NonNull final Map<Long, Feed> feeds,
+                                              final boolean downloadedOnly) {
         if (rules.isEmpty()) {
             return new ArrayList<>();
         }
@@ -154,8 +160,8 @@ public final class PlaylistReader {
                 if (feed == null) {
                     return new ArrayList<>();
                 }
-                return DBReader.getFeedItemList(feed, new FeedItemFilter(FeedItemFilter.HAS_MEDIA),
-                        SortOrder.DATE_NEW_OLD, 0, limit);
+                return collect(feed, itemFilter(downloadedOnly, FeedItemFilter.HAS_MEDIA),
+                        SortOrder.DATE_NEW_OLD, limit, Collections.emptySet());
             }
 
             @NonNull
@@ -165,17 +171,37 @@ public final class PlaylistReader {
                 if (feed == null) {
                     return new ArrayList<>();
                 }
-                int fetchLimit = limit == Integer.MAX_VALUE ? limit : limit + excludedOldestIds.size();
-                List<FeedItem> result = new ArrayList<>();
-                for (FeedItem item : DBReader.getFeedItemList(feed,
-                        new FeedItemFilter(FeedItemFilter.HAS_MEDIA, FeedItemFilter.UNPLAYED),
-                        SortOrder.DATE_OLD_NEW, 0, fetchLimit)) {
-                    if (result.size() < limit && !excludedOldestIds.contains(item.getId())) {
-                        result.add(item);
-                    }
-                }
-                return result;
+                return collect(feed, itemFilter(downloadedOnly, FeedItemFilter.HAS_MEDIA, FeedItemFilter.UNPLAYED),
+                        SortOrder.DATE_OLD_NEW, limit, excludedOldestIds);
             }
         });
+    }
+
+    @NonNull
+    private static FeedItemFilter itemFilter(boolean downloadedOnly, String... properties) {
+        FeedItemFilter filter = new FeedItemFilter(properties);
+        return downloadedOnly ? new FeedItemFilter(filter, FeedItemFilter.DOWNLOADED) : filter;
+    }
+
+    @NonNull
+    private static List<FeedItem> collect(@NonNull Feed feed, @NonNull FeedItemFilter itemFilter,
+                                          @NonNull SortOrder order, int limit, @NonNull Set<Long> skippedIds) {
+        List<FeedItem> result = new ArrayList<>();
+        int pageSize = limit == Integer.MAX_VALUE ? Integer.MAX_VALUE
+                : Math.max(MIN_PAGE_SIZE, limit + skippedIds.size());
+        int offset = 0;
+        while (result.size() < limit) {
+            List<FeedItem> page = DBReader.getFeedItemList(feed, itemFilter, order, offset, pageSize);
+            for (FeedItem item : EpisodeFilters.filter(feed, page)) {
+                if (result.size() < limit && !skippedIds.contains(item.getId())) {
+                    result.add(item);
+                }
+            }
+            if (page.size() < pageSize || pageSize == Integer.MAX_VALUE || offset >= MAX_SCANNED_EPISODES) {
+                break;
+            }
+            offset += pageSize;
+        }
+        return result;
     }
 }

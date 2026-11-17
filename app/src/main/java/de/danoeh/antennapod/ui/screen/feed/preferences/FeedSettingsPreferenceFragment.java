@@ -40,6 +40,7 @@ import de.danoeh.antennapod.storage.database.DBReader;
 import de.danoeh.antennapod.storage.database.DBWriter;
 import de.danoeh.antennapod.storage.database.FeedAdSkip;
 import de.danoeh.antennapod.storage.database.FeedDatabaseWriter;
+import de.danoeh.antennapod.storage.preferences.EpisodeFilterPreferences;
 import de.danoeh.antennapod.storage.preferences.UserPreferences;
 import de.danoeh.antennapod.ui.preferences.screen.synchronization.AuthenticationDialog;
 import de.danoeh.antennapod.ui.screen.feed.RenameFeedDialog;
@@ -211,6 +212,7 @@ public class FeedSettingsPreferenceFragment extends PreferenceFragmentCompat {
             }.show();
             return false;
         });
+        AdvancedEpisodeFilterSettings.setup(this, findPreference(PREF_EPISODE_FILTER), feed);
         findPreference(PREF_AUTHENTICATION).setOnPreferenceClickListener(preference -> {
             new AuthenticationDialog(getContext(),
                     R.string.authentication_label, true,
@@ -376,7 +378,7 @@ public class FeedSettingsPreferenceFragment extends PreferenceFragmentCompat {
             return;
         }
         boolean enabled = feed.getPreferences().isAutoDownload(UserPreferences.isEnableAutodownloadGlobal());
-        findPreference(PREF_EPISODE_FILTER).setVisible(enabled);
+        findPreference(PREF_EPISODE_FILTER).setVisible(enabled || EpisodeFilterPreferences.isAdvanced());
         ListPreference autoDownloadPreference = findPreference(PREF_AUTODOWNLOAD);
         String summary = switch (feedPreferences.getAutoDownload()) {
             case GLOBAL -> getString(R.string.global_default_with_value,

@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import de.danoeh.antennapod.storage.database.EpisodeFilterDbAdapter;
 import de.danoeh.antennapod.storage.database.FeedAdSkipDbAdapter;
 import de.danoeh.antennapod.storage.database.PlaylistDbAdapter;
 
@@ -21,7 +22,8 @@ public final class OfficialAppExporter {
     private static final String[] FORK_TABLES = {
         PlaylistDbAdapter.TABLE_NAME_PLAYLIST_RULES,
         PlaylistDbAdapter.TABLE_NAME_PLAYLISTS,
-        FeedAdSkipDbAdapter.TABLE_NAME_FEED_AD_SKIP
+        FeedAdSkipDbAdapter.TABLE_NAME_FEED_AD_SKIP,
+        EpisodeFilterDbAdapter.TABLE_NAME_FEED_EPISODE_FILTERS
     };
 
     private OfficialAppExporter() {

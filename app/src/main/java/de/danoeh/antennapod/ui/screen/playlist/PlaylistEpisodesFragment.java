@@ -136,6 +136,14 @@ public class PlaylistEpisodesFragment extends EpisodesListFragment {
                 }
             }
             return true;
+        } else if (itemId == R.id.playlist_downloaded_only) {
+            Playlist current = playlist;
+            if (current != null) {
+                current.setDownloadedOnly(!current.isDownloadedOnly());
+                item.setChecked(current.isDownloadedOnly());
+                PlaylistWriter.updatePlaylist(current);
+            }
+            return true;
         } else if (itemId == R.id.playlist_android_auto) {
             Playlist current = playlist;
             if (current != null) {
@@ -261,6 +269,7 @@ public class PlaylistEpisodesFragment extends EpisodesListFragment {
             toolbar.setTitle(current.getName());
             toolbar.getMenu().findItem(R.id.playlist_auto_download).setChecked(current.isAutoDownload());
             toolbar.getMenu().findItem(R.id.playlist_android_auto).setChecked(current.isShowInAndroidAuto());
+            toolbar.getMenu().findItem(R.id.playlist_downloaded_only).setChecked(current.isDownloadedOnly());
         }
     }
 

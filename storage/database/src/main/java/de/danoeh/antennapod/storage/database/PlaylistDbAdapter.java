@@ -22,6 +22,7 @@ public class PlaylistDbAdapter {
     private static final String KEY_AUTO_DOWNLOAD = "auto_download";
     private static final String KEY_ANDROID_AUTO = "android_auto";
     private static final String KEY_POSITION = "position";
+    private static final String KEY_DOWNLOADED_ONLY = "downloaded_only";
     private static final String KEY_PLAYLIST = "playlist";
     private static final String KEY_FEED = "feed";
     private static final String KEY_EPISODE_COUNT = "episode_count";
@@ -34,7 +35,8 @@ public class PlaylistDbAdapter {
             + KEY_NAME + " TEXT NOT NULL, "
             + KEY_AUTO_DOWNLOAD + " INTEGER NOT NULL DEFAULT 0, "
             + KEY_ANDROID_AUTO + " INTEGER NOT NULL DEFAULT 0, "
-            + KEY_POSITION + " INTEGER NOT NULL DEFAULT 0)";
+            + KEY_POSITION + " INTEGER NOT NULL DEFAULT 0, "
+            + KEY_DOWNLOADED_ONLY + " INTEGER NOT NULL DEFAULT 0)";
 
     private static final String CREATE_TABLE_PLAYLIST_RULES = "CREATE TABLE IF NOT EXISTS "
             + TABLE_NAME_PLAYLIST_RULES + " ("
@@ -64,6 +66,19 @@ public class PlaylistDbAdapter {
         db.execSQL(CREATE_TABLE_PLAYLISTS);
         db.execSQL(CREATE_TABLE_PLAYLIST_RULES);
         db.execSQL(CREATE_INDEX_PLAYLIST_RULES_PLAYLIST);
+        addColumnIfMissing(db, TABLE_NAME_PLAYLISTS, KEY_DOWNLOADED_ONLY, "INTEGER NOT NULL DEFAULT 0");
+    }
+
+    private static void addColumnIfMissing(SQLiteDatabase db, String table, String column, String definition) {
+        try (Cursor cursor = db.rawQuery("PRAGMA table_info(" + table + ")", null)) {
+            int nameIndex = cursor.getColumnIndexOrThrow("name");
+            while (cursor.moveToNext()) {
+                if (column.equals(cursor.getString(nameIndex))) {
+                    return;
+                }
+            }
+        }
+        db.execSQL("ALTER TABLE " + table + " ADD COLUMN " + column + " " + definition);
     }
 
     @NonNull
@@ -185,16 +200,19 @@ public class PlaylistDbAdapter {
         values.put(KEY_AUTO_DOWNLOAD, playlist.isAutoDownload() ? 1 : 0);
         values.put(KEY_ANDROID_AUTO, playlist.isShowInAndroidAuto() ? 1 : 0);
         values.put(KEY_POSITION, playlist.getPosition());
+        values.put(KEY_DOWNLOADED_ONLY, playlist.isDownloadedOnly() ? 1 : 0);
         return values;
     }
 
     private static Playlist playlistFromCursor(Cursor cursor) {
-        return new Playlist(
+        Playlist playlist = new Playlist(
                 cursor.getLong(cursor.getColumnIndexOrThrow(KEY_ID)),
                 cursor.getString(cursor.getColumnIndexOrThrow(KEY_NAME)),
                 cursor.getInt(cursor.getColumnIndexOrThrow(KEY_AUTO_DOWNLOAD)) != 0,
                 cursor.getInt(cursor.getColumnIndexOrThrow(KEY_ANDROID_AUTO)) != 0,
                 cursor.getInt(cursor.getColumnIndexOrThrow(KEY_POSITION)));
+        playlist.setDownloadedOnly(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_DOWNLOADED_ONLY)) != 0);
+        return playlist;
     }
 
     private static ContentValues ruleToValues(PlaylistRule rule) {

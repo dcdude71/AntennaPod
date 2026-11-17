@@ -34,6 +34,7 @@ public class OfficialAppExporterTest {
             db.execSQL("CREATE TABLE PlaylistRules (id INTEGER PRIMARY KEY, playlist INTEGER)");
             db.execSQL("CREATE INDEX PlaylistRules_playlist ON PlaylistRules (playlist)");
             db.execSQL("CREATE TABLE FeedAdSkip (feed INTEGER PRIMARY KEY, seconds INTEGER)");
+            db.execSQL("CREATE TABLE FeedEpisodeFilters (feed INTEGER PRIMARY KEY, include_terms TEXT)");
             db.setVersion(3110000);
         }
 
@@ -52,6 +53,7 @@ public class OfficialAppExporterTest {
             assertFalse(tables.contains("PlaylistRules"));
             assertFalse(tables.contains("PlaylistRules_playlist"));
             assertFalse(tables.contains("FeedAdSkip"));
+            assertFalse(tables.contains("FeedEpisodeFilters"));
             assertEquals(3110000, db.getVersion());
             try (Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM Feeds", null)) {
                 cursor.moveToFirst();

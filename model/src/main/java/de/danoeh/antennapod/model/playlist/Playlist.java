@@ -6,6 +6,7 @@ public class Playlist {
     private boolean autoDownload;
     private boolean showInAndroidAuto;
     private int position;
+    private boolean downloadedOnly;
 
     public Playlist(long id, String name, boolean autoDownload, boolean showInAndroidAuto, int position) {
         this.id = id;
@@ -57,5 +58,13 @@ public class Playlist {
 
     public void setPosition(int position) {
         this.position = position;
+    }
+
+    public boolean isDownloadedOnly() {
+        return downloadedOnly;
+    }
+
+    public void setDownloadedOnly(boolean downloadedOnly) {
+        this.downloadedOnly = downloadedOnly;
     }
 }

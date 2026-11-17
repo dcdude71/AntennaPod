@@ -10,16 +10,19 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import de.danoeh.antennapod.model.feed.AdvancedEpisodeFilter;
 import de.danoeh.antennapod.model.feed.Feed;
 import de.danoeh.antennapod.model.feed.FeedItem;
 import de.danoeh.antennapod.model.feed.FeedMedia;
 import de.danoeh.antennapod.model.playlist.Playlist;
 import de.danoeh.antennapod.model.playlist.PlaylistRule;
+import de.danoeh.antennapod.storage.preferences.EpisodeFilterPreferences;
 import de.danoeh.antennapod.storage.preferences.UserPreferences;
 
 import static org.junit.Assert.assertEquals;
@@ -44,6 +47,7 @@ public class PlaylistDatabaseTest {
 
     @After
     public void tearDown() {
+        setFilterStyle(EpisodeFilterPreferences.STYLE_BASIC);
         PodDBAdapter.tearDownTests();
     }
 
@@ -230,6 +234,65 @@ public class PlaylistDatabaseTest {
         }
         adapter.close();
         assertEquals(2, PlaylistReader.getDownloadedEpisodeCountInPlaylists());
+    }
+
+    @Test
+    public void testAdvancedFilterAppliesToPlaylists() throws Exception {
+        Feed feed = createFeed(6);
+        long playlistId = PlaylistWriter.createPlaylist(new Playlist("Filtered")).get();
+        PlaylistRule rule = new PlaylistRule(playlistId, feed.getId());
+        rule.setPickFrom(PlaylistRule.PickFrom.OLDEST);
+        rule.setEpisodeCount(3);
+        PlaylistWriter.addRule(rule).get();
+        EpisodeFilters.setAdvancedFilter(feed.getId(), new AdvancedEpisodeFilter(Collections.emptyList(), false,
+                List.of("Episode 1"), true, false, true, AdvancedEpisodeFilter.NO_LIMIT,
+                AdvancedEpisodeFilter.NO_LIMIT));
+
+        setFilterStyle(EpisodeFilterPreferences.STYLE_BASIC);
+        assertEquals(List.of(itemId(feed, 0), itemId(feed, 1), itemId(feed, 2)),
+                ids(PlaylistReader.getEpisodes(playlistId)));
+
+        setFilterStyle(EpisodeFilterPreferences.STYLE_ADVANCED);
+        assertEquals(List.of(itemId(feed, 0), itemId(feed, 2), itemId(feed, 3)),
+                ids(PlaylistReader.getEpisodes(playlistId)));
+    }
+
+    @Test
+    public void testDownloadedOnlyPlaylist() throws Exception {
+        Feed feed = createFeed(6);
+        Playlist playlist = new Playlist("Downloaded");
+        long playlistId = PlaylistWriter.createPlaylist(playlist).get();
+        PlaylistRule rule = new PlaylistRule(playlistId, feed.getId());
+        rule.setPickFrom(PlaylistRule.PickFrom.OLDEST);
+        rule.setEpisodeCount(3);
+        PlaylistWriter.addRule(rule).get();
+        PodDBAdapter adapter = PodDBAdapter.getInstance();
+        adapter.open();
+        for (int i : new int[]{1, 4}) {
+            FeedMedia media = feed.getItems().get(i).getMedia();
+            media.setLocalFileUrl("file-" + i);
+            media.setDownloaded(true, 1);
+            adapter.setMedia(media);
+        }
+        adapter.close();
+        assertEquals(3, PlaylistReader.getEpisodes(playlistId).size());
+
+        Playlist stored = PlaylistReader.getPlaylist(playlistId);
+        stored.setDownloadedOnly(true);
+        PlaylistWriter.updatePlaylist(stored).get();
+        assertTrue(PlaylistReader.getPlaylist(playlistId).isDownloadedOnly());
+        assertEquals(List.of(itemId(feed, 1), itemId(feed, 4)), ids(PlaylistReader.getEpisodes(playlistId)));
+    }
+
+    private void setFilterStyle(String style) {
+        Context context = RuntimeEnvironment.getApplication();
+        context.getSharedPreferences(context.getPackageName() + "_preferences", Context.MODE_PRIVATE).edit()
+                .putString(EpisodeFilterPreferences.PREF_EPISODE_FILTER_STYLE, style).commit();
+        EpisodeFilterPreferences.init(context);
+    }
+
+    private static long itemId(Feed feed, int index) {
+        return feed.getItems().get(index).getId();
     }
 
     private Feed createFeed(int numEpisodes) {

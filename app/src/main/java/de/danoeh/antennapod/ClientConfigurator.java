@@ -11,6 +11,7 @@ import de.danoeh.antennapod.net.sync.service.SynchronizationQueueImpl;
 import de.danoeh.antennapod.net.sync.serviceinterface.SynchronizationQueue;
 import de.danoeh.antennapod.storage.preferences.SynchronizationSettings;
 import de.danoeh.antennapod.storage.preferences.SynchronizationCredentials;
+import de.danoeh.antennapod.storage.preferences.EpisodeFilterPreferences;
 import de.danoeh.antennapod.storage.preferences.PlaybackPreferences;
 import de.danoeh.antennapod.storage.preferences.SleepTimerPreferences;
 import de.danoeh.antennapod.storage.preferences.UsageStatistics;
@@ -56,6 +57,7 @@ public class ClientConfigurator {
         AntennapodHttpClient.setProxyConfig(UserPreferences.getProxyConfig());
         SleepTimerPreferences.init(context);
         NotificationUtils.createChannels(context);
+        EpisodeFilterPreferences.init(context);
         PlaylistShortcuts.register(context);
         initialized = true;
     }

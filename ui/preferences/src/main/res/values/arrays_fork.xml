@@ -16,4 +16,12 @@
         <item>next_playlist</item>
         <item>stop</item>
     </string-array>
+    <string-array name="episode_filter_style_titles">
+        <item>@string/episode_filter_style_basic</item>
+        <item>@string/episode_filter_style_advanced</item>
+    </string-array>
+    <string-array name="episode_filter_style_values" translatable="false">
+        <item>basic</item>
+        <item>advanced</item>
+    </string-array>
 </resources>
