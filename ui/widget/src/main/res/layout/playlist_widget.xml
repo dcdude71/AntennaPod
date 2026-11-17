@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/playlist_widget_background"
-    android:padding="6dp">
+    android:padding="4dp">
 
     <LinearLayout
         android:id="@+id/playlistWidgetTiles"

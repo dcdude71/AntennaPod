@@ -4,27 +4,27 @@
     android:id="@+id/playlistWidgetTile"
     android:layout_width="0dp"
     android:layout_height="match_parent"
-    android:layout_margin="3dp"
+    android:layout_margin="2dp"
     android:layout_weight="1"
     android:background="@drawable/playlist_widget_tile"
     android:gravity="center_vertical"
     android:orientation="vertical"
     android:paddingHorizontal="8dp"
-    android:paddingVertical="6dp">
+    android:paddingVertical="4dp">
 
     <ImageView
-        android:layout_width="28dp"
-        android:layout_height="28dp"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
         android:background="@drawable/playlist_widget_button"
         android:importantForAccessibility="no"
-        android:padding="6dp"
+        android:padding="5dp"
         android:src="@drawable/ic_playlist_widget_play" />
 
     <TextView
         android:id="@+id/playlistWidgetName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="2dp"
         android:ellipsize="end"
         android:singleLine="true"
         android:textColor="@color/playlist_widget_on_tile"

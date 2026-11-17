@@ -44,7 +44,7 @@ public class PlaylistWidget extends AppWidgetProvider {
     private static final String KEY_PLAYLISTS = "playlists_";
     private static final String PLAYLISTS_FRAGMENT = "PlaylistsFragment";
     private static final int MIN_COMPACT_TILE_WIDTH_DP = 80;
-    private static final int MIN_COMPACT_HEIGHT_DP = 80;
+    private static final int MIN_COMPACT_HEIGHT_DP = 76;
     private static final int MIN_WIDE_TILE_WIDTH_DP = 140;
     private static final int MIN_WIDE_HEIGHT_DP = 56;
     private static final long REFRESH_DELAY_MS = 500;
