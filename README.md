@@ -101,12 +101,12 @@ On a wide screen (an unfolded Pixel Fold or Galaxy Z Fold, a tablet, or a phone 
 Tip: if auto-downloaded episodes from your podcasts land in the queue and you would rather they didn't, turn off Settings → Playback → **Enqueue downloaded** (a standard AntennaPod setting).
 
 ### Installs next to the official app
-The fork uses its own package name (`io.github.dcdude71.antennapodmix`) and shows up as "AntennaPod Mix", so it can be installed alongside the official AntennaPod. The two apps do not share data. To try the fork with your podcasts, use "Database export" in AntennaPod (Settings → Backup & restore), then "Database import" in the fork.
+The fork uses its own package name (`io.github.dcdude71.antennapodmix`) and shows up as "AntennaPod Mix", with a purple icon and a "MIX" label (visible with themed icons too), so it can be installed alongside the official AntennaPod and told apart at a glance. The two apps do not share data. To try the fork with your podcasts, use "Database export" in AntennaPod (Settings → Backup & restore), then "Database import" in the fork.
 
 ### Backups and switching back to AntennaPod
 In Settings → Backup & restore:
 
-- **Database export** is your regular backup. It includes your playlists and skip-ad times, and restores everything in AntennaPod Mix.
+- **Database export** is your regular backup. It includes your playlists, skip-ad times and advanced episode filters, and restores everything in AntennaPod Mix.
 - **Export for official AntennaPod** makes the same backup without the fork's additions (playlists, playlist rules, skip-ad times, advanced episode filters), for switching back to the official app. Import it there with "Database import"; your subscriptions, played episodes, queue and settings carry over.
 
 One caveat: AntennaPod Mix follows AntennaPod's development version. If AntennaPod changes its database format there, Mix can get ahead of the official release for a while, and the official app will refuse to import a backup from a newer version until it is updated too.
@@ -130,7 +130,7 @@ If you need something dependable, the official AntennaPod is the way to go. Than
 
 ## Privacy
 
-AntennaPod Mix collects no data and sends nothing to its developer. Like AntennaPod, it only connects to the podcast feeds you subscribe to and to services you choose to use (such as podcast search or synchronization). The fork's added features (playlists, Android Auto, Skip ad, the foldable layouts) work entirely on your device. For the official app's policy, see [antennapod.org/privacy](https://antennapod.org/privacy/).
+AntennaPod Mix collects no data and sends nothing to its developer. Like AntennaPod, it only connects to the podcast feeds you subscribe to and to services you choose to use (such as podcast search or synchronization). The fork's added features (playlists, widgets and shortcuts, Android Auto, Skip ad, the advanced episode filter, the foldable layouts) work entirely on your device. For the official app's policy, see [antennapod.org/privacy](https://antennapod.org/privacy/).
 
 ## Credits
 
