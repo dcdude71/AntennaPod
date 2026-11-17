@@ -636,6 +636,11 @@
     <!-- About screen -->
     <string name="about_pref">About</string>
     <string name="antennapod_version">AntennaPod version</string>
+    <string name="fork_version">AntennaPod Mix version</string>
+    <string name="fork_source_code">Source code</string>
+    <string name="fork_notice_title">AntennaPod Mix</string>
+    <string name="fork_notice_summary">A modified version of AntennaPod, licensed under the GNU General Public License v3. Source code: github.com/dcdude71/AntennaPod</string>
+    <string name="fork_report_bug_message">Sorry to hear something isn’t working. This is AntennaPod Mix, a modified version of AntennaPod, so please report problems on its GitHub page, not to the AntennaPod team. Check there first in case the issue has already been reported.</string>
     <string name="contributors">Contributors</string>
     <string name="contributors_summary">Everyone can help to make AntennaPod better - with code, translations or by helping users in our forum</string>
     <string name="developers">Developers</string>

@@ -32,6 +32,7 @@ public class AboutFragment extends AnimatedPreferenceFragment {
             versionName += "f";
         }
 
+        findPreference("about_version").setTitle(R.string.fork_version);
         findPreference("about_version").setSummary(String.format(
                 "%s (%s)", versionName, BuildConfig.COMMIT_HASH));
         findPreference("about_version").setOnPreferenceClickListener((preference) -> {
@@ -51,7 +52,11 @@ public class AboutFragment extends AnimatedPreferenceFragment {
             return true;
         });
         findPreference("about_privacy_policy").setOnPreferenceClickListener((preference) -> {
-            IntentUtils.openInBrowser(getContext(), "https://antennapod.org/privacy/");
+            IntentUtils.openInBrowser(getContext(), ForkInfo.PRIVACY_URL);
+            return true;
+        });
+        findPreference("about_source_code").setOnPreferenceClickListener((preference) -> {
+            IntentUtils.openInBrowser(getContext(), ForkInfo.REPOSITORY_URL);
             return true;
         });
         findPreference("about_licenses").setOnPreferenceClickListener((preference) -> {

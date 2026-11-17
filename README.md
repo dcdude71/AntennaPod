@@ -99,6 +99,10 @@ This is mainly a personal project, maintained in my spare time and shaped by how
 
 If you need something dependable, the official AntennaPod is the way to go. Thank you for understanding!
 
+## Privacy
+
+AntennaPod Mix collects no data and sends nothing to its developer. Like AntennaPod, it only connects to the podcast feeds you subscribe to and to services you choose to use (such as podcast search or synchronization). The fork's added features (playlists, Android Auto, Skip ad, the foldable layouts) work entirely on your device. For the official app's policy, see [antennapod.org/privacy](https://antennapod.org/privacy/).
+
 ## Credits
 
 All the hard work behind this app comes from the [AntennaPod](https://github.com/AntennaPod/AntennaPod) team, its contributors and translators. This fork only adds a few things on top. If you enjoy the app, consider supporting the original project at [antennapod.org](https://antennapod.org/).

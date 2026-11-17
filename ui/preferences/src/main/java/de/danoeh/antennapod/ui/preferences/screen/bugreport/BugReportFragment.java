@@ -32,6 +32,7 @@ import de.danoeh.antennapod.ui.common.AnimatedFragment;
 import de.danoeh.antennapod.ui.common.ClipboardUtils;
 import de.danoeh.antennapod.ui.common.IntentUtils;
 import de.danoeh.antennapod.ui.preferences.R;
+import de.danoeh.antennapod.ui.preferences.screen.about.ForkInfo;
 import de.danoeh.antennapod.ui.preferences.databinding.BugReportFragmentBinding;
 
 /**
@@ -86,10 +87,10 @@ public class BugReportFragment extends AnimatedFragment {
                     break;
             }
         });
-        viewBinding.openForumButton.setOnClickListener(v ->
-                IntentUtils.openInBrowser(requireContext(), "https://forum.antennapod.org/search"));
+        viewBinding.userMessageLabel.setText(R.string.fork_report_bug_message);
+        viewBinding.openForumButton.setVisibility(View.GONE);
         viewBinding.openGithubButton.setOnClickListener(v ->
-                IntentUtils.openInBrowser(requireContext(), "https://github.com/AntennaPod/AntennaPod/issues"));
+                IntentUtils.openInBrowser(requireContext(), ForkInfo.ISSUES_URL));
         viewBinding.attribAppVersionLabel.setOnClickListener(v ->
                 ClipboardUtils.copyText((TextView) v, R.string.report_bug_attrib_app_version));
         viewBinding.attribAndroidVersionLabel.setOnClickListener(v ->
