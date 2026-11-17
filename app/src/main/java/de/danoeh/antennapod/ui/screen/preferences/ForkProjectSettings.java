@@ -23,12 +23,23 @@ final class ForkProjectSettings {
         notice.setIcon(R.drawable.ic_info);
         notice.setTitle(R.string.fork_notice_title);
         notice.setSummary(R.string.fork_notice_summary);
-        notice.setOrder(-1);
+        notice.setOrder(-2);
         notice.setOnPreferenceClickListener(preference -> {
             IntentUtils.openInBrowser(fragment.requireContext(), ForkInfo.REPOSITORY_URL);
             return true;
         });
         project.addPreference(notice);
+
+        Preference guide = new Preference(fragment.requireContext());
+        guide.setIcon(R.drawable.ic_questionmark);
+        guide.setTitle(R.string.fork_guide_title);
+        guide.setSummary(R.string.fork_guide_summary);
+        guide.setOrder(-1);
+        guide.setOnPreferenceClickListener(preference -> {
+            IntentUtils.openInBrowser(fragment.requireContext(), ForkInfo.GUIDE_URL);
+            return true;
+        });
+        project.addPreference(guide);
 
         Preference forum = fragment.findPreference(forumKey);
         if (forum != null) {

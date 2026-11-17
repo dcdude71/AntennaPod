@@ -12,104 +12,15 @@ AntennaPod Mix is a personal fork of [AntennaPod](https://github.com/AntennaPod/
 
 ## What's different in this fork
 
-### Rule-based playlists
-Next to the regular queue, you can create any number of playlists. A playlist is built from rules, one per podcast:
+- **[Rule-based playlists](docs/playlists.md):** next to the regular queue, create playlists from rules, one per podcast: how many episodes, the most recent or the oldest unplayed, play order and priority. They update themselves as episodes come in and as you listen, can download their episodes automatically, can stick to downloaded episodes only, and show up in Android Auto.
+- **[Playlists on your home screen](docs/home-screen.md):** a 4×1 widget that starts one of four playlists with one tap, playlist icons, and playlists in the app's long-press shortcuts.
+- **[Advanced episode filter](docs/episode-filter.md):** include and skip words together, search titles and descriptions, whole words, a length range, with a live preview. Playlists respect the filter.
+- **[Skip ad button and a modern player](docs/player.md):** a per-podcast "Skip ad" button and a redesigned full-screen player (the classic one is one setting away).
+- **[Made for foldables and big screens](docs/foldables.md):** two-pane layouts for playlists and episode details, show notes beside the player, and tabletop mode.
+- **[Backups that work both ways](docs/backups.md):** the regular backup includes everything Mix adds, and a separate export lets you go back to the official app.
+- **Installs next to the official app:** its own package name (`io.github.dcdude71.antennapodmix`) and a purple icon with a "MIX" label, so you can run both and tell them apart. The two apps do not share data.
 
-- **How many episodes:** all unplayed episodes, or a limit (for example 3)
-- **Which ones:** the most recent episodes, or the oldest unplayed ones
-- **Play order:** oldest first or newest first
-- **Priority (1-10):** priority 1 podcasts play first, then priority 2, and so on. Podcasts with the same priority follow the order of the rules, which you can change by dragging.
-
-The playlist updates itself as new episodes come in and as you listen.
-
-Example: a "Morning" playlist with the 2 most recent episodes of a news podcast (priority 1), then the next unplayed episode of a series you are catching up on (priority 2).
-
-#### How to use playlists
-1. Open the **Playlists** tab and tap **+** to create a playlist.
-2. Tap the playlist, then the **pencil** (Edit rules) and **Add podcast**. Choose how many episodes, which ones, the play order and the priority. Swipe a rule away to remove it, or drag it to reorder.
-3. Back on the playlist, press the **play** button at the top to play it from the start. To play everything, press **play** at the top of the Playlists tab: it starts with your first playlist that has episodes.
-
-Playlists play from the top only. To hear one particular episode, open its podcast and play it from there (that uses the normal queue).
-
-When an episode ends, the next one comes from the playlist, never from your queue, and playing from a playlist never adds episodes to the queue. Starting an episode from anywhere else (the queue, the inbox, a podcast page) takes you back to the normal queue.
-
-When a playlist runs out, the app moves on to the next playlist in the order of your Playlists tab, skipping empty ones. You can change this in Settings → Playback → **At the end of a playlist**:
-
-- **Continue with the next playlist** (default)
-- **Stop**
-
-Either way, playback never falls back to the queue.
-
-#### Automatic downloads for playlists
-In a playlist's menu (⋮), turn on **Auto-download episodes** to keep its episodes downloaded, following your usual download settings (Wi-Fi only, battery, and so on). These downloads:
-
-- are not added to the queue,
-- are kept when the app cleans up downloads to make room,
-- do not count toward the episode limit in Settings → Downloads → Automatic download. That limit is left entirely to your podcasts' own automatic downloads.
-
-To keep a playlist from filling your storage, every rule in a playlist with auto-download needs a number of episodes, up to 10 per podcast. "All unplayed episodes" is not available there. If a playlist already uses it, the app asks you to edit its rules before turning on auto-download.
-
-The fork also fixes a problem where automatic downloads could stop altogether once more episodes were downloaded than the episode limit allows.
-
-#### Playlists in Android Auto
-In a playlist's menu (⋮), **Show in Android Auto** adds it to a **Playlists** folder in Android Auto, right after "Continue listening". It is on for new playlists; playlists created before this version start with it off. Starting an episode from that folder plays the playlist, just like on the phone.
-
-#### Playlists on your home screen
-- **Playlists widget (4×1):** add it from your launcher's widget list, then pick up to four playlists and drag them into order. Tap a tile to start that playlist from the top; the playing one turns into a pause button. It squeezes four compact tiles onto a narrow screen and uses wider tiles when there is room. Long-press the widget and choose its settings to change the playlists.
-- **One playlist as an icon:** in a playlist, open the menu (⋮) and choose **Add to home screen**. Tapping the icon starts the playlist without opening the app.
-- **Long-press the app icon** to start one of your first playlists directly. Most launchers only show four shortcuts, and AntennaPod's own Queue and Episodes shortcuts come first, so you will see your first two playlists.
-
-### Advanced episode filter
-AntennaPod's own episode filter (in a podcast's settings) looks at titles only and lets you pick either words to include or words to exclude. AntennaPod Mix adds an advanced filter. Turn it on in Settings → Downloads → Automatic download → **Episode filter style → Advanced**. A podcast's **Episode filter** then opens a full screen where you can:
-
-- use words to include **and** words to skip at the same time (skipping wins);
-- require any or all of the include words;
-- look in titles, descriptions or both;
-- match whole words only, so "war" does not match "award";
-- set a minimum and a maximum length.
-
-A live preview shows which of the last 50 episodes match, and why. Both filters are kept, so you can switch between Basic and Advanced at any time. The advanced filter starts from the podcast's basic words. The filter decides what downloads automatically, and playlists only pick episodes that pass it, in both modes.
-
-### Playlists with only downloaded episodes
-In a playlist's menu (⋮), **Only downloaded episodes** makes its rules pick only from episodes that are already downloaded. Combined with a podcast's episode filter (which decides what gets downloaded), this gives you a playlist of exactly the episodes you want.
-
-### Skip ad button
-Many podcasts play ads of about the same length. In a podcast's settings, set an "Ad skip time" (for example 30 seconds). The player then shows a "Skip ad" button for that podcast that jumps ahead by that amount, separate from the regular fast-forward button.
-
-### A modern player
-The full-screen player has a new look: smaller artwork, a bold episode title, and large, well-spaced controls (rewind, play, fast-forward) with speed, sleep timer, next episode and shownotes in a labeled row below. Prefer the original? Switch back any time in Settings → User interface → Player style → Classic.
-
-### Made for foldables and big screens
-On a wide screen (an unfolded Pixel Fold or Galaxy Z Fold, a tablet, or a phone in landscape), the app uses the extra room. Everything rearranges itself as you fold and unfold, and you stay where you were.
-
-- **Player:** with the modern player, the show notes sit next to the artwork and controls instead of behind the Shownotes button.
-- **Tabletop mode:** half-fold the phone on a table (held sideways) and the player puts the artwork on the top half and big controls on the bottom half.
-- **Playlists:** your playlists on the left, the selected playlist's episodes on the right. Tap the pencil to edit: the rules move to the left and a live preview on the right updates as you change them (newly added episodes are briefly highlighted). On a narrow screen, the rules screen shows how many episodes the playlist currently has.
-- **Episode details beside the list:** tapping an episode anywhere (Inbox, Queue, Episodes, Downloads, Home, a podcast's page) opens its details on the right while the list stays on the left. Close them with ✕ or Back. Fold the phone and the episode goes full screen.
-
-### Settings added by this fork
-| Setting | Where | Options |
-|---|---|---|
-| At the end of a playlist | Settings → Playback | Continue with the next playlist (default) · Stop |
-| Player style | Settings → User interface | Modern (default) · Classic |
-| Ad skip time | A podcast's settings | Number of seconds, 0 to hide the button |
-| Episode filter style | Settings → Downloads → Automatic download | Basic (default) · Advanced |
-| Auto-download episodes | A playlist's menu (⋮) | On · Off |
-| Only downloaded episodes | A playlist's menu (⋮) | On · Off (default) |
-| Show in Android Auto | A playlist's menu (⋮) | On (default for new playlists) · Off |
-
-Tip: if auto-downloaded episodes from your podcasts land in the queue and you would rather they didn't, turn off Settings → Playback → **Enqueue downloaded** (a standard AntennaPod setting).
-
-### Installs next to the official app
-The fork uses its own package name (`io.github.dcdude71.antennapodmix`) and shows up as "AntennaPod Mix", with a purple icon and a "MIX" label (visible with themed icons too), so it can be installed alongside the official AntennaPod and told apart at a glance. The two apps do not share data. To try the fork with your podcasts, use "Database export" in AntennaPod (Settings → Backup & restore), then "Database import" in the fork.
-
-### Backups and switching back to AntennaPod
-In Settings → Backup & restore:
-
-- **Database export** is your regular backup. It includes your playlists, skip-ad times and advanced episode filters, and restores everything in AntennaPod Mix.
-- **Export for official AntennaPod** makes the same backup without the fork's additions (playlists, playlist rules, skip-ad times, advanced episode filters), for switching back to the official app. Import it there with "Database import"; your subscriptions, played episodes, queue and settings carry over.
-
-One caveat: AntennaPod Mix follows AntennaPod's development version. If AntennaPod changes its database format there, Mix can get ahead of the official release for a while, and the official app will refuse to import a backup from a newer version until it is updated too.
+**New here? Start with the [AntennaPod Mix guide](docs/README.md)** (also in the app: Settings → AntennaPod Mix guide) and the [FAQ](docs/faq.md).
 
 ## Installing
 
