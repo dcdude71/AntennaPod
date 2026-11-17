@@ -33,6 +33,7 @@ import de.danoeh.antennapod.model.feed.FeedItemFilter;
 import de.danoeh.antennapod.model.feed.SortOrder;
 import de.danoeh.antennapod.storage.importexport.AutomaticDatabaseExportWorker;
 import de.danoeh.antennapod.storage.importexport.DatabaseExporter;
+import de.danoeh.antennapod.storage.importexport.OfficialAppExporter;
 import de.danoeh.antennapod.storage.importexport.FavoritesWriter;
 import de.danoeh.antennapod.storage.importexport.HtmlWriter;
 import de.danoeh.antennapod.storage.importexport.OpmlWriter;
@@ -62,6 +63,8 @@ public class ImportExportPreferencesFragment extends AnimatedPreferenceFragment 
     private static final String PREF_HTML_EXPORT = "prefHtmlExport";
     private static final String PREF_DATABASE_IMPORT = "prefDatabaseImport";
     private static final String PREF_DATABASE_EXPORT = "prefDatabaseExport";
+    private static final String PREF_OFFICIAL_APP_EXPORT = "prefOfficialAppExport";
+    private static final String OFFICIAL_APP_EXPORT_FILENAME = "AntennaPodBackup-official-%s.db";
     private static final String PREF_AUTOMATIC_DATABASE_EXPORT = "prefAutomaticDatabaseExport";
     private static final String PREF_FAVORITE_EXPORT = "prefFavoritesExport";
     private static final String DEFAULT_OPML_OUTPUT_NAME = "antennapod-feeds-%s.opml";
@@ -84,6 +87,8 @@ public class ImportExportPreferencesFragment extends AnimatedPreferenceFragment 
             registerForActivityResult(new StartActivityForResult(), this::restoreDatabaseResult);
     private final ActivityResultLauncher<String> backupDatabaseLauncher =
             registerForActivityResult(new BackupDatabase(), this::backupDatabaseResult);
+    private final ActivityResultLauncher<String> officialAppExportLauncher =
+            registerForActivityResult(new BackupDatabase(), this::officialAppExportResult);
     private final ActivityResultLauncher<String> chooseOpmlImportPathLauncher =
             registerForActivityResult(new GetContent(), uri -> {
                 if (uri != null) {
@@ -152,6 +157,17 @@ public class ImportExportPreferencesFragment extends AnimatedPreferenceFragment 
                 preference -> {
                     try {
                         backupDatabaseLauncher.launch(dateStampFilename(DATABASE_EXPORT_FILENAME));
+                    } catch (ActivityNotFoundException e) {
+                        Snackbar.make(getView(), R.string.unable_to_start_system_file_manager, Snackbar.LENGTH_LONG)
+                                .show();
+                    }
+                    return true;
+                });
+        findPreference(PREF_DATABASE_EXPORT).setSummary(R.string.fork_database_export_summary);
+        findPreference(PREF_OFFICIAL_APP_EXPORT).setOnPreferenceClickListener(
+                preference -> {
+                    try {
+                        officialAppExportLauncher.launch(dateStampFilename(OFFICIAL_APP_EXPORT_FILENAME));
                     } catch (ActivityNotFoundException e) {
                         Snackbar.make(getView(), R.string.unable_to_start_system_file_manager, Snackbar.LENGTH_LONG)
                                 .show();
@@ -266,6 +282,20 @@ public class ImportExportPreferencesFragment extends AnimatedPreferenceFragment 
                     showDatabaseImportSuccessDialog();
                     progressDialog.dismiss();
                 }, this::showImportErrorDialog);
+    }
+
+    private void officialAppExportResult(final Uri uri) {
+        if (uri == null) {
+            return;
+        }
+        progressDialog.show();
+        disposable = Completable.fromAction(() -> OfficialAppExporter.exportToDocument(uri, getContext()))
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(() -> {
+                    showExportSuccessSnackbar(uri, "application/x-sqlite3");
+                    progressDialog.dismiss();
+                }, this::showExportErrorDialog);
     }
 
     private void backupDatabaseResult(final Uri uri) {

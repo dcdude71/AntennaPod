@@ -687,6 +687,9 @@
     <string name="opml_export_label">OPML export</string>
     <string name="html_export_label">HTML export</string>
     <string name="database_export_label">Database export</string>
+    <string name="fork_database_export_summary">Back up subscriptions, listened episodes, queue and playlists, to restore in AntennaPod Mix</string>
+    <string name="fork_official_export_label">Export for official AntennaPod</string>
+    <string name="fork_official_export_summary">Backup for switching back to the official app. Playlists and skip-ad times are not included</string>
     <string name="automatic_database_export_label">Automatic database export</string>
     <string name="automatic_database_export_summary">Create a backup of the AntennaPod database every 3 days. Only keep the 5 most recent backups.</string>
     <string name="automatic_database_export_error">Error during automatic database backup</string>

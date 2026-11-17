@@ -82,6 +82,14 @@ Tip: if auto-downloaded episodes from your podcasts land in the queue and you wo
 ### Installs next to the official app
 The fork uses its own package name (`io.github.dcdude71.antennapodmix`) and shows up as "AntennaPod Mix", so it can be installed alongside the official AntennaPod. The two apps do not share data. To try the fork with your podcasts, use "Database export" in AntennaPod (Settings → Backup & restore), then "Database import" in the fork.
 
+### Backups and switching back to AntennaPod
+In Settings → Backup & restore:
+
+- **Database export** is your regular backup. It includes your playlists and skip-ad times, and restores everything in AntennaPod Mix.
+- **Export for official AntennaPod** makes the same backup without the fork's additions (playlists, playlist rules, skip-ad times), for switching back to the official app. Import it there with "Database import"; your subscriptions, played episodes, queue and settings carry over.
+
+One caveat: AntennaPod Mix follows AntennaPod's development version. If AntennaPod changes its database format there, Mix can get ahead of the official release for a while, and the official app will refuse to import a backup from a newer version until it is updated too.
+
 ## Installing
 
 Signed APKs are published on the [Releases page](https://github.com/dcdude71/AntennaPod/releases). The easiest way to install and stay up to date is [Obtainium](https://github.com/ImranR98/Obtainium): add `https://github.com/dcdude71/AntennaPod` as an app source.
