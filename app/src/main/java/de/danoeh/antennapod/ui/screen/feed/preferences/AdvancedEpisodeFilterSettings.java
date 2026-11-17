@@ -6,6 +6,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.preference.Preference;
@@ -45,24 +46,34 @@ public final class AdvancedEpisodeFilterSettings {
             }
             return basicListener == null || basicListener.onPreferenceClick(p);
         });
+        Runnable refresh = () -> updateSummary(fragment, preference, feed, basicSummary);
+        refresh.run();
+        FragmentManager fragmentManager = fragment.getParentFragmentManager();
+        FragmentManager.OnBackStackChangedListener listener = refresh::run;
+        fragmentManager.addOnBackStackChangedListener(listener);
         fragment.getLifecycle().addObserver(new DefaultLifecycleObserver() {
             @Override
-            public void onResume(@NonNull LifecycleOwner owner) {
-                if (!EpisodeFilterPreferences.isAdvanced()) {
-                    preference.setSummary(basicSummary);
-                    return;
-                }
-                Context context = fragment.getContext();
-                if (context == null) {
-                    return;
-                }
-                Single.fromCallable(() -> EpisodeFilters.getAdvancedFilterOrBasic(feed))
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(filter -> preference.setSummary(summarize(context, filter)),
-                                error -> Log.e(TAG, Log.getStackTraceString(error)));
+            public void onDestroy(@NonNull LifecycleOwner owner) {
+                fragmentManager.removeOnBackStackChangedListener(listener);
             }
         });
+    }
+
+    private static void updateSummary(@NonNull PreferenceFragmentCompat fragment, @NonNull Preference preference,
+                                      @NonNull Feed feed, @Nullable CharSequence basicSummary) {
+        if (!EpisodeFilterPreferences.isAdvanced()) {
+            preference.setSummary(basicSummary);
+            return;
+        }
+        Context context = fragment.getContext();
+        if (context == null) {
+            return;
+        }
+        Single.fromCallable(() -> EpisodeFilters.getAdvancedFilterOrBasic(feed))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(filter -> preference.setSummary(summarize(context, filter)),
+                        error -> Log.e(TAG, Log.getStackTraceString(error)));
     }
 
     @NonNull

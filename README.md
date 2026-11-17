@@ -59,6 +59,20 @@ In a playlist's menu (⋮), **Show in Android Auto** adds it to a **Playlists** 
 - **One playlist as an icon:** in a playlist, open the menu (⋮) and choose **Add to home screen**. Tapping the icon starts the playlist without opening the app.
 - **Long-press the app icon** to start one of your first playlists directly. Most launchers only show four shortcuts, and AntennaPod's own Queue and Episodes shortcuts come first, so you will see your first two playlists.
 
+### Advanced episode filter
+AntennaPod's own episode filter (in a podcast's settings) looks at titles only and lets you pick either words to include or words to exclude. AntennaPod Mix adds an advanced filter. Turn it on in Settings → Downloads → Automatic download → **Episode filter style → Advanced**. A podcast's **Episode filter** then opens a full screen where you can:
+
+- use words to include **and** words to skip at the same time (skipping wins);
+- require any or all of the include words;
+- look in titles, descriptions or both;
+- match whole words only, so "war" does not match "award";
+- set a minimum and a maximum length.
+
+A live preview shows which of the last 50 episodes match, and why. Both filters are kept, so you can switch between Basic and Advanced at any time. The advanced filter starts from the podcast's basic words. The filter decides what downloads automatically, and playlists only pick episodes that pass it, in both modes.
+
+### Playlists with only downloaded episodes
+In a playlist's menu (⋮), **Only downloaded episodes** makes its rules pick only from episodes that are already downloaded. Combined with a podcast's episode filter (which decides what gets downloaded), this gives you a playlist of exactly the episodes you want.
+
 ### Skip ad button
 Many podcasts play ads of about the same length. In a podcast's settings, set an "Ad skip time" (for example 30 seconds). The player then shows a "Skip ad" button for that podcast that jumps ahead by that amount, separate from the regular fast-forward button.
 
@@ -79,7 +93,9 @@ On a wide screen (an unfolded Pixel Fold or Galaxy Z Fold, a tablet, or a phone 
 | At the end of a playlist | Settings → Playback | Continue with the next playlist (default) · Stop |
 | Player style | Settings → User interface | Modern (default) · Classic |
 | Ad skip time | A podcast's settings | Number of seconds, 0 to hide the button |
+| Episode filter style | Settings → Downloads → Automatic download | Basic (default) · Advanced |
 | Auto-download episodes | A playlist's menu (⋮) | On · Off |
+| Only downloaded episodes | A playlist's menu (⋮) | On · Off (default) |
 | Show in Android Auto | A playlist's menu (⋮) | On (default for new playlists) · Off |
 
 Tip: if auto-downloaded episodes from your podcasts land in the queue and you would rather they didn't, turn off Settings → Playback → **Enqueue downloaded** (a standard AntennaPod setting).
@@ -91,7 +107,7 @@ The fork uses its own package name (`io.github.dcdude71.antennapodmix`) and show
 In Settings → Backup & restore:
 
 - **Database export** is your regular backup. It includes your playlists and skip-ad times, and restores everything in AntennaPod Mix.
-- **Export for official AntennaPod** makes the same backup without the fork's additions (playlists, playlist rules, skip-ad times), for switching back to the official app. Import it there with "Database import"; your subscriptions, played episodes, queue and settings carry over.
+- **Export for official AntennaPod** makes the same backup without the fork's additions (playlists, playlist rules, skip-ad times, advanced episode filters), for switching back to the official app. Import it there with "Database import"; your subscriptions, played episodes, queue and settings carry over.
 
 One caveat: AntennaPod Mix follows AntennaPod's development version. If AntennaPod changes its database format there, Mix can get ahead of the official release for a while, and the official app will refuse to import a backup from a newer version until it is updated too.
 

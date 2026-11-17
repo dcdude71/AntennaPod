@@ -270,6 +270,9 @@ public class PlaylistEpisodesFragment extends EpisodesListFragment {
             toolbar.getMenu().findItem(R.id.playlist_auto_download).setChecked(current.isAutoDownload());
             toolbar.getMenu().findItem(R.id.playlist_android_auto).setChecked(current.isShowInAndroidAuto());
             toolbar.getMenu().findItem(R.id.playlist_downloaded_only).setChecked(current.isDownloadedOnly());
+            emptyView.setMessage(current.isDownloadedOnly()
+                    ? R.string.playlist_episodes_empty_downloaded_message
+                    : R.string.playlist_episodes_empty_message);
         }
     }
 

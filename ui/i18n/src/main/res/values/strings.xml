@@ -1214,4 +1214,5 @@
     <string name="advanced_filter_summary_max">at most %1$d min</string>
     <string name="advanced_filter_no_field">Pick title, description or both.</string>
     <string name="playlist_downloaded_only">Only downloaded episodes</string>
+    <string name="playlist_episodes_empty_downloaded_message">None of this playlist\'s downloaded episodes are left to play. Turn off \"Only downloaded episodes\" in the menu to see all of them.</string>
 </resources>
