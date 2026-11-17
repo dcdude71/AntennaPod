@@ -1,6 +1,6 @@
 # Foldables and big screens
 
-On a wide screen (an unfolded Pixel Fold or Galaxy Z Fold, a tablet, or a phone in landscape), AntennaPod Mix uses the extra room. Everything rearranges itself as you fold and unfold, and you stay where you were.
+On a wide screen (an unfolded Pixel Fold or Galaxy Z Fold, a tablet, or a phone in landscape), Castlist uses the extra room. Everything rearranges itself as you fold and unfold, and you stay where you were.
 
 ## Player
 

@@ -3,12 +3,12 @@
 Handoff notes for working on this fork (on any machine, with or without Claude Code). Upstream `AGENTS.md` still applies.
 
 ## Repo setup
-- Fork: `dcdude71/AntennaPod` (`origin`). Upstream: `AntennaPod/AntennaPod` (add it as `upstream`).
+- Fork: `dcdude71/Castlist` (`origin`, renamed from `dcdude71/AntennaPod` in v0.9.3). Upstream: `AntennaPod/AntennaPod` (add it as `upstream`).
 - All fork work is on `develop`, rebased on upstream `develop`. The old `fork-setup` and `playlists` branches are gone; their commits are on `develop`.
-- App name: "AntennaPod Mix" (debug: "AntennaPod Mix Debug"), set in `app/build.gradle`. Release APKs are named `AntennaPod-Mix-<tag>.apk`.
-- Application id: `io.github.dcdude71.antennapodmix`, so it installs next to the official app.
+- App name: "Castlist" (debug: "Castlist Debug"), set in `app/build.gradle`. It was "AntennaPod Mix" up to v0.9.2. Release APKs are named `Castlist-<tag>.apk`.
+- Application id: `io.github.dcdude71.castlist` (was `io.github.dcdude71.antennapodmix` up to v0.9.2), so it installs next to the official app. Icon sources: `art/castlist-icon/`.
 - Releases: push a `v*` tag and `.github/workflows/fork-release.yml` builds and signs the APK. The keystore and passwords are GitHub secrets (`KEYSTORE_BASE64`, `KEYSTORE_PASSWORD`, `KEY_ALIAS`, `KEY_PASSWORD`), so nothing needs to be copied between machines. A tag with a dash (`v0.7.0-beta.1`) is published as a GitHub pre-release; Obtainium users get it only with "Include prereleases" on.
-- If a tag push doesn't start the release build (happened with v0.7.1, published from a local build), push the tag anyway, then start it by hand: GitHub → Actions → Fork Release → Run workflow, entering the tag. Or from the command line: `gh workflow run fork-release.yml -R dcdude71/AntennaPod -f tag=v0.7.2`. A local build needs `-PforkVersionName` and the signing properties, exactly as in the workflow.
+- If a tag push doesn't start the release build (happened with v0.7.1, published from a local build), push the tag anyway, then start it by hand: GitHub → Actions → Fork Release → Run workflow, entering the tag. Or from the command line: `gh workflow run fork-release.yml -R dcdude71/Castlist -f tag=v0.7.2`. A local build needs `-PforkVersionName` and the signing properties, exactly as in the workflow.
 - `local.properties` and `.idea/` are machine-specific and not committed.
 - Upstream's `Checks` and `Copilot Setup Steps` workflows are disabled on the fork (GitHub → Actions; their emulator tests expect upstream's UI). Before a release, run `./gradlew checkstyle lint` plus the module tests locally, and upstream's XML formatter on layouts: `find . -wholename "*/res/layout/*.xml" | xargs java -jar android-xml-formatter.jar` (1.1.0, from github.com/ByteHamster/android-xml-formatter); it must leave no diff.
 - Commit as `dcdude71 <dcdude71@users.noreply.github.com>` (set with `git config user.name/user.email` in this repo), never under a real name.
@@ -44,8 +44,8 @@ Phases:
 Inspired by Downcast's playlist engine.
 
 ## Testing on a device
-- Debug build: `./gradlew --console=plain :app:installPlayDebug`, then `adb shell monkey -p io.github.dcdude71.antennapodmix.debug -c android.intent.category.LAUNCHER 1` (AGENTS.md's launch command uses the upstream package name and does not work here).
-- The debug app is separate from the release app. Import a database export to test with real podcasts. Downloaded files from the release app are not readable by the debug app, so reset `FeedMedia.downloaded`/`file_url` in the imported copy (`adb exec-out run-as io.github.dcdude71.antennapodmix.debug cat databases/Antennapod.db`, edit with sqlite3, push back with `run-as ... sh -c 'cat > databases/Antennapod.db'` while the app is force-stopped).
+- Debug build: `./gradlew --console=plain :app:installPlayDebug`, then `adb shell monkey -p io.github.dcdude71.castlist.debug -c android.intent.category.LAUNCHER 1` (AGENTS.md's launch command uses the upstream package name and does not work here).
+- The debug app is separate from the release app. Import a database export to test with real podcasts. Downloaded files from the release app are not readable by the debug app, so reset `FeedMedia.downloaded`/`file_url` in the imported copy (`adb exec-out run-as io.github.dcdude71.castlist.debug cat databases/Antennapod.db`, edit with sqlite3, push back with `run-as ... sh -c 'cat > databases/Antennapod.db'` while the app is force-stopped).
 
 ## Skip ad
 Per-podcast "Ad skip time" in the podcast's settings (fork table via `FeedAdSkip` / `FeedAdSkipDbAdapter`). When set, the player shows a "Skip ad" button that jumps ahead by that amount from the current position, separate from fast-forward.

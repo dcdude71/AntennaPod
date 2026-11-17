@@ -7,7 +7,7 @@ Start your playlists without opening the app.
 ![The playlists widget](images/widget.png)
 
 1. Long-press an empty spot on your home screen and choose **Widgets**.
-2. Find **AntennaPod Mix** and drag the **Playlists** widget (4×1) onto the home screen.
+2. Find **Castlist** and drag the **Playlists** widget (4×1) onto the home screen.
 3. Pick up to four playlists. Drag them by the handle to set their order on the widget, then tap **Add widget**.
 
 ![Choosing the widget's playlists](images/widget-setup.png)
@@ -33,4 +33,4 @@ If you rename the playlist, the icon follows. If you delete the playlist, the ic
 
 ## App shortcuts
 
-Long-press the AntennaPod Mix icon to start one of your first playlists directly. Most launchers only show four shortcuts, and AntennaPod's own Queue and Episodes shortcuts come first, so you will usually see your first two playlists. Reorder your playlists in the Playlists tab to choose which ones.
+Long-press the Castlist icon to start one of your first playlists directly. Most launchers only show four shortcuts, and AntennaPod's own Queue and Episodes shortcuts come first, so you will usually see your first two playlists. Reorder your playlists in the Playlists tab to choose which ones.

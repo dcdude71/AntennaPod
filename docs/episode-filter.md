@@ -2,11 +2,11 @@
 
 An episode filter decides, for one podcast, which episodes are downloaded automatically and which ones playlists can use. It does not hide anything from the episode list, the Inbox or the queue, and it does not affect downloads you start yourself.
 
-AntennaPod Mix offers two filters. Choose one in Settings → Downloads → Automatic download → **Episode filter style**:
+Castlist offers two filters. Choose one in Settings → Downloads → Automatic download → **Episode filter style**:
 
 | | Basic | Advanced |
 |---|---|---|
-| Works with the official AntennaPod | Yes | No, AntennaPod Mix only |
+| Works with the official AntennaPod | Yes | No, Castlist only |
 | Words to include | Yes | Yes |
 | Words to skip | Yes, but not together with include words | Yes, together with include words |
 | Any or all of the words | Any | Any or all |

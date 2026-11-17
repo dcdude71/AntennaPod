@@ -636,13 +636,13 @@
     <!-- About screen -->
     <string name="about_pref">About</string>
     <string name="antennapod_version">AntennaPod version</string>
-    <string name="fork_version">AntennaPod Mix version</string>
+    <string name="fork_version">Castlist version</string>
     <string name="fork_source_code">Source code</string>
-    <string name="fork_notice_title">AntennaPod Mix</string>
-    <string name="fork_notice_summary">A modified version of AntennaPod, licensed under the GNU General Public License v3. Source code: github.com/dcdude71/AntennaPod</string>
-    <string name="fork_guide_title">AntennaPod Mix guide</string>
-    <string name="fork_guide_summary">How playlists, the widget, episode filters and the other Mix features work</string>
-    <string name="fork_report_bug_message">Sorry to hear something isn’t working. This is AntennaPod Mix, a modified version of AntennaPod, so please report problems on its GitHub page, not to the AntennaPod team. Check there first in case the issue has already been reported.</string>
+    <string name="fork_notice_title">Castlist</string>
+    <string name="fork_notice_summary">Based on AntennaPod and licensed under the GNU General Public License v3. Source code: github.com/dcdude71/Castlist</string>
+    <string name="fork_guide_title">Castlist guide</string>
+    <string name="fork_guide_summary">How playlists, the widget, episode filters and the other Castlist features work</string>
+    <string name="fork_report_bug_message">Sorry to hear something isn’t working. This is Castlist, a modified version of AntennaPod, so please report problems on its GitHub page, not to the AntennaPod team. Check there first in case the issue has already been reported.</string>
     <string name="contributors">Contributors</string>
     <string name="contributors_summary">Everyone can help to make AntennaPod better - with code, translations or by helping users in our forum</string>
     <string name="developers">Developers</string>
@@ -689,7 +689,7 @@
     <string name="opml_export_label">OPML export</string>
     <string name="html_export_label">HTML export</string>
     <string name="database_export_label">Database export</string>
-    <string name="fork_database_export_summary">Back up subscriptions, listened episodes, queue and playlists, to restore in AntennaPod Mix</string>
+    <string name="fork_database_export_summary">Back up subscriptions, listened episodes, queue and playlists, to restore in Castlist</string>
     <string name="fork_official_export_label">Export for official AntennaPod</string>
     <string name="fork_official_export_summary">Backup for switching back to the official app. Playlists, skip-ad times and advanced episode filters are not included</string>
     <string name="automatic_database_export_label">Automatic database export</string>
@@ -1171,7 +1171,7 @@
     <string name="playlist_no_longer_exists">This playlist no longer exists</string>
     <string name="pref_episode_filter_style_title">Episode filter style</string>
     <string name="episode_filter_style_basic">Basic (works with the official AntennaPod)</string>
-    <string name="episode_filter_style_advanced">Advanced (AntennaPod Mix only)</string>
+    <string name="episode_filter_style_advanced">Advanced (Castlist only)</string>
     <string name="advanced_filter_title">Episode filter</string>
     <string name="advanced_filter_save">Save</string>
     <string name="advanced_filter_intro">Decides which new episodes download automatically and which ones playlists can use.</string>

@@ -1,6 +1,6 @@
-# AntennaPod Mix guide
+# Castlist guide
 
-How to use the features that AntennaPod Mix adds on top of [AntennaPod](https://antennapod.org/). For everything else (subscribing, the queue, downloads, sync, and so on), the official [AntennaPod documentation](https://antennapod.org/documentation/) applies.
+How to use the features that Castlist adds on top of [AntennaPod](https://antennapod.org/). For everything else (subscribing, the queue, downloads, sync, and so on), the official [AntennaPod documentation](https://antennapod.org/documentation/) applies.
 
 | Guide | What it covers |
 |---|---|
@@ -12,4 +12,4 @@ How to use the features that AntennaPod Mix adds on top of [AntennaPod](https://
 | [Backups](backups.md) | Backing up, restoring, and switching back to the official app |
 | [FAQ](faq.md) | Common questions |
 
-Something unclear or missing? [Open an issue](https://github.com/dcdude71/AntennaPod/issues).
+Something unclear or missing? [Open an issue](https://github.com/dcdude71/Castlist/issues).

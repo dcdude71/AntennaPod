@@ -17,12 +17,12 @@
     <Preference
             android:key="about_source_code"
             android:icon="@drawable/ic_web"
-            android:summary="github.com/dcdude71/AntennaPod"
+            android:summary="github.com/dcdude71/Castlist"
             android:title="@string/fork_source_code"/>
     <Preference
             android:key="about_privacy_policy"
             android:icon="@drawable/ic_policy"
-            android:summary="github.com/dcdude71/AntennaPod#privacy"
+            android:summary="github.com/dcdude71/Castlist#privacy"
             android:title="@string/privacy_policy"/>
     <Preference
             android:key="about_licenses"

@@ -20,16 +20,16 @@ Check, in order:
 Yes, with the [advanced filter](episode-filter.md#advanced-filter): Settings → Downloads → Automatic download → Episode filter style → Advanced, then a podcast's Episode filter, and tick **Description**.
 
 ### Will my playlists come back if I reinstall?
-Only from a backup made in AntennaPod Mix (**Database export**). See [Backups](backups.md).
+Only from a backup made in Castlist (**Database export**). See [Backups](backups.md).
 
 ### Can I go back to the official AntennaPod?
 Yes. Use **Export for official AntennaPod** in Settings → Backup & restore, and import that file in the official app. Playlists, skip-ad times and advanced filters stay behind. See [Backups](backups.md#switching-back-to-the-official-antennapod).
 
-### Can I run AntennaPod Mix next to the official app?
-Yes. They are separate apps and do not share data. AntennaPod Mix has a purple icon with a "MIX" label so you can tell them apart.
+### Can I run Castlist next to the official app?
+Yes. They are separate apps and do not share data. Castlist has its own name and icon so you can tell them apart.
 
 ### How do I get updates?
-Through [Obtainium](https://github.com/ImranR98/Obtainium) with `https://github.com/dcdude71/AntennaPod` as the source, or by downloading the APK from the [Releases page](https://github.com/dcdude71/AntennaPod/releases).
+Through [Obtainium](https://github.com/ImranR98/Obtainium) with `https://github.com/dcdude71/Castlist` as the source, or by downloading the APK from the [Releases page](https://github.com/dcdude71/Castlist/releases).
 
 ### Where do I report a problem?
-Here, in the [issues](https://github.com/dcdude71/AntennaPod/issues). Please don't report AntennaPod Mix problems to the AntennaPod team. AntennaPod Mix is a personal project, so replies may take a while.
+Here, in the [issues](https://github.com/dcdude71/Castlist/issues). Please don't report Castlist problems to the AntennaPod team. Castlist is a personal project, so replies may take a while.
