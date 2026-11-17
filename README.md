@@ -22,6 +22,23 @@ AntennaPod Mix is a personal fork of [AntennaPod](https://github.com/AntennaPod/
 
 **New here? Start with the [AntennaPod Mix guide](docs/README.md)** (also in the app: Settings → AntennaPod Mix guide) and the [FAQ](docs/faq.md).
 
+## Staying close to AntennaPod
+
+AntennaPod Mix is built to follow AntennaPod, not to drift away from it.
+
+**Easy to keep up to date with AntennaPod.** The fork is meant to be rebased onto new AntennaPod versions as they come out, so it is designed to make that painless:
+
+- New features live in new files. AntennaPod's own code is touched only where a feature has to hook in, usually with a line or two, and is never reorganized, renamed or reformatted.
+- Mix's look (icon, splash screen) replaces AntennaPod's images through the app's own resources instead of editing them.
+- Where Mix changes how something looks or works, AntennaPod's way stays available as a setting: Player style → Classic, and Episode filter style → Basic (the default).
+
+**Your data stays compatible with the official app.**
+
+- AntennaPod's database is never modified. Its tables and its version number stay exactly as in AntennaPod; everything Mix adds (playlists, skip-ad times, advanced filters) lives in separate tables of its own.
+- A backup from the official AntennaPod imports into Mix as is.
+- **Export for official AntennaPod** gives you a backup the official app can import, without Mix's additions. See [Backups](docs/backups.md).
+- Updating Mix never needs a fresh start: new features add what they need to your existing data automatically.
+
 ## Installing
 
 Signed APKs are published on the [Releases page](https://github.com/dcdude71/AntennaPod/releases). The easiest way to install and stay up to date is [Obtainium](https://github.com/ImranR98/Obtainium): add `https://github.com/dcdude71/AntennaPod` as an app source.
