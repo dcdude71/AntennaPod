@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/playlistWidgetTile"
+    android:layout_width="0dp"
+    android:layout_height="match_parent"
+    android:layout_margin="3dp"
+    android:layout_weight="1"
+    android:background="@drawable/playlist_widget_tile_playing"
+    android:gravity="center_vertical"
+    android:orientation="vertical"
+    android:paddingHorizontal="8dp"
+    android:paddingVertical="6dp">
+
+    <ImageView
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:background="@drawable/playlist_widget_button_playing"
+        android:importantForAccessibility="no"
+        android:padding="6dp"
+        android:src="@drawable/ic_playlist_widget_pause" />
+
+    <TextView
+        android:id="@+id/playlistWidgetName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:textColor="@color/playlist_widget_on_accent"
+        android:textSize="13sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/playlistWidgetSummary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:alpha="0.8"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:textColor="@color/playlist_widget_on_accent"
+        android:textSize="11sp" />
+
+</LinearLayout>

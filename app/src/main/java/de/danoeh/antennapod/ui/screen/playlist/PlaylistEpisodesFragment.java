@@ -20,6 +20,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
+import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
@@ -36,6 +37,7 @@ import de.danoeh.antennapod.actionbutton.PlayActionButton;
 import de.danoeh.antennapod.actionbutton.StreamActionButton;
 import de.danoeh.antennapod.activity.MainActivity;
 import de.danoeh.antennapod.event.FeedItemEvent;
+import de.danoeh.antennapod.event.MessageEvent;
 import de.danoeh.antennapod.event.PlaylistEvent;
 import de.danoeh.antennapod.model.feed.FeedItem;
 import de.danoeh.antennapod.model.feed.FeedItemFilter;
@@ -140,6 +142,12 @@ public class PlaylistEpisodesFragment extends EpisodesListFragment {
                 current.setShowInAndroidAuto(!current.isShowInAndroidAuto());
                 item.setChecked(current.isShowInAndroidAuto());
                 PlaylistWriter.updatePlaylist(current);
+            }
+            return true;
+        } else if (itemId == R.id.playlist_add_to_home_screen) {
+            Playlist current = playlist;
+            if (current != null && !PlaylistShortcuts.pin(requireContext(), current)) {
+                EventBus.getDefault().post(new MessageEvent(getString(R.string.playlist_shortcut_unsupported)));
             }
             return true;
         } else if (itemId == R.id.playlist_rename) {

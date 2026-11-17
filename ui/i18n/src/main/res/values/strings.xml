@@ -1149,4 +1149,22 @@
     <string name="playlist_rule_auto_download_limit">This playlist auto-downloads, so each podcast needs a number of episodes (up to %1$d).</string>
     <string name="playlist_auto_download_needs_limit_title">Set a number of episodes first</string>
     <string name="playlist_auto_download_needs_limit_message">Auto-download needs a number of episodes for each podcast, so it cannot fill your storage. Change the rules set to \"All unplayed\", then turn on auto-download.</string>
+    <string name="playlist_widget_label">Playlists</string>
+    <string name="playlist_widget_description">Start one of your playlists with one tap</string>
+    <string name="playlist_widget_settings_title">Widget playlists</string>
+    <string name="playlist_widget_settings_hint">Pick up to %1$d. Drag to change their order on the widget.</string>
+    <string name="playlist_widget_selected">%1$d of %2$d selected</string>
+    <string name="playlist_widget_add">Add widget</string>
+    <string name="playlist_widget_save">Save</string>
+    <string name="playlist_widget_position">Position %1$d</string>
+    <string name="playlist_widget_not_on_widget">Not on widget</string>
+    <string name="playlist_widget_empty">Tap to create a playlist</string>
+    <string name="playlist_widget_playing">Playing · %1$s</string>
+    <string name="playlist_widget_play">Play %1$s</string>
+    <string name="playlist_widget_pause">Pause %1$s</string>
+    <string name="playlist_widget_preview_name">Playlist</string>
+    <string name="playlist_widget_preview_summary">Tap to play</string>
+    <string name="playlist_add_to_home_screen">Add to home screen</string>
+    <string name="playlist_shortcut_unsupported">Your launcher does not support shortcuts</string>
+    <string name="playlist_no_longer_exists">This playlist no longer exists</string>
 </resources>

@@ -63,6 +63,7 @@ public abstract class WidgetUpdater {
      * Update the widgets with the given parameters. Must be called in a background thread.
      */
     public static void updateWidget(Context context, WidgetState widgetState) {
+        PlaylistWidget.onPlayerStatus(context, widgetState);
         if (!PlayerWidget.isEnabled(context) || widgetState == null) {
             return;
         }

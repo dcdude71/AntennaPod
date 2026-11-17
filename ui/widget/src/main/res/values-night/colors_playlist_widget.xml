@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="playlist_widget_background">#FF1D1B20</color>
+    <color name="playlist_widget_tile">#FF36313F</color>
+    <color name="playlist_widget_on_tile">#FFE6E0E9</color>
+    <color name="playlist_widget_accent">#FFD0BCFF</color>
+    <color name="playlist_widget_on_accent">#FF381E72</color>
+</resources>

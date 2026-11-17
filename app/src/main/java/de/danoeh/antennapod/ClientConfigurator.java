@@ -24,6 +24,7 @@ import de.danoeh.antennapod.net.ssl.SslProviderInstaller;
 import de.danoeh.antennapod.storage.database.PodDBAdapter;
 
 import de.danoeh.antennapod.ui.notifications.NotificationUtils;
+import de.danoeh.antennapod.ui.screen.playlist.PlaylistShortcuts;
 import java.io.File;
 
 public class ClientConfigurator {
@@ -55,6 +56,7 @@ public class ClientConfigurator {
         AntennapodHttpClient.setProxyConfig(UserPreferences.getProxyConfig());
         SleepTimerPreferences.init(context);
         NotificationUtils.createChannels(context);
+        PlaylistShortcuts.register(context);
         initialized = true;
     }
 }

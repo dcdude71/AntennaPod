@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <group
+        android:scaleX="1.75"
+        android:scaleY="1.75"
+        android:translateX="33"
+        android:translateY="33">
+        <path
+            android:fillColor="@color/playlist_shortcut_foreground"
+            android:pathData="M3,10h11v2H3zM3,6h11v2H3zM3,14h7v2H3zM16,13v8l6,-4z" />
+    </group>
+</vector>

@@ -54,6 +54,11 @@ The fork also fixes a problem where automatic downloads could stop altogether on
 #### Playlists in Android Auto
 In a playlist's menu (⋮), **Show in Android Auto** adds it to a **Playlists** folder in Android Auto, right after "Continue listening". It is on for new playlists; playlists created before this version start with it off. Starting an episode from that folder plays the playlist, just like on the phone.
 
+#### Playlists on your home screen
+- **Playlists widget (4×1):** add it from your launcher's widget list, then pick up to four playlists and drag them into order. Tap a tile to start that playlist from the top; the playing one turns into a pause button. It squeezes four compact tiles onto a narrow screen and uses wider tiles when there is room. Long-press the widget and choose its settings to change the playlists.
+- **One playlist as an icon:** in a playlist, open the menu (⋮) and choose **Add to home screen**. Tapping the icon starts the playlist without opening the app.
+- **Long-press the app icon** to start one of your first playlists directly. Most launchers only show four shortcuts, and AntennaPod's own Queue and Episodes shortcuts come first, so you will see your first two playlists.
+
 ### Skip ad button
 Many podcasts play ads of about the same length. In a podcast's settings, set an "Ad skip time" (for example 30 seconds). The player then shows a "Skip ad" button for that podcast that jumps ahead by that amount, separate from the regular fast-forward button.
 

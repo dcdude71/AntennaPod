@@ -279,6 +279,28 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".ui.screen.playlist.PlaylistPlayActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:noHistory="true"
+            android:taskAffinity=""
+            android:theme="@android:style/Theme.Translucent.NoTitleBar">
+            <intent-filter>
+                <action android:name="de.danoeh.antennapod.intents.PLAY_PLAYLIST" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".ui.screen.playlist.PlaylistWidgetConfigActivity"
+            android:exported="true"
+            android:label="@string/playlist_widget_settings_title">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
+
         <provider
             android:authorities="@string/provider_authority"
             android:name="androidx.core.content.FileProvider"
