@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import de.danoeh.antennapod.R;
+import de.danoeh.antennapod.net.download.serviceinterface.AutoDownloadManager;
 
 public class PlaylistEditFragment extends Fragment {
     public static final String TAG = "PlaylistEditFragment";
@@ -47,6 +48,12 @@ public class PlaylistEditFragment extends Fragment {
         }
         applyPanes();
         return root;
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        AutoDownloadManager.getInstance().autodownloadUndownloadedItems(requireContext().getApplicationContext());
     }
 
     @Override

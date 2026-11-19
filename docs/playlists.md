@@ -60,6 +60,8 @@ In a playlist's menu (⋮), turn on **Auto-download episodes** to keep its episo
 - are kept when the app cleans up downloads to make room,
 - do not count toward the episode limit in Settings → Downloads → Automatic download. That limit is left entirely to your podcasts' own automatic downloads.
 
+A playlist episode is downloaded even if it was downloaded and removed before, for example by the official app before you moved to Castlist. The exception is an episode whose download you deleted or cancelled yourself in Castlist: it stays as it is. Download it again by hand if you change your mind. Downloads also start right after you edit a playlist's rules, not only at the next refresh.
+
 To keep a playlist from filling your storage, every rule in a playlist with auto-download needs a number of episodes, up to 10 per podcast. "All unplayed episodes" is not available there. If a playlist already uses it, the app asks you to edit its rules first.
 
 ## Only downloaded episodes

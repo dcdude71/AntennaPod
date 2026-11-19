@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import de.danoeh.antennapod.model.feed.FeedItem;
@@ -17,6 +18,7 @@ import de.danoeh.antennapod.model.feed.FeedItemFilter;
 import de.danoeh.antennapod.model.feed.SortOrder;
 import de.danoeh.antennapod.storage.database.DBReader;
 import de.danoeh.antennapod.storage.database.DBWriter;
+import de.danoeh.antennapod.storage.database.PlaylistReader;
 import de.danoeh.antennapod.storage.preferences.UserPreferences;
 
 /**
@@ -80,10 +82,12 @@ public class ExceptFavoriteCleanupAlgorithm extends EpisodeCleanupAlgorithm {
         List<FeedItem> candidates = new ArrayList<>();
         List<FeedItem> downloadedItems = DBReader.getEpisodes(0, Integer.MAX_VALUE,
                 new FeedItemFilter(FeedItemFilter.DOWNLOADED), SortOrder.DATE_NEW_OLD);
+        Set<Long> playlistEpisodeIds = PlaylistReader.getEpisodeIdsInPlaylists();
         for (FeedItem item : downloadedItems) {
             if (item.hasMedia()
                     && item.getMedia().isDownloaded()
                     && (!item.getFeed().isLocalFeed() || UserPreferences.isAutoDeleteLocal())
+                    && !playlistEpisodeIds.contains(item.getId())
                     && !item.isTagged(FeedItem.TAG_FAVORITE)) {
                 candidates.add(item);
             }

@@ -25,17 +25,21 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.actionbutton.ItemActionButton;
 import de.danoeh.antennapod.actionbutton.PlayActionButton;
 import de.danoeh.antennapod.actionbutton.StreamActionButton;
 import de.danoeh.antennapod.activity.MainActivity;
+import de.danoeh.antennapod.event.FeedItemEvent;
 import de.danoeh.antennapod.event.MessageEvent;
 import de.danoeh.antennapod.event.PlaylistEvent;
 import de.danoeh.antennapod.model.feed.FeedItem;
 import de.danoeh.antennapod.model.playlist.Playlist;
+import de.danoeh.antennapod.model.playlist.PlaylistRule;
 import de.danoeh.antennapod.storage.database.PlaylistPlayback;
 import de.danoeh.antennapod.storage.database.PlaylistReader;
 import de.danoeh.antennapod.storage.database.PlaylistWriter;
@@ -61,6 +65,7 @@ public class PlaylistsFragment extends Fragment implements Toolbar.OnMenuItemCli
     private View detailPane;
     private boolean wide;
     private long selectedId = PlaylistPanes.NO_PLAYLIST;
+    private Set<Long> feedIds = new HashSet<>();
 
     @NonNull
     @Override
@@ -222,20 +227,38 @@ public class PlaylistsFragment extends Fragment implements Toolbar.OnMenuItemCli
         loadPlaylists();
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onFeedItemChanged(FeedItemEvent event) {
+        for (FeedItem item : event.items) {
+            if (item != null && feedIds.contains(item.getFeedId())) {
+                loadPlaylists();
+                return;
+            }
+        }
+    }
+
     private void loadPlaylists() {
         if (disposable != null) {
             disposable.dispose();
         }
         disposable = Observable.fromCallable(() -> {
-            List<Pair<Playlist, Integer>> result = new ArrayList<>();
+            List<PlaylistSummary> result = new ArrayList<>();
+            Set<Long> ruleFeedIds = new HashSet<>();
             for (Playlist playlist : PlaylistReader.getPlaylists()) {
-                result.add(new Pair<>(playlist, PlaylistReader.getRules(playlist.getId()).size()));
+                List<PlaylistRule> rules = PlaylistReader.getRules(playlist.getId());
+                for (PlaylistRule rule : rules) {
+                    ruleFeedIds.add(rule.getFeedId());
+                }
+                result.add(new PlaylistSummary(playlist, rules.size(),
+                        PlaylistReader.getEpisodes(playlist.getId()).size()));
             }
-            return result;
+            return new Pair<>(result, ruleFeedIds);
         })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(result -> {
+                .subscribe(loaded -> {
+                    List<PlaylistSummary> result = loaded.first;
+                    feedIds = loaded.second;
                     adapter.setItems(result);
                     emptyView.updateVisibility();
                     if (wide) {
@@ -244,15 +267,15 @@ public class PlaylistsFragment extends Fragment implements Toolbar.OnMenuItemCli
                 }, error -> Log.e(TAG, Log.getStackTraceString(error)));
     }
 
-    private void selectExistingPlaylist(List<Pair<Playlist, Integer>> playlists) {
+    private void selectExistingPlaylist(List<PlaylistSummary> playlists) {
         long firstId = PlaylistPanes.NO_PLAYLIST;
-        for (Pair<Playlist, Integer> item : playlists) {
-            if (item.first.getId() == selectedId) {
+        for (PlaylistSummary item : playlists) {
+            if (item.playlist.getId() == selectedId) {
                 showDetail(selectedId);
                 return;
             }
             if (firstId == PlaylistPanes.NO_PLAYLIST) {
-                firstId = item.first.getId();
+                firstId = item.playlist.getId();
             }
         }
         select(firstId);
@@ -260,35 +283,48 @@ public class PlaylistsFragment extends Fragment implements Toolbar.OnMenuItemCli
         adapter.notifyDataSetChanged();
     }
 
-    private class PlaylistAdapter extends ReorderableListAdapter<Pair<Playlist, Integer>> {
+    private static class PlaylistSummary {
+        final Playlist playlist;
+        final int podcasts;
+        final int episodes;
+
+        PlaylistSummary(Playlist playlist, int podcasts, int episodes) {
+            this.playlist = playlist;
+            this.podcasts = podcasts;
+            this.episodes = episodes;
+        }
+    }
+
+    private class PlaylistAdapter extends ReorderableListAdapter<PlaylistSummary> {
         @Override
-        void bind(@NonNull ViewHolder holder, @NonNull Pair<Playlist, Integer> item) {
+        void bind(@NonNull ViewHolder holder, @NonNull PlaylistSummary item) {
             holder.image.setImageResource(R.drawable.ic_playlist_play);
-            holder.title.setText(item.first.getName());
-            holder.subtitle.setText(getResources().getQuantityString(
-                    R.plurals.playlist_num_podcasts, item.second, item.second));
-            boolean selected = wide && item.first.getId() == selectedId;
+            holder.title.setText(item.playlist.getName());
+            holder.subtitle.setText(getString(R.string.playlist_summary,
+                    getResources().getQuantityString(R.plurals.playlist_num_podcasts, item.podcasts, item.podcasts),
+                    getResources().getQuantityString(R.plurals.playlist_num_episodes, item.episodes, item.episodes)));
+            boolean selected = wide && item.playlist.getId() == selectedId;
             holder.itemView.setForeground(selected ? new ColorDrawable(ColorUtils.setAlphaComponent(
                     ThemeUtils.getColorFromAttr(requireContext(), R.attr.colorPrimary), SELECTED_ALPHA)) : null);
         }
 
         @Override
-        void onItemClick(@NonNull Pair<Playlist, Integer> item) {
-            select(item.first.getId());
+        void onItemClick(@NonNull PlaylistSummary item) {
+            select(item.playlist.getId());
             if (wide) {
                 showDetail(selectedId);
                 notifyDataSetChanged();
             } else {
                 ((MainActivity) requireActivity()).loadChildFragment(
-                        PlaylistEpisodesFragment.newInstance(item.first.getId()));
+                        PlaylistEpisodesFragment.newInstance(item.playlist.getId()));
             }
         }
 
         @Override
-        void onOrderChanged(@NonNull List<Pair<Playlist, Integer>> newOrder) {
+        void onOrderChanged(@NonNull List<PlaylistSummary> newOrder) {
             List<Playlist> playlists = new ArrayList<>();
-            for (Pair<Playlist, Integer> item : newOrder) {
-                playlists.add(item.first);
+            for (PlaylistSummary item : newOrder) {
+                playlists.add(item.playlist);
             }
             PlaylistWriter.setPlaylistOrder(playlists);
         }

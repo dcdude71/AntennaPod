@@ -11,6 +11,7 @@ import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.model.feed.FeedItem;
 import de.danoeh.antennapod.model.feed.FeedMedia;
 import de.danoeh.antennapod.storage.database.DBWriter;
+import de.danoeh.antennapod.storage.database.PlaylistWriter;
 import de.danoeh.antennapod.ui.view.LocalDeleteModal;
 
 public class DeleteActionButton extends ItemActionButton {
@@ -39,7 +40,10 @@ public class DeleteActionButton extends ItemActionButton {
         }
 
         LocalDeleteModal.showLocalFeedDeleteWarningIfNecessary(context, Collections.singletonList(item),
-                () -> DBWriter.deleteFeedMediaOfItem(context, media));
+                () -> {
+                    PlaylistWriter.dismissEpisode(item);
+                    DBWriter.deleteFeedMediaOfItem(context, media);
+                });
     }
 
     @Override

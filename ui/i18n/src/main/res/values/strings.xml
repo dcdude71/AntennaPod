@@ -1131,6 +1131,11 @@
         <item quantity="one">%d podcast</item>
         <item quantity="other">%d podcasts</item>
     </plurals>
+    <plurals name="playlist_num_episodes">
+        <item quantity="one">%d episode</item>
+        <item quantity="other">%d episodes</item>
+    </plurals>
+    <string name="playlist_summary">%1$s · %2$s</string>
     <string name="feed_ad_skip">Ad skip time</string>
     <string name="feed_ad_skip_off">Off. Set a time to show a \"Skip ad\" button in the player.</string>
     <string name="feed_ad_skip_message">The \"Skip ad\" button in the player jumps ahead by this many seconds. Use 0 to hide the button.</string>

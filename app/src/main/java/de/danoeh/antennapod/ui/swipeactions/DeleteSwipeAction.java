@@ -7,6 +7,7 @@ import java.util.Collections;
 
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.storage.database.DBWriter;
+import de.danoeh.antennapod.storage.database.PlaylistWriter;
 import de.danoeh.antennapod.model.feed.FeedItem;
 import de.danoeh.antennapod.model.feed.FeedItemFilter;
 import de.danoeh.antennapod.ui.view.LocalDeleteModal;
@@ -40,7 +41,10 @@ public class DeleteSwipeAction implements SwipeAction {
         }
         LocalDeleteModal.showLocalFeedDeleteWarningIfNecessary(
                 fragment.requireContext(), Collections.singletonList(item),
-                () -> DBWriter.deleteFeedMediaOfItem(fragment.requireContext(), item.getMedia()));
+                () -> {
+                    PlaylistWriter.dismissEpisode(item);
+                    DBWriter.deleteFeedMediaOfItem(fragment.requireContext(), item.getMedia());
+                });
     }
 
     @Override

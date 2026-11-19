@@ -209,6 +209,15 @@ public class PlaylistDatabaseTest {
     }
 
     @Test
+    public void testDismissedEpisodes() throws Exception {
+        Feed feed = createFeed(2);
+        assertTrue(PlaylistReader.getDismissedEpisodeIds().isEmpty());
+        PlaylistWriter.dismissEpisode(feed.getItems().get(1)).get();
+        PlaylistWriter.dismissEpisode(feed.getItems().get(1)).get();
+        assertEquals(Set.of(feed.getItems().get(1).getId()), PlaylistReader.getDismissedEpisodeIds());
+    }
+
+    @Test
     public void testProtectedEpisodesAreCappedPerRule() throws Exception {
         Feed feed = createFeed(15);
         long playlistId = PlaylistWriter.createPlaylist(new Playlist("All")).get();

@@ -8,7 +8,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import de.danoeh.antennapod.model.playlist.Playlist;
 import de.danoeh.antennapod.model.playlist.PlaylistRule;
@@ -16,6 +18,7 @@ import de.danoeh.antennapod.model.playlist.PlaylistRule;
 public class PlaylistDbAdapter {
     public static final String TABLE_NAME_PLAYLISTS = "Playlists";
     public static final String TABLE_NAME_PLAYLIST_RULES = "PlaylistRules";
+    public static final String TABLE_NAME_PLAYLIST_DISMISSED = "PlaylistDismissedEpisodes";
 
     private static final String KEY_ID = "id";
     private static final String KEY_NAME = "name";
@@ -29,6 +32,7 @@ public class PlaylistDbAdapter {
     private static final String KEY_PICK_FROM = "pick_from";
     private static final String KEY_PLAY_ORDER = "play_order";
     private static final String KEY_PRIORITY = "priority";
+    private static final String KEY_ITEM = "item";
 
     private static final String CREATE_TABLE_PLAYLISTS = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME_PLAYLISTS + " ("
             + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -66,6 +70,8 @@ public class PlaylistDbAdapter {
         db.execSQL(CREATE_TABLE_PLAYLISTS);
         db.execSQL(CREATE_TABLE_PLAYLIST_RULES);
         db.execSQL(CREATE_INDEX_PLAYLIST_RULES_PLAYLIST);
+        db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_NAME_PLAYLIST_DISMISSED + " ("
+                + KEY_ITEM + " INTEGER PRIMARY KEY)");
         addColumnIfMissing(db, TABLE_NAME_PLAYLISTS, KEY_DOWNLOADED_ONLY, "INTEGER NOT NULL DEFAULT 0");
     }
 
@@ -167,6 +173,24 @@ public class PlaylistDbAdapter {
     void deleteAll() {
         db.delete(TABLE_NAME_PLAYLIST_RULES, null, null);
         db.delete(TABLE_NAME_PLAYLISTS, null, null);
+        db.delete(TABLE_NAME_PLAYLIST_DISMISSED, null, null);
+    }
+
+    void addDismissedEpisode(long itemId) {
+        ContentValues values = new ContentValues();
+        values.put(KEY_ITEM, itemId);
+        db.insertWithOnConflict(TABLE_NAME_PLAYLIST_DISMISSED, null, values, SQLiteDatabase.CONFLICT_IGNORE);
+    }
+
+    Set<Long> getDismissedEpisodes() {
+        Set<Long> ids = new HashSet<>();
+        try (Cursor cursor = db.query(TABLE_NAME_PLAYLIST_DISMISSED, new String[]{KEY_ITEM},
+                null, null, null, null, null)) {
+            while (cursor.moveToNext()) {
+                ids.add(cursor.getLong(0));
+            }
+        }
+        return ids;
     }
 
     private void setOrder(String table, List<Long> ids) {

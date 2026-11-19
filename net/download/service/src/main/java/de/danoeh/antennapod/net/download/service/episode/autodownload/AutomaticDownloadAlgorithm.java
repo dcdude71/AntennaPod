@@ -76,7 +76,7 @@ public class AutomaticDownloadAlgorithm {
 
                 // filter items that are not auto downloadable
                 removeNotAutoDownloadable(candidates);
-                removeNotAutoDownloadable(playlistEpisodes);
+                removeNotPlaylistDownloadable(playlistEpisodes, PlaylistReader.getDismissedEpisodeIds());
                 for (FeedItem episode : playlistEpisodes) {
                     DownloadServiceInterface.get().downloadWithoutEnqueue(context, episode);
                 }
@@ -116,6 +116,19 @@ public class AutomaticDownloadAlgorithm {
         while (it.hasNext()) {
             FeedItem item = it.next();
             if (!item.isAutoDownloadEnabled()
+                    || item.isDownloaded()
+                    || !item.hasMedia()
+                    || item.getFeed().isLocalFeed()) {
+                it.remove();
+            }
+        }
+    }
+
+    private static void removeNotPlaylistDownloadable(List<FeedItem> items, Set<Long> dismissedIds) {
+        Iterator<FeedItem> it = items.iterator();
+        while (it.hasNext()) {
+            FeedItem item = it.next();
+            if (dismissedIds.contains(item.getId())
                     || item.isDownloaded()
                     || !item.hasMedia()
                     || item.getFeed().isLocalFeed()) {

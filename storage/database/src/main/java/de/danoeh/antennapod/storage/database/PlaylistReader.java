@@ -83,6 +83,17 @@ public final class PlaylistReader {
     }
 
     @NonNull
+    public static synchronized Set<Long> getDismissedEpisodeIds() {
+        PodDBAdapter adapter = PodDBAdapter.getInstance();
+        adapter.open();
+        try {
+            return adapter.getPlaylistDbAdapter().getDismissedEpisodes();
+        } finally {
+            adapter.close();
+        }
+    }
+
+    @NonNull
     static List<PlaylistRule> limitForAutoDownload(@NonNull List<PlaylistRule> rules) {
         List<PlaylistRule> limited = new ArrayList<>();
         for (PlaylistRule rule : rules) {

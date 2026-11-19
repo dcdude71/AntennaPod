@@ -11,6 +11,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import de.danoeh.antennapod.event.PlaylistEvent;
+import de.danoeh.antennapod.model.feed.FeedItem;
 import de.danoeh.antennapod.model.playlist.Playlist;
 import de.danoeh.antennapod.model.playlist.PlaylistRule;
 
@@ -131,6 +132,18 @@ public final class PlaylistWriter {
                 adapter.close();
             }
             EventBus.getDefault().post(new PlaylistEvent(playlistId));
+        });
+    }
+
+    public static Future<?> dismissEpisode(@NonNull FeedItem item) {
+        final long itemId = item.getId();
+        return dbExec.submit(() -> {
+            PodDBAdapter adapter = PodDBAdapter.getInstance().open();
+            try {
+                adapter.getPlaylistDbAdapter().addDismissedEpisode(itemId);
+            } finally {
+                adapter.close();
+            }
         });
     }
 }
