@@ -17,7 +17,7 @@ Check, in order:
 - if the playlist has **Only downloaded episodes** on, it is downloaded.
 
 ### Can I filter on words in the description?
-Yes, with the [advanced filter](episode-filter.md#advanced-filter): Settings → Downloads → Automatic download → Episode filter style → Advanced, then a podcast's Episode filter, and tick **Description**.
+Yes, with the [advanced filter](episode-filter.md#advanced-filter): Settings → Downloads → Automatic download → Episode filter style → Advanced, then in a podcast's Episode filter add a condition on **Description** (or **Post**, which looks in the title and the description).
 
 ### Will my playlists come back if I reinstall?
 Only from a backup made in Castlist (**Database export**). See [Backups](backups.md).

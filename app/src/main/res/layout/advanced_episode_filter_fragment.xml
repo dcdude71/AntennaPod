@@ -42,43 +42,19 @@
                     android:textColor="?android:attr/textColorSecondary" />
 
                 <TextView
-                    android:text="@string/advanced_filter_include_label"
+                    android:text="@string/advanced_filter_keep_label"
                     style="@style/AdvancedFilterSection" />
 
-                <com.google.android.material.chip.ChipGroup
-                    android:id="@+id/includeChips"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/includeInputLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:hint="@string/advanced_filter_add_word"
-                    app:endIconContentDescription="@string/advanced_filter_add"
-                    app:endIconDrawable="@drawable/ic_add"
-                    app:endIconMode="custom">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/includeInput"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:imeOptions="actionDone"
-                        android:inputType="text" />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
                 <com.google.android.material.button.MaterialButtonToggleGroup
-                    android:id="@+id/matchToggle"
+                    android:id="@+id/keepMatchToggle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
                     app:selectionRequired="true"
                     app:singleSelection="true">
 
                     <Button
-                        android:id="@+id/matchAnyButton"
+                        android:id="@+id/keepMatchAnyButton"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -86,7 +62,7 @@
                         style="?attr/materialButtonOutlinedStyle" />
 
                     <Button
-                        android:id="@+id/matchAllButton"
+                        android:id="@+id/keepMatchAllButton"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -96,125 +72,84 @@
                 </com.google.android.material.button.MaterialButtonToggleGroup>
 
                 <TextView
-                    android:text="@string/advanced_filter_exclude_label"
-                    style="@style/AdvancedFilterSection" />
-
-                <com.google.android.material.chip.ChipGroup
-                    android:id="@+id/excludeChips"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/excludeInputLayout"
+                    android:id="@+id/keepEmpty"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:hint="@string/advanced_filter_add_word"
-                    app:endIconContentDescription="@string/advanced_filter_add"
-                    app:endIconDrawable="@drawable/ic_add"
-                    app:endIconMode="custom"
-                    app:helperText="@string/advanced_filter_exclude_wins">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/excludeInput"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:imeOptions="actionDone"
-                        android:inputType="text" />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <TextView
-                    android:text="@string/advanced_filter_search_in"
-                    style="@style/AdvancedFilterSection" />
-
-                <CheckBox
-                    android:id="@+id/searchTitle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:minHeight="48dp"
-                    android:text="@string/advanced_filter_search_title" />
-
-                <CheckBox
-                    android:id="@+id/searchDescription"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:minHeight="48dp"
-                    android:text="@string/advanced_filter_search_description" />
-
-                <TextView
-                    android:id="@+id/noFieldWarning"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/advanced_filter_no_field"
-                    android:textAppearance="@style/TextAppearance.Material3.BodySmall"
-                    android:textColor="?attr/colorError"
-                    android:visibility="gone" />
-
-                <com.google.android.material.materialswitch.MaterialSwitch
-                    android:id="@+id/wholeWords"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:minHeight="48dp"
-                    android:text="@string/advanced_filter_whole_words" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/advanced_filter_whole_words_summary"
-                    android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                    android:text="@string/advanced_filter_keep_empty"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
                     android:textColor="?android:attr/textColorSecondary" />
 
-                <TextView
-                    android:text="@string/advanced_filter_length"
-                    style="@style/AdvancedFilterSection" />
-
                 <LinearLayout
+                    android:id="@+id/keepConditions"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:baselineAligned="false"
-                    android:orientation="horizontal">
+                    android:orientation="vertical" />
 
-                    <com.google.android.material.textfield.TextInputLayout
+                <Button
+                    android:id="@+id/keepAddButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/advanced_filter_add_condition"
+                    app:icon="@drawable/ic_add"
+                    style="?attr/materialButtonOutlinedStyle" />
+
+                <TextView
+                    android:text="@string/advanced_filter_skip_label"
+                    style="@style/AdvancedFilterSection" />
+
+                <com.google.android.material.button.MaterialButtonToggleGroup
+                    android:id="@+id/skipMatchToggle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    app:selectionRequired="true"
+                    app:singleSelection="true">
+
+                    <Button
+                        android:id="@+id/skipMatchAnyButton"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="8dp"
                         android:layout_weight="1"
-                        android:hint="@string/advanced_filter_min_minutes">
+                        android:text="@string/advanced_filter_match_any"
+                        style="?attr/materialButtonOutlinedStyle" />
 
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/minDuration"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:inputType="number"
-                            android:maxLength="4" />
-
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <com.google.android.material.textfield.TextInputLayout
+                    <Button
+                        android:id="@+id/skipMatchAllButton"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
                         android:layout_weight="1"
-                        android:hint="@string/advanced_filter_max_minutes">
+                        android:text="@string/advanced_filter_match_all"
+                        style="?attr/materialButtonOutlinedStyle" />
 
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/maxDuration"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:inputType="number"
-                            android:maxLength="4" />
+                </com.google.android.material.button.MaterialButtonToggleGroup>
 
-                    </com.google.android.material.textfield.TextInputLayout>
+                <TextView
+                    android:id="@+id/skipEmpty"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/advanced_filter_skip_empty"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                    android:textColor="?android:attr/textColorSecondary" />
 
-                </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/skipConditions"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+
+                <Button
+                    android:id="@+id/skipAddButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/advanced_filter_add_condition"
+                    app:icon="@drawable/ic_add"
+                    style="?attr/materialButtonOutlinedStyle" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:text="@string/advanced_filter_length_hint"
+                    android:text="@string/advanced_filter_exclude_wins"
                     android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                     android:textColor="?android:attr/textColorSecondary" />
 

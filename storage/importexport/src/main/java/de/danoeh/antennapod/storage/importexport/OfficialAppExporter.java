@@ -22,8 +22,10 @@ public final class OfficialAppExporter {
     private static final String[] FORK_TABLES = {
         PlaylistDbAdapter.TABLE_NAME_PLAYLIST_RULES,
         PlaylistDbAdapter.TABLE_NAME_PLAYLISTS,
+        PlaylistDbAdapter.TABLE_NAME_PLAYLIST_DISMISSED,
         FeedAdSkipDbAdapter.TABLE_NAME_FEED_AD_SKIP,
-        EpisodeFilterDbAdapter.TABLE_NAME_FEED_EPISODE_FILTERS
+        EpisodeFilterDbAdapter.TABLE_NAME_FEED_EPISODE_FILTERS,
+        EpisodeFilterDbAdapter.TABLE_NAME_EPISODE_FILTER_CONDITIONS
     };
 
     private OfficialAppExporter() {

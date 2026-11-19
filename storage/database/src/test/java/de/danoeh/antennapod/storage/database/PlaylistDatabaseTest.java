@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Set;
 
 import de.danoeh.antennapod.model.feed.AdvancedEpisodeFilter;
+import de.danoeh.antennapod.model.feed.EpisodeCondition;
 import de.danoeh.antennapod.model.feed.Feed;
 import de.danoeh.antennapod.model.feed.FeedItem;
 import de.danoeh.antennapod.model.feed.FeedMedia;
@@ -253,9 +254,12 @@ public class PlaylistDatabaseTest {
         rule.setPickFrom(PlaylistRule.PickFrom.OLDEST);
         rule.setEpisodeCount(3);
         PlaylistWriter.addRule(rule).get();
-        EpisodeFilters.setAdvancedFilter(feed.getId(), new AdvancedEpisodeFilter(Collections.emptyList(), false,
-                List.of("Episode 1"), true, false, true, AdvancedEpisodeFilter.NO_LIMIT,
-                AdvancedEpisodeFilter.NO_LIMIT));
+        AdvancedEpisodeFilter filter = new AdvancedEpisodeFilter(Collections.emptyList(), false,
+                List.of(EpisodeCondition.contains(EpisodeCondition.Field.TITLE, "Episode 1", true)), false);
+        EpisodeFilters.setAdvancedFilter(feed.getId(), filter);
+        AdvancedEpisodeFilter stored = EpisodeFilters.getAdvancedFilter(feed.getId());
+        assertEquals(filter.getSkipConditions(), stored.getSkipConditions());
+        assertTrue(stored.getKeepConditions().isEmpty());
 
         setFilterStyle(EpisodeFilterPreferences.STYLE_BASIC);
         assertEquals(List.of(itemId(feed, 0), itemId(feed, 1), itemId(feed, 2)),

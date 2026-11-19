@@ -51,6 +51,11 @@ Inspired by Downcast's playlist engine.
 ## Skip ad
 Per-podcast "Ad skip time" in the podcast's settings (fork table via `FeedAdSkip` / `FeedAdSkipDbAdapter`). When set, the player shows a "Skip ad" button that jumps ahead by that amount from the current position, separate from fast-forward.
 
+## Episode filter (advanced)
+- Model: `AdvancedEpisodeFilter` = keep conditions (any/all) + skip conditions (any/all); `EpisodeCondition` = field (POST = title or description, TITLE, DESCRIPTION, LENGTH), operator, value, whole word. Matching ignores case and accents (`EpisodeCondition.normalize`). Unknown length never fails a keep condition nor triggers a skip one.
+- Storage: `FeedEpisodeFilters` (one row per feed; `format` 1 = conditions, `match_all` = keep, `skip_match_all`) plus `FeedEpisodeFilterConditions`. Rows with `format` 0 are the older word-list filters and are converted on read by `AdvancedEpisodeFilter.fromLegacy`; saving rewrites them as conditions.
+- Per-episode author and categories are not stored by upstream, so they are not filter fields (yet).
+
 ## Player style
 Settings → User interface → Player style: Modern (default) or Classic (upstream layout). Modern aims for an Apple Podcasts-like look: small artwork, bold title, big controls. Fork-only files: `PlayerStyle.java`, `PlayerLayout.java`, `audioplayer_fragment_modern.xml`.
 - Foldables (Modern only, `PlayerLayout`): window ≥ 600dp wide → shownotes in `descriptionPane` beside the controls (pager shows the cover only, Shownotes button hidden). Half-open with a horizontal fold (tabletop, via `androidx.window`) → cover above the fold, controls below; overrides the wide layout. MainActivity handles size changes itself (no recreate), so the layout is re-applied from `AudioPlayerFragment.onConfigurationChanged`.

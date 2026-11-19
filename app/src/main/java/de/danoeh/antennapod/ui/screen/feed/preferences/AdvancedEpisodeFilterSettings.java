@@ -6,6 +6,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
@@ -18,6 +19,7 @@ import java.util.List;
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.activity.MainActivity;
 import de.danoeh.antennapod.model.feed.AdvancedEpisodeFilter;
+import de.danoeh.antennapod.model.feed.EpisodeCondition;
 import de.danoeh.antennapod.model.feed.Feed;
 import de.danoeh.antennapod.storage.database.EpisodeFilters;
 import de.danoeh.antennapod.storage.preferences.EpisodeFilterPreferences;
@@ -82,41 +84,83 @@ public final class AdvancedEpisodeFilterSettings {
             return context.getString(R.string.advanced_filter_summary_none);
         }
         List<String> parts = new ArrayList<>();
-        if (!filter.getIncludeTerms().isEmpty()) {
-            parts.add(context.getString(filter.isMatchAll() ? R.string.advanced_filter_summary_include_all
-                    : R.string.advanced_filter_summary_include_any, quoted(filter.getIncludeTerms())));
+        if (!filter.getKeepConditions().isEmpty()) {
+            parts.add(context.getString(filter.isKeepMatchAll() ? R.string.advanced_filter_summary_keep_all
+                    : R.string.advanced_filter_summary_keep_any, describe(context, filter.getKeepConditions())));
         }
-        if (!filter.getExcludeTerms().isEmpty()) {
-            parts.add(context.getString(R.string.advanced_filter_summary_exclude, quoted(filter.getExcludeTerms())));
-        }
-        if (!filter.getIncludeTerms().isEmpty() || !filter.getExcludeTerms().isEmpty()) {
-            if (filter.isSearchDescription() && filter.isSearchTitle()) {
-                parts.add(context.getString(R.string.advanced_filter_summary_title_description));
-            } else if (filter.isSearchDescription()) {
-                parts.add(context.getString(R.string.advanced_filter_summary_description));
-            }
-            if (filter.isWholeWords()) {
-                parts.add(context.getString(R.string.advanced_filter_summary_whole_words));
-            }
-        }
-        int min = filter.getMinDurationSeconds() / 60;
-        int max = filter.getMaxDurationSeconds() / 60;
-        if (min > 0 && max > 0) {
-            parts.add(context.getString(R.string.advanced_filter_summary_range, min, max));
-        } else if (min > 0) {
-            parts.add(context.getString(R.string.advanced_filter_summary_min, min));
-        } else if (max > 0) {
-            parts.add(context.getString(R.string.advanced_filter_summary_max, max));
+        if (!filter.getSkipConditions().isEmpty()) {
+            parts.add(context.getString(filter.isSkipMatchAll() ? R.string.advanced_filter_summary_skip_all
+                    : R.string.advanced_filter_summary_skip_any, describe(context, filter.getSkipConditions())));
         }
         return TextUtils.join(" · ", parts);
     }
 
     @NonNull
-    private static String quoted(@NonNull List<String> terms) {
-        List<String> quoted = new ArrayList<>();
-        for (String term : terms) {
-            quoted.add("“" + term + "”");
+    private static String describe(@NonNull Context context, @NonNull List<EpisodeCondition> conditions) {
+        List<String> descriptions = new ArrayList<>();
+        for (EpisodeCondition condition : conditions) {
+            descriptions.add(describe(context, condition));
         }
-        return TextUtils.join(", ", quoted);
+        return TextUtils.join(", ", descriptions);
+    }
+
+    @NonNull
+    static String describe(@NonNull Context context, @NonNull EpisodeCondition condition) {
+        String operator = context.getString(operatorLabel(condition.getOperator()));
+        if (condition.getField() == EpisodeCondition.Field.LENGTH) {
+            return context.getString(R.string.advanced_filter_condition_length, operator, condition.getMinutes());
+        }
+        int field;
+        switch (condition.getField()) {
+            case TITLE:
+                field = R.string.advanced_filter_condition_title;
+                break;
+            case DESCRIPTION:
+                field = R.string.advanced_filter_condition_description;
+                break;
+            case POST:
+            default:
+                field = R.string.advanced_filter_condition_post;
+                break;
+        }
+        String text = context.getString(R.string.advanced_filter_condition_text,
+                context.getString(field), operator, condition.getValue());
+        return condition.isWholeWord() ? context.getString(R.string.advanced_filter_condition_whole_word, text) : text;
+    }
+
+    @StringRes
+    static int fieldLabel(@NonNull EpisodeCondition.Field field) {
+        switch (field) {
+            case TITLE:
+                return R.string.advanced_filter_field_title;
+            case DESCRIPTION:
+                return R.string.advanced_filter_field_description;
+            case LENGTH:
+                return R.string.advanced_filter_field_length;
+            case POST:
+            default:
+                return R.string.advanced_filter_field_post;
+        }
+    }
+
+    @StringRes
+    static int operatorLabel(@NonNull EpisodeCondition.Operator operator) {
+        switch (operator) {
+            case NOT_CONTAINS:
+                return R.string.advanced_filter_op_not_contains;
+            case STARTS_WITH:
+                return R.string.advanced_filter_op_starts_with;
+            case ENDS_WITH:
+                return R.string.advanced_filter_op_ends_with;
+            case IS:
+                return R.string.advanced_filter_op_is;
+            case SHORTER_THAN:
+                return R.string.advanced_filter_op_shorter_than;
+            case LONGER_THAN:
+                return R.string.advanced_filter_op_longer_than;
+            case CONTAINS:
+            default:
+                return R.string.advanced_filter_op_contains;
+        }
     }
 }

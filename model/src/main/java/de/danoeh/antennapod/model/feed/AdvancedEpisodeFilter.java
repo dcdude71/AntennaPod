@@ -6,14 +6,12 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
-import java.util.regex.Pattern;
 
 public class AdvancedEpisodeFilter {
     public static final int NO_LIMIT = -1;
 
     public enum Reason {
-        NO_WORDS, INCLUDED, EXCLUDED, MISSING_WORD, NO_WORD_FOUND, TOO_SHORT, TOO_LONG
+        NO_CONDITIONS, KEPT, NOT_KEPT, SKIPPED, NOT_SKIPPED
     }
 
     public static final class Result {
@@ -21,149 +19,162 @@ public class AdvancedEpisodeFilter {
         @NonNull
         public final Reason reason;
         @Nullable
-        public final String term;
-        public final boolean inDescription;
+        public final EpisodeCondition condition;
 
-        Result(boolean matches, @NonNull Reason reason, @Nullable String term, boolean inDescription) {
+        Result(boolean matches, @NonNull Reason reason, @Nullable EpisodeCondition condition) {
             this.matches = matches;
             this.reason = reason;
-            this.term = term;
-            this.inDescription = inDescription;
+            this.condition = condition;
         }
     }
 
-    private final List<String> includeTerms;
-    private final boolean matchAll;
-    private final List<String> excludeTerms;
-    private final boolean searchTitle;
-    private final boolean searchDescription;
-    private final boolean wholeWords;
-    private final int minDurationSeconds;
-    private final int maxDurationSeconds;
+    private final List<EpisodeCondition> keepConditions;
+    private final boolean keepMatchAll;
+    private final List<EpisodeCondition> skipConditions;
+    private final boolean skipMatchAll;
 
-    public AdvancedEpisodeFilter(@NonNull List<String> includeTerms, boolean matchAll,
-                                 @NonNull List<String> excludeTerms, boolean searchTitle, boolean searchDescription,
-                                 boolean wholeWords, int minDurationSeconds, int maxDurationSeconds) {
-        this.includeTerms = cleanTerms(includeTerms);
-        this.matchAll = matchAll;
-        this.excludeTerms = cleanTerms(excludeTerms);
-        this.searchTitle = searchTitle;
-        this.searchDescription = searchDescription;
-        this.wholeWords = wholeWords;
-        this.minDurationSeconds = minDurationSeconds;
-        this.maxDurationSeconds = maxDurationSeconds;
+    public AdvancedEpisodeFilter(@NonNull List<EpisodeCondition> keepConditions, boolean keepMatchAll,
+                                 @NonNull List<EpisodeCondition> skipConditions, boolean skipMatchAll) {
+        this.keepConditions = clean(keepConditions);
+        this.keepMatchAll = keepMatchAll;
+        this.skipConditions = clean(skipConditions);
+        this.skipMatchAll = skipMatchAll;
+    }
+
+    @NonNull
+    public static AdvancedEpisodeFilter empty() {
+        return new AdvancedEpisodeFilter(Collections.emptyList(), false, Collections.emptyList(), false);
     }
 
     @NonNull
     public static AdvancedEpisodeFilter fromBasic(@Nullable FeedFilter basic) {
         if (basic == null) {
-            return new AdvancedEpisodeFilter(Collections.emptyList(), false, Collections.emptyList(),
-                    true, false, false, NO_LIMIT, NO_LIMIT);
+            return empty();
         }
         int minimal = basic.hasMinimalDurationFilter() ? basic.getMinimalDurationFilter() : NO_LIMIT;
-        return new AdvancedEpisodeFilter(basic.getIncludeFilter(), false, basic.getExcludeFilter(),
+        return fromLegacy(basic.getIncludeFilter(), false, basic.getExcludeFilter(),
                 true, false, false, minimal, NO_LIMIT);
     }
 
     @NonNull
-    public List<String> getIncludeTerms() {
-        return new ArrayList<>(includeTerms);
-    }
-
-    public boolean isMatchAll() {
-        return matchAll;
+    public static AdvancedEpisodeFilter fromLegacy(@NonNull List<String> includeTerms, boolean matchAll,
+                                                   @NonNull List<String> excludeTerms, boolean searchTitle,
+                                                   boolean searchDescription, boolean wholeWords,
+                                                   int minDurationSeconds, int maxDurationSeconds) {
+        EpisodeCondition.Field field = searchTitle && searchDescription ? EpisodeCondition.Field.POST
+                : searchDescription ? EpisodeCondition.Field.DESCRIPTION : EpisodeCondition.Field.TITLE;
+        List<EpisodeCondition> keep = new ArrayList<>();
+        for (String term : includeTerms) {
+            keep.add(EpisodeCondition.contains(field, term, wholeWords));
+        }
+        List<EpisodeCondition> skip = new ArrayList<>();
+        for (String term : excludeTerms) {
+            skip.add(EpisodeCondition.contains(field, term, wholeWords));
+        }
+        if (minDurationSeconds > 0) {
+            skip.add(EpisodeCondition.length(EpisodeCondition.Operator.SHORTER_THAN,
+                    Math.max(1, minDurationSeconds / 60)));
+        }
+        if (maxDurationSeconds > 0) {
+            skip.add(EpisodeCondition.length(EpisodeCondition.Operator.LONGER_THAN,
+                    Math.max(1, maxDurationSeconds / 60)));
+        }
+        return new AdvancedEpisodeFilter(keep, matchAll, skip, false);
     }
 
     @NonNull
-    public List<String> getExcludeTerms() {
-        return new ArrayList<>(excludeTerms);
+    public List<EpisodeCondition> getKeepConditions() {
+        return new ArrayList<>(keepConditions);
     }
 
-    public boolean isSearchTitle() {
-        return searchTitle;
+    public boolean isKeepMatchAll() {
+        return keepMatchAll;
     }
 
-    public boolean isSearchDescription() {
-        return searchDescription;
+    @NonNull
+    public List<EpisodeCondition> getSkipConditions() {
+        return new ArrayList<>(skipConditions);
     }
 
-    public boolean isWholeWords() {
-        return wholeWords;
-    }
-
-    public int getMinDurationSeconds() {
-        return minDurationSeconds;
-    }
-
-    public int getMaxDurationSeconds() {
-        return maxDurationSeconds;
+    public boolean isSkipMatchAll() {
+        return skipMatchAll;
     }
 
     public boolean isEmpty() {
-        return includeTerms.isEmpty() && excludeTerms.isEmpty()
-                && minDurationSeconds <= 0 && maxDurationSeconds <= 0;
+        return keepConditions.isEmpty() && skipConditions.isEmpty();
     }
 
     public boolean needsDescription() {
-        return searchDescription && (!includeTerms.isEmpty() || !excludeTerms.isEmpty());
+        for (EpisodeCondition condition : keepConditions) {
+            if (condition.usesDescription()) {
+                return true;
+            }
+        }
+        for (EpisodeCondition condition : skipConditions) {
+            if (condition.usesDescription()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @NonNull
     public Result evaluate(@Nullable String title, @Nullable String description, int durationMillis) {
-        int seconds = durationMillis / 1000;
-        if (durationMillis > 0 && minDurationSeconds > 0 && seconds < minDurationSeconds) {
-            return new Result(false, Reason.TOO_SHORT, null, false);
+        if (isEmpty()) {
+            return new Result(true, Reason.NO_CONDITIONS, null);
         }
-        if (durationMillis > 0 && maxDurationSeconds > 0 && seconds > maxDurationSeconds) {
-            return new Result(false, Reason.TOO_LONG, null, false);
-        }
-        String titleText = searchTitle && title != null ? title : "";
-        String descriptionText = searchDescription && description != null ? toPlainText(description) : "";
+        String normalizedTitle = EpisodeCondition.normalize(title);
+        String normalizedDescription = needsDescription() && description != null
+                ? EpisodeCondition.normalize(toPlainText(description)) : "";
 
-        for (String term : excludeTerms) {
-            if (contains(titleText, term)) {
-                return new Result(false, Reason.EXCLUDED, term, false);
-            }
-            if (contains(descriptionText, term)) {
-                return new Result(false, Reason.EXCLUDED, term, true);
-            }
-        }
-        if (includeTerms.isEmpty()) {
-            return new Result(true, Reason.NO_WORDS, null, false);
-        }
-        String firstFound = null;
-        boolean firstInDescription = false;
-        for (String term : includeTerms) {
-            boolean inTitle = contains(titleText, term);
-            boolean inDescription = !inTitle && contains(descriptionText, term);
-            if (inTitle || inDescription) {
-                if (!matchAll) {
-                    return new Result(true, Reason.INCLUDED, term, inDescription);
+        EpisodeCondition kept = null;
+        if (!keepConditions.isEmpty()) {
+            EpisodeCondition decisive = null;
+            boolean keep = keepMatchAll;
+            for (EpisodeCondition condition : keepConditions) {
+                Boolean holds = condition.test(normalizedTitle, normalizedDescription, durationMillis);
+                boolean passes = holds == null || holds;
+                if (keepMatchAll && !passes) {
+                    keep = false;
+                    decisive = condition;
+                    break;
                 }
-                if (firstFound == null) {
-                    firstFound = term;
-                    firstInDescription = inDescription;
+                if (!keepMatchAll && passes) {
+                    keep = true;
+                    decisive = condition;
+                    break;
                 }
-            } else if (matchAll) {
-                return new Result(false, Reason.MISSING_WORD, term, false);
             }
+            if (!keep) {
+                return new Result(false, Reason.NOT_KEPT, decisive);
+            }
+            kept = keepMatchAll ? null : decisive;
         }
-        if (matchAll) {
-            return new Result(true, Reason.INCLUDED, firstFound, firstInDescription);
-        }
-        return new Result(false, Reason.NO_WORD_FOUND, null, false);
-    }
 
-    private boolean contains(@NonNull String text, @NonNull String term) {
-        if (text.isEmpty()) {
-            return false;
+        if (!skipConditions.isEmpty()) {
+            EpisodeCondition decisive = null;
+            boolean skip = skipMatchAll;
+            for (EpisodeCondition condition : skipConditions) {
+                Boolean holds = condition.test(normalizedTitle, normalizedDescription, durationMillis);
+                boolean applies = holds != null && holds;
+                if (skipMatchAll && !applies) {
+                    skip = false;
+                    break;
+                }
+                if (!skipMatchAll && applies) {
+                    skip = true;
+                    decisive = condition;
+                    break;
+                }
+            }
+            if (skip) {
+                return new Result(false, Reason.SKIPPED, decisive);
+            }
+            if (keepConditions.isEmpty()) {
+                return new Result(true, Reason.NOT_SKIPPED, null);
+            }
         }
-        if (!wholeWords) {
-            return text.toLowerCase(Locale.ROOT).contains(term.toLowerCase(Locale.ROOT));
-        }
-        Pattern pattern = Pattern.compile("(?<![\\p{L}\\p{N}])" + Pattern.quote(term) + "(?![\\p{L}\\p{N}])",
-                Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
-        return pattern.matcher(text).find();
+        return new Result(true, Reason.KEPT, kept);
     }
 
     @NonNull
@@ -179,12 +190,11 @@ public class AdvancedEpisodeFilter {
     }
 
     @NonNull
-    private static List<String> cleanTerms(@NonNull List<String> terms) {
-        List<String> cleaned = new ArrayList<>();
-        for (String term : terms) {
-            String trimmed = term == null ? "" : term.trim();
-            if (!trimmed.isEmpty() && !cleaned.contains(trimmed)) {
-                cleaned.add(trimmed);
+    private static List<EpisodeCondition> clean(@NonNull List<EpisodeCondition> conditions) {
+        List<EpisodeCondition> cleaned = new ArrayList<>();
+        for (EpisodeCondition condition : conditions) {
+            if (condition != null && condition.isValid() && !cleaned.contains(condition)) {
+                cleaned.add(condition);
             }
         }
         return cleaned;
