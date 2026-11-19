@@ -154,6 +154,11 @@ if (project.hasProperty("antennaPodPlayPublisherCredentials")) {
     }
 }
 
+def castlistVersion = new Properties()
+file("castlist-version.properties").withInputStream { castlistVersion.load(it) }
+android.defaultConfig.versionName = castlistVersion.getProperty("versionName")
+android.defaultConfig.versionCode = castlistVersion.getProperty("versionCode").toInteger()
+
 if (project.hasProperty("forkVersionName")) {
     android.defaultConfig.versionName = project.property("forkVersionName")
 }

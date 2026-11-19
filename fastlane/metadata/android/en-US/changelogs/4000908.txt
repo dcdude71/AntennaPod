@@ -1,0 +1,1 @@
+First release with its own version number and store listing. Skip ad on the lock screen, one sleep button in the player, more columns on open foldables, time left in playlists, Duplicate playlist, "All playlists" widget tile.

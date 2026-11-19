@@ -1,0 +1,29 @@
+Castlist is a podcast player built on AntennaPod, the open-source podcast manager. It keeps everything AntennaPod does and adds a few features for people who listen a lot.
+
+<b>Rule-based playlists</b>
+<ul>
+<li>A playlist is a set of rules, one per podcast: how many episodes, the most recent or the oldest unplayed, and in which order. The playlist fills and updates itself.</li>
+<li>Play a playlist from the top and move on to the next one when it ends.</li>
+<li>Keep a playlist's episodes downloaded automatically, or show only downloaded ones.</li>
+<li>See the time left in each playlist, in the app, in the player and on the widget.</li>
+<li>Start playlists from a home screen widget, a home screen icon or Android Auto.</li>
+</ul>
+
+<b>Episode filters</b>
+<ul>
+<li>Keep or skip episodes with conditions on the title, the description or the length: contains, doesn't contain, starts with, ends with, is exactly.</li>
+<li>Any or all conditions, whole words, accents and case ignored, with a live preview.</li>
+<li>Filters decide what downloads automatically and what playlists use.</li>
+</ul>
+
+<b>Player</b>
+<ul>
+<li>A modern player with big controls, or the classic AntennaPod layout.</li>
+<li>A Skip ad button with a per-podcast time, also on the lock screen.</li>
+<li>Layouts for foldables and large screens.</li>
+</ul>
+
+<b>Everything from AntennaPod</b>
+Subscribe to any RSS feed, queue and inbox, automatic downloads and cleanup, chapters, sleep timer, playback speed, gpodder.net and Nextcloud sync, OPML import and export, and database backups. A backup from AntennaPod imports into Castlist as is.
+
+Castlist collects no data. It is not affiliated with or endorsed by the AntennaPod team. Please report problems on Castlist's GitHub page, not to AntennaPod.
