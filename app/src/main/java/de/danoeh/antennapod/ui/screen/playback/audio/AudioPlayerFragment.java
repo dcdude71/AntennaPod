@@ -384,6 +384,7 @@ public class AudioPlayerFragment extends Fragment implements
         boolean timerActive = !event.isCancelled() && !event.isOver();
         toolbar.getMenu().findItem(R.id.set_sleeptimer_item).setVisible(!timerActive);
         toolbar.getMenu().findItem(R.id.disable_sleeptimer_item).setVisible(timerActive);
+        PlayerStyle.onSleepTimerUpdate(getView(), event);
         if (event.isCancelled() || event.wasJustEnabled() || event.isOver()) {
             AudioPlayerFragment.this.loadMediaInfo(false);
         }

@@ -4,9 +4,11 @@
 
 Many podcasts play ads of about the same length. In a podcast's settings, set an **Ad skip time** (for example 30 seconds). The player then shows a **Skip ad** button for that podcast that jumps ahead by that amount, separate from the regular fast-forward button. Set it back to 0 to hide the button.
 
+The same **Skip ad** button also appears in the media controls on the lock screen and in Quick Settings, next to fast-forward. The small collapsed notification keeps rewind, play and fast-forward. To hide it there, turn off Settings → Castlist features → **Skip ad in notification**.
+
 ## The modern player
 
-The full-screen player has a new look: smaller artwork, a bold episode title, and large, well-spaced controls (rewind, play, fast-forward), with speed, sleep timer, next episode and show notes in a labeled row below.
+The full-screen player has a new look: smaller artwork, a bold episode title, and large, well-spaced controls (rewind, play, fast-forward), with speed, sleep timer, next episode and show notes in a labeled row below. While a sleep timer runs, the Sleep button turns to the accent color and shows the time left; tap it to change or stop the timer.
 
 ![The modern player](images/player.png)
 

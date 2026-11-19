@@ -2,6 +2,7 @@ package de.danoeh.antennapod.ui.screen.subscriptions;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -299,6 +300,14 @@ public class SubscriptionFragment extends Fragment
         return false;
     }
 
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if (subscriptionRecycler != null) {
+            setColumnNumber(prefs.getInt(PREF_NUM_COLUMNS, getDefaultNumOfColumns()));
+        }
+    }
+
     private void setColumnNumber(int columns) {
         if (itemDecoration != null) {
             subscriptionRecycler.removeItemDecoration(itemDecoration);
@@ -310,7 +319,8 @@ public class SubscriptionFragment extends Fragment
         } else if (columns == 1) {
             layoutManager = new GridLayoutManager(getContext(), 1, RecyclerView.VERTICAL, false);
         } else {
-            layoutManager = new GridLayoutManager(getContext(), columns, RecyclerView.VERTICAL, false);
+            layoutManager = new GridLayoutManager(getContext(), SubscriptionColumns.shown(requireContext(), columns),
+                    RecyclerView.VERTICAL, false);
             itemDecoration = new SubscriptionsRecyclerAdapter.GridDividerItemDecorator();
             subscriptionRecycler.addItemDecoration(itemDecoration);
         }

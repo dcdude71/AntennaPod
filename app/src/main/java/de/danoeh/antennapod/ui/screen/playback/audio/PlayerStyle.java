@@ -8,7 +8,9 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewOutlineProvider;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
@@ -16,8 +18,15 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.preference.PreferenceManager;
 
+import com.google.android.material.appbar.MaterialToolbar;
+
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.databinding.CoverFragmentBinding;
+import de.danoeh.antennapod.event.playback.SleepTimerUpdatedEvent;
+import de.danoeh.antennapod.storage.preferences.SleepTimerPreferences;
+import de.danoeh.antennapod.storage.preferences.SleepTimerType;
+import de.danoeh.antennapod.ui.common.Converter;
+import de.danoeh.antennapod.ui.common.ThemeUtils;
 import de.danoeh.antennapod.ui.screen.playback.SleepTimerDialog;
 
 public final class PlayerStyle {
@@ -51,6 +60,43 @@ public final class PlayerStyle {
                 new SleepTimerDialog().show(fragment.getChildFragmentManager(), "SleepTimerDialog"));
         root.findViewById(R.id.butShownotes).setOnClickListener(v ->
                 fragment.scrollToPage(AudioPlayerFragment.POS_DESCRIPTION, true));
+        hideToolbarSleepTimer(root.findViewById(R.id.toolbar));
+    }
+
+    static void onSleepTimerUpdate(@Nullable View root, @NonNull SleepTimerUpdatedEvent event) {
+        if (root == null) {
+            return;
+        }
+        ImageButton sleepButton = root.findViewById(R.id.butSleepTimer);
+        TextView label = root.findViewById(R.id.txtvSleepTimer);
+        if (sleepButton == null || label == null) {
+            return;
+        }
+        hideToolbarSleepTimer(root.findViewById(R.id.toolbar));
+        Context context = root.getContext();
+        boolean active = !event.isCancelled() && !event.isOver();
+        int color = active ? ThemeUtils.getColorFromAttr(context, androidx.appcompat.R.attr.colorPrimary)
+                : ThemeUtils.getColorFromAttr(context, android.R.attr.textColorSecondary);
+        label.setTextColor(color);
+        sleepButton.setColorFilter(active ? color : ThemeUtils.getColorFromAttr(context,
+                androidx.appcompat.R.attr.colorControlNormal));
+        if (!active) {
+            label.setText(R.string.player_sleep_label);
+        } else if (SleepTimerPreferences.getSleepTimerType() == SleepTimerType.EPISODES) {
+            int episodes = (int) event.getDisplayTimeLeft();
+            label.setText(context.getResources().getQuantityString(R.plurals.num_episodes, episodes, episodes));
+        } else {
+            String time = Converter.getDurationStringLong((int) event.getDisplayTimeLeft());
+            label.setText(time.startsWith("00:") ? time.substring(3) : time);
+        }
+    }
+
+    private static void hideToolbarSleepTimer(@Nullable MaterialToolbar toolbar) {
+        if (toolbar == null) {
+            return;
+        }
+        toolbar.getMenu().findItem(R.id.set_sleeptimer_item).setVisible(false);
+        toolbar.getMenu().findItem(R.id.disable_sleeptimer_item).setVisible(false);
     }
 
     static void setupLayout(@NonNull AudioPlayerFragment fragment, @NonNull View root) {

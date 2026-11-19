@@ -52,7 +52,7 @@ Inspired by Downcast's playlist engine.
 - The debug app is separate from the release app. Import a database export to test with real podcasts. Downloaded files from the release app are not readable by the debug app, so reset `FeedMedia.downloaded`/`file_url` in the imported copy (`adb exec-out run-as io.github.dcdude71.castlist.debug cat databases/Antennapod.db`, edit with sqlite3, push back with `run-as ... sh -c 'cat > databases/Antennapod.db'` while the app is force-stopped).
 
 ## Skip ad
-Per-podcast "Ad skip time" in the podcast's settings (fork table via `FeedAdSkip` / `FeedAdSkipDbAdapter`). When set, the player shows a "Skip ad" button that jumps ahead by that amount from the current position, separate from fast-forward.
+Per-podcast "Ad skip time" in the podcast's settings (fork table via `FeedAdSkip` / `FeedAdSkipDbAdapter`). When set, the player shows a "Skip ad" button that jumps ahead by that amount from the current position, separate from fast-forward. The media notification gets the same button right after fast-forward (`NotificationAdSkip`, hooks in `MediaLibrarySessionCallback` and `Media3PlaybackService.switchToPlayable`), unless Settings → Castlist features → "Skip ad in notification" (`prefNotificationAdSkip`) is off. Android shows it on the lock screen and in Quick Settings, not in the 3-button collapsed notification.
 
 ## Episode filter (advanced)
 - Model: `AdvancedEpisodeFilter` = keep conditions (any/all) + skip conditions (any/all); `EpisodeCondition` = field (POST = title or description, TITLE, DESCRIPTION, LENGTH), operator, value, whole word. Matching ignores case and accents (`EpisodeCondition.normalize`). Unknown length never fails a keep condition nor triggers a skip one.

@@ -23,3 +23,7 @@ Tapping an episode anywhere (Inbox, Queue, Episodes, Downloads, Home, a podcast'
 ## Home screen widget
 
 The [playlists widget](home-screen.md#playlists-widget) uses compact tiles on the narrow outer screen and wider ones when there is room.
+
+## Subscriptions
+
+When the phone is open (or on any screen at least 600 dp wide), the Subscriptions grid shows twice the number of columns you chose in its menu, so the covers stay about the same size. Folding the phone goes back to your number.

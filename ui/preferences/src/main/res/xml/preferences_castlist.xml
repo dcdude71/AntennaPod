@@ -11,6 +11,11 @@
                 android:title="@string/pref_player_style_title"
                 app:useSimpleSummaryProvider="true"
                 android:defaultValue="modern" />
+        <SwitchPreferenceCompat
+                android:key="prefNotificationAdSkip"
+                android:title="@string/pref_notification_ad_skip_title"
+                android:summary="@string/pref_notification_ad_skip_summary"
+                android:defaultValue="true" />
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/playlists_label">
