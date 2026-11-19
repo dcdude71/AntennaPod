@@ -82,6 +82,16 @@ public final class PlaylistReader {
         return episodes;
     }
 
+    public static long getTimeLeftMillis(@NonNull List<FeedItem> episodes) {
+        long total = 0;
+        for (FeedItem item : episodes) {
+            if (item.getMedia() != null) {
+                total += Math.max(0, item.getMedia().getDuration() - item.getMedia().getPosition());
+            }
+        }
+        return total;
+    }
+
     @NonNull
     public static synchronized Set<Long> getDismissedEpisodeIds() {
         PodDBAdapter adapter = PodDBAdapter.getInstance();
@@ -146,6 +156,18 @@ public final class PlaylistReader {
         return getEpisodes(rules, excludedOldestIds, loadFeeds(), downloadedOnly);
     }
 
+    public static int countEpisodesHiddenByFilters(long playlistId) {
+        List<PlaylistRule> rules = getRules(playlistId);
+        if (rules.isEmpty()) {
+            return 0;
+        }
+        Playlist playlist = getPlaylist(playlistId);
+        boolean downloadedOnly = playlist != null && playlist.isDownloadedOnly();
+        Map<Long, Feed> feeds = loadFeeds();
+        int unfiltered = getEpisodes(rules, Collections.emptySet(), feeds, downloadedOnly, false).size();
+        return Math.max(0, unfiltered - getEpisodes(rules, Collections.emptySet(), feeds, downloadedOnly).size());
+    }
+
     @NonNull
     private static Map<Long, Feed> loadFeeds() {
         Map<Long, Feed> feeds = new HashMap<>();
@@ -160,6 +182,14 @@ public final class PlaylistReader {
                                               @NonNull final Set<Long> excludedOldestIds,
                                               @NonNull final Map<Long, Feed> feeds,
                                               final boolean downloadedOnly) {
+        return getEpisodes(rules, excludedOldestIds, feeds, downloadedOnly, true);
+    }
+
+    @NonNull
+    private static List<FeedItem> getEpisodes(@NonNull List<PlaylistRule> rules,
+                                              @NonNull final Set<Long> excludedOldestIds,
+                                              @NonNull final Map<Long, Feed> feeds,
+                                              final boolean downloadedOnly, final boolean applyFilters) {
         if (rules.isEmpty()) {
             return new ArrayList<>();
         }
@@ -172,7 +202,7 @@ public final class PlaylistReader {
                     return new ArrayList<>();
                 }
                 return collect(feed, itemFilter(downloadedOnly, FeedItemFilter.HAS_MEDIA),
-                        SortOrder.DATE_NEW_OLD, limit, Collections.emptySet());
+                        SortOrder.DATE_NEW_OLD, limit, Collections.emptySet(), applyFilters);
             }
 
             @NonNull
@@ -183,7 +213,7 @@ public final class PlaylistReader {
                     return new ArrayList<>();
                 }
                 return collect(feed, itemFilter(downloadedOnly, FeedItemFilter.HAS_MEDIA, FeedItemFilter.UNPLAYED),
-                        SortOrder.DATE_OLD_NEW, limit, excludedOldestIds);
+                        SortOrder.DATE_OLD_NEW, limit, excludedOldestIds, applyFilters);
             }
         });
     }
@@ -196,14 +226,15 @@ public final class PlaylistReader {
 
     @NonNull
     private static List<FeedItem> collect(@NonNull Feed feed, @NonNull FeedItemFilter itemFilter,
-                                          @NonNull SortOrder order, int limit, @NonNull Set<Long> skippedIds) {
+                                          @NonNull SortOrder order, int limit, @NonNull Set<Long> skippedIds,
+                                          boolean applyFilters) {
         List<FeedItem> result = new ArrayList<>();
         int pageSize = limit == Integer.MAX_VALUE ? Integer.MAX_VALUE
                 : Math.max(MIN_PAGE_SIZE, limit + skippedIds.size());
         int offset = 0;
         while (result.size() < limit) {
             List<FeedItem> page = DBReader.getFeedItemList(feed, itemFilter, order, offset, pageSize);
-            for (FeedItem item : EpisodeFilters.filter(feed, page)) {
+            for (FeedItem item : applyFilters ? EpisodeFilters.filter(feed, page) : page) {
                 if (result.size() < limit && !skippedIds.contains(item.getId())) {
                     result.add(item);
                 }

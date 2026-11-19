@@ -2,6 +2,7 @@ package de.danoeh.antennapod.ui.screen.playlist;
 
 import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.pm.ShortcutInfoCompat;
@@ -21,6 +22,7 @@ import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.event.FeedItemEvent;
 import de.danoeh.antennapod.event.FeedUpdateRunningEvent;
 import de.danoeh.antennapod.event.PlaylistEvent;
+import de.danoeh.antennapod.event.PlaylistTransitionEvent;
 import de.danoeh.antennapod.model.playlist.Playlist;
 import de.danoeh.antennapod.storage.database.PlaylistReader;
 import de.danoeh.antennapod.ui.appstartintent.PlaylistPlayStarter;
@@ -75,6 +77,13 @@ public final class PlaylistShortcuts {
     public void onPlaylistEvent(PlaylistEvent event) {
         PlaylistWidget.refresh(context);
         update(context);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onPlaylistTransition(PlaylistTransitionEvent event) {
+        String message = event.nextPlaylistName == null ? context.getString(R.string.playlist_finished)
+                : context.getString(R.string.playlist_now_playing, event.nextPlaylistName);
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
     }
 
     @Subscribe(threadMode = ThreadMode.BACKGROUND)

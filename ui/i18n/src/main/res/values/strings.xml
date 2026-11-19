@@ -1137,6 +1137,17 @@
         <item quantity="other">%d episodes</item>
     </plurals>
     <string name="playlist_summary">%1$s · %2$s</string>
+    <string name="playlist_time_left">%1$s left</string>
+    <string name="playlist_duration_minutes">%1$d min</string>
+    <string name="playlist_duration_hours_minutes">%1$d h %2$d min</string>
+    <string name="playlist_now_playing">Now playing: %1$s</string>
+    <string name="playlist_finished">Playlist finished</string>
+    <string name="playlist_duplicate">Duplicate</string>
+    <string name="playlist_copy_name">%1$s (copy)</string>
+    <plurals name="playlist_hidden_by_filters">
+        <item quantity="one">%d episode is hidden by an episode filter. Check the filter in the podcast\'s settings.</item>
+        <item quantity="other">%d episodes are hidden by episode filters. Check the filters in the podcasts\' settings.</item>
+    </plurals>
     <string name="feed_ad_skip">Ad skip time</string>
     <string name="feed_ad_skip_off">Off. Set a time to show a \"Skip ad\" button in the player.</string>
     <string name="feed_ad_skip_message">The \"Skip ad\" button in the player jumps ahead by this many seconds. Use 0 to hide the button.</string>
@@ -1181,6 +1192,8 @@
     <string name="pref_episode_filter_style_title">Episode filter style</string>
     <string name="episode_filter_style_basic">Basic (works with the official AntennaPod)</string>
     <string name="episode_filter_style_advanced">Advanced (Castlist only)</string>
+    <string name="episode_filter_style_switched_advanced">Podcasts now use their advanced filters. Your basic filters are kept, unchanged, and are ignored while Advanced is on. Switching back to Basic uses them again.</string>
+    <string name="episode_filter_style_switched_basic">Podcasts now use their basic filters. Your advanced filters are kept, unchanged, and are ignored while Basic is on. Switching back to Advanced uses them again.</string>
     <string name="advanced_filter_title">Episode filter</string>
     <string name="advanced_filter_save">Save</string>
     <string name="advanced_filter_intro">Decides which new episodes download automatically and which ones playlists can use. \"Post\" looks in the title and the description. Upper and lower case and accents are ignored.</string>

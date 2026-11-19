@@ -20,7 +20,7 @@ Using it:
 - A playlist with nothing to play says so; tapping it opens the Playlists tab.
 - **All playlists** is also in the list of choices. Its tile starts your playlists from the top, like the ▶ button in the Playlists tab: the first playlist with episodes, then the next ones as set in Settings → Castlist features → At the end of a playlist. It shows pause whenever a playlist is playing. A widget can hold just this one tile.
 
-The widget adapts to its size: four compact tiles on a narrow screen (like the outer screen of a foldable), wider tiles when there is room. You can resize it like any widget. If it is too narrow for all your playlists, it shows the first ones.
+The widget adapts to its size: four compact tiles on a narrow screen (like the outer screen of a foldable), wider tiles when there is room. Wide tiles also show the time left in each playlist. You can resize it like any widget. If it is too narrow for all your playlists, it shows the first ones.
 
 To change the playlists later, long-press the widget and open its settings (on Pixel phones: the pencil or **Widget settings**).
 

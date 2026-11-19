@@ -210,6 +210,46 @@ public class PlaylistDatabaseTest {
     }
 
     @Test
+    public void testDuplicatePlaylist() throws Exception {
+        Feed feed = createFeed(3);
+        Playlist original = new Playlist("Original");
+        original.setAutoDownload(true);
+        long originalId = PlaylistWriter.createPlaylist(original).get();
+        PlaylistRule rule = new PlaylistRule(originalId, feed.getId());
+        rule.setEpisodeCount(2);
+        rule.setPickFrom(PlaylistRule.PickFrom.OLDEST);
+        PlaylistWriter.addRule(rule).get();
+
+        long copyId = PlaylistWriter.duplicatePlaylist(originalId, "Copy").get();
+        assertTrue(copyId != originalId);
+        Playlist copy = PlaylistReader.getPlaylist(copyId);
+        assertEquals("Copy", copy.getName());
+        assertTrue(copy.isAutoDownload());
+        List<PlaylistRule> rules = PlaylistReader.getRules(copyId);
+        assertEquals(1, rules.size());
+        assertEquals(2, rules.get(0).getEpisodeCount());
+        assertEquals(PlaylistRule.PickFrom.OLDEST, rules.get(0).getPickFrom());
+        assertEquals(ids(PlaylistReader.getEpisodes(originalId)), ids(PlaylistReader.getEpisodes(copyId)));
+    }
+
+    @Test
+    public void testCountEpisodesHiddenByFilters() throws Exception {
+        Feed feed = createFeed(3);
+        long playlistId = PlaylistWriter.createPlaylist(new Playlist("Filtered")).get();
+        PlaylistRule rule = new PlaylistRule(playlistId, feed.getId());
+        rule.setPickFrom(PlaylistRule.PickFrom.OLDEST);
+        PlaylistWriter.addRule(rule).get();
+        EpisodeFilters.setAdvancedFilter(feed.getId(), new AdvancedEpisodeFilter(Collections.emptyList(), false,
+                List.of(EpisodeCondition.contains(EpisodeCondition.Field.TITLE, "Episode", false)), false));
+
+        setFilterStyle(EpisodeFilterPreferences.STYLE_BASIC);
+        assertEquals(0, PlaylistReader.countEpisodesHiddenByFilters(playlistId));
+        setFilterStyle(EpisodeFilterPreferences.STYLE_ADVANCED);
+        assertTrue(PlaylistReader.getEpisodes(playlistId).isEmpty());
+        assertEquals(3, PlaylistReader.countEpisodesHiddenByFilters(playlistId));
+    }
+
+    @Test
     public void testDismissedEpisodes() throws Exception {
         Feed feed = createFeed(2);
         assertTrue(PlaylistReader.getDismissedEpisodeIds().isEmpty());

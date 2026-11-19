@@ -11,6 +11,12 @@ Next to the regular queue, you can create any number of playlists. A playlist is
 3. Tap **Add podcast**, choose a podcast and set its rule (below).
 4. Add more podcasts the same way. Drag a rule to reorder it, swipe it away to remove it.
 
+The Playlists tab shows, for each playlist, how many podcasts and episodes it holds and how much listening time is left ("2 podcasts · 5 episodes · 3 h 10 min left"). Time left counts only what is still unheard in partly played episodes.
+
+To start a similar playlist, open a playlist's menu (⋮) and choose **Duplicate**: the copy gets the same rules and options under a new name.
+
+If a playlist is empty because the podcasts' [episode filters](episode-filter.md) hide all its episodes, it says how many are hidden, so you know where to look.
+
 ![Editing a playlist's rules](images/playlist-rules.png)
 
 ## Rules
@@ -41,6 +47,8 @@ On a big screen the rules editor shows a live preview of the playlist next to th
 
 Playlists always play from the top. To hear one particular episode, open its podcast and play it from there; that uses the normal queue.
 
+While a playlist plays, the player shows its name and the time left under the podcast name, for example *Morning · 1 h 20 min left*.
+
 When an episode ends, the next one comes from the playlist, never from your queue, and playing from a playlist never adds episodes to the queue. Starting an episode from anywhere else (the queue, the inbox, a podcast page) switches back to the normal queue.
 
 ## When a playlist runs out
@@ -50,7 +58,7 @@ The app moves on to the next playlist, in the order of your Playlists tab, skipp
 - **Continue with the next playlist** (default)
 - **Stop**
 
-Either way, playback never falls back to the queue. Reorder your playlists by dragging them in the Playlists tab.
+A short message says "Now playing: *next playlist*" when the app moves on, or "Playlist finished" when it stops. Either way, playback never falls back to the queue. Reorder your playlists by dragging them in the Playlists tab.
 
 ## Automatic downloads
 

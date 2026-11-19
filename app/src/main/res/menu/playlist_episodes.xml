@@ -43,6 +43,11 @@
         custom:showAsAction="never" />
 
     <item
+        android:id="@+id/playlist_duplicate"
+        android:title="@string/playlist_duplicate"
+        custom:showAsAction="never" />
+
+    <item
         android:id="@+id/playlist_delete"
         android:title="@string/playlist_delete"
         custom:showAsAction="never" />

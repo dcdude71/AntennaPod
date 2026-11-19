@@ -887,6 +887,7 @@ public class Media3PlaybackService extends MediaLibraryService {
             return;
         }
         int startPosition = playbackStartPosition;
+        boolean fromPlaylist = PlaylistPlayback.getActivePlaylist(this) != PlaylistPlayback.NO_PLAYLIST;
         queueLoaderDisposable = Maybe.fromCallable(() -> {
             FeedItem nextItem = PlaylistPlayback.getNextItem(this, item, wasSkipped);
             boolean hasNext = nextItem != null && nextItem.getMedia() != null;
@@ -936,7 +937,7 @@ public class Media3PlaybackService extends MediaLibraryService {
                             EventBus.getDefault().post(new PlayerStatusEvent());
                             EventBus.getDefault().post(
                                     new PlaybackServiceEvent(PlaybackServiceEvent.Action.SERVICE_SHUT_DOWN));
-                            if (wasSkipped) {
+                            if (wasSkipped && !fromPlaylist) {
                                 EventBus.getDefault().post(new MessageEvent(getString(R.string.no_following_in_queue)));
                             }
                         });

@@ -48,6 +48,7 @@ import de.danoeh.antennapod.storage.database.PlaylistPlayback;
 import de.danoeh.antennapod.storage.database.PlaylistReader;
 import de.danoeh.antennapod.storage.database.PlaylistWriter;
 import de.danoeh.antennapod.ui.common.ConfirmationDialog;
+import de.danoeh.antennapod.ui.common.PlaylistTime;
 import de.danoeh.antennapod.ui.episodeslist.EpisodeItemViewHolder;
 import de.danoeh.antennapod.ui.episodeslist.EpisodesListFragment;
 
@@ -61,6 +62,8 @@ public class PlaylistEpisodesFragment extends EpisodesListFragment {
     private long playlistId;
     private volatile Playlist playlist;
     private volatile int episodeCount;
+    private volatile long timeLeftMillis;
+    private volatile int hiddenByFilters;
     private volatile boolean hasUnlimitedRule;
     private volatile Set<Long> ruleFeedIds = Collections.emptySet();
     private boolean preview;
@@ -167,6 +170,14 @@ public class PlaylistEpisodesFragment extends EpisodesListFragment {
                 });
             }
             return true;
+        } else if (itemId == R.id.playlist_duplicate) {
+            Playlist current = playlist;
+            if (current != null) {
+                PlaylistNameDialog.show(requireContext(), R.string.playlist_duplicate,
+                        getString(R.string.playlist_copy_name, current.getName()),
+                        name -> PlaylistWriter.duplicatePlaylist(playlistId, name));
+            }
+            return true;
         } else if (itemId == R.id.playlist_delete) {
             confirmDelete();
             return true;
@@ -267,12 +278,21 @@ public class PlaylistEpisodesFragment extends EpisodesListFragment {
         Playlist current = playlist;
         if (current != null) {
             toolbar.setTitle(current.getName());
+            String count = getResources().getQuantityString(R.plurals.playlist_num_episodes,
+                    episodeCount, episodeCount);
+            toolbar.setSubtitle(timeLeftMillis > 0 ? getString(R.string.playlist_summary, count,
+                    getString(R.string.playlist_time_left,
+                            PlaylistTime.format(requireContext(), timeLeftMillis))) : count);
             toolbar.getMenu().findItem(R.id.playlist_auto_download).setChecked(current.isAutoDownload());
             toolbar.getMenu().findItem(R.id.playlist_android_auto).setChecked(current.isShowInAndroidAuto());
             toolbar.getMenu().findItem(R.id.playlist_downloaded_only).setChecked(current.isDownloadedOnly());
             emptyView.setMessage(current.isDownloadedOnly()
                     ? R.string.playlist_episodes_empty_downloaded_message
                     : R.string.playlist_episodes_empty_message);
+            if (hiddenByFilters > 0) {
+                emptyView.setMessage(getResources().getQuantityString(R.plurals.playlist_hidden_by_filters,
+                        hiddenByFilters, hiddenByFilters));
+            }
         }
     }
 
@@ -320,6 +340,8 @@ public class PlaylistEpisodesFragment extends EpisodesListFragment {
         ruleFeedIds = feedIds;
         List<FeedItem> items = PlaylistReader.getEpisodes(playlistId);
         episodeCount = items.size();
+        timeLeftMillis = PlaylistReader.getTimeLeftMillis(items);
+        hiddenByFilters = items.isEmpty() ? PlaylistReader.countEpisodesHiddenByFilters(playlistId) : 0;
         if (preview) {
             Set<Long> ids = new HashSet<>();
             for (FeedItem item : items) {

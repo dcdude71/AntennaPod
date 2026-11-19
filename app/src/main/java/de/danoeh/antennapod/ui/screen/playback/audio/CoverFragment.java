@@ -161,6 +161,7 @@ public class CoverFragment extends Fragment {
         }
         viewBinding.txtvPodcastTitle.setOnLongClickListener(v -> copyText(media.getFeedTitle()));
         viewBinding.txtvEpisodeTitle.setText(media.getEpisodeTitle());
+        PlaylistLine.update(viewBinding);
         viewBinding.txtvEpisodeTitle.setOnLongClickListener(v -> copyText(media.getEpisodeTitle()));
         viewBinding.txtvEpisodeTitle.setOnClickListener(v -> {
             int lines = viewBinding.txtvEpisodeTitle.getLineCount();

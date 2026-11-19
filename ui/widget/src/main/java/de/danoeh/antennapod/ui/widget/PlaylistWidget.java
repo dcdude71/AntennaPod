@@ -21,10 +21,8 @@ import androidx.media3.common.Player;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -39,6 +37,7 @@ import de.danoeh.antennapod.storage.preferences.PlaybackPreferences;
 import de.danoeh.antennapod.ui.appstartintent.MainActivityStarter;
 import de.danoeh.antennapod.ui.appstartintent.MediaButtonStarter;
 import de.danoeh.antennapod.ui.appstartintent.PlaylistPlayStarter;
+import de.danoeh.antennapod.ui.common.PlaylistTime;
 
 public class PlaylistWidget extends AppWidgetProvider {
     public static final int MAX_PLAYLISTS = 4;
@@ -148,7 +147,7 @@ public class PlaylistWidget extends AppWidgetProvider {
         boolean isPlaying = knownPlaying != null ? knownPlaying
                 : PlaybackPreferences.getCurrentPlayerStatus() == PlaybackPreferences.PLAYER_STATUS_PLAYING;
         long active = PlaylistPlayback.getActivePlaylist(context);
-        Map<Long, Integer> counts = new HashMap<>();
+        Map<Long, long[]> counts = new HashMap<>();
 
         for (int widgetId : widgetIds) {
             List<Playlist> shown = new ArrayList<>();
@@ -168,7 +167,7 @@ public class PlaylistWidget extends AppWidgetProvider {
 
     @NonNull
     private static RemoteViews buildViews(@NonNull Context context, @Nullable Bundle options,
-                                          @NonNull List<Playlist> shown, @NonNull Map<Long, Integer> counts,
+                                          @NonNull List<Playlist> shown, @NonNull Map<Long, long[]> counts,
                                           boolean isPlaying, long active) {
         for (Playlist playlist : shown) {
             if (!counts.containsKey(playlist.getId())) {
@@ -205,7 +204,7 @@ public class PlaylistWidget extends AppWidgetProvider {
 
     @NonNull
     private static RemoteViews buildViews(@NonNull Context context, @NonNull List<Playlist> shown,
-                                          @NonNull Map<Long, Integer> counts, boolean isPlaying, long active,
+                                          @NonNull Map<Long, long[]> counts, boolean isPlaying, long active,
                                           boolean compact) {
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.playlist_widget);
         views.removeAllViews(R.id.playlistWidgetTiles);
@@ -218,18 +217,20 @@ public class PlaylistWidget extends AppWidgetProvider {
         views.setViewVisibility(R.id.playlistWidgetTiles, View.VISIBLE);
         views.setViewVisibility(R.id.playlistWidgetEmpty, View.GONE);
         for (Playlist playlist : shown) {
-            Integer count = counts.get(playlist.getId());
+            long[] stats = counts.get(playlist.getId());
             boolean allTile = playlist.getId() == PlaylistPlayStarter.ALL_PLAYLISTS;
             boolean tilePlaying = isPlaying && (active == playlist.getId()
                     || (allTile && active != PlaylistPlayback.NO_PLAYLIST));
             views.addView(R.id.playlistWidgetTiles,
-                    createTile(context, playlist, count == null ? 0 : count, tilePlaying, compact));
+                    createTile(context, playlist, stats == null ? 0 : (int) stats[0],
+                    stats == null ? 0 : stats[1], tilePlaying, compact));
         }
         return views;
     }
 
     @NonNull
     private static RemoteViews createTile(@NonNull Context context, @NonNull Playlist playlist, int count,
+                                          long timeLeftMillis,
                                           boolean tilePlaying, boolean compact) {
         int layout;
         if (compact) {
@@ -241,6 +242,10 @@ public class PlaylistWidget extends AppWidgetProvider {
         RemoteViews tile = new RemoteViews(context.getPackageName(), layout);
         String summary = count == 0 ? context.getString(R.string.playlist_episodes_empty_title)
                 : context.getResources().getQuantityString(R.plurals.num_episodes, count, count);
+        if (!compact && count > 0 && timeLeftMillis > 0) {
+            summary = context.getString(R.string.playlist_summary, summary,
+                    PlaylistTime.format(context, timeLeftMillis));
+        }
         if (tilePlaying) {
             summary = context.getString(R.string.playlist_widget_playing, summary);
         }
@@ -266,17 +271,19 @@ public class PlaylistWidget extends AppWidgetProvider {
                 false, false, -1);
     }
 
-    private static int countEpisodes(long playlistId) {
+    @NonNull
+    private static long[] countEpisodes(long playlistId) {
         if (playlistId != PlaylistPlayStarter.ALL_PLAYLISTS) {
-            return PlaylistReader.getEpisodes(playlistId).size();
+            List<FeedItem> episodes = PlaylistReader.getEpisodes(playlistId);
+            return new long[] {episodes.size(), PlaylistReader.getTimeLeftMillis(episodes)};
         }
-        Set<Long> ids = new HashSet<>();
+        Map<Long, FeedItem> unique = new HashMap<>();
         for (Playlist playlist : PlaylistReader.getPlaylists()) {
             for (FeedItem item : PlaylistReader.getEpisodes(playlist.getId())) {
-                ids.add(item.getId());
+                unique.put(item.getId(), item);
             }
         }
-        return ids.size();
+        return new long[] {unique.size(), PlaylistReader.getTimeLeftMillis(new ArrayList<>(unique.values()))};
     }
 
     @NonNull

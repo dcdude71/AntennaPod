@@ -44,6 +44,7 @@ import de.danoeh.antennapod.storage.database.PlaylistPlayback;
 import de.danoeh.antennapod.storage.database.PlaylistReader;
 import de.danoeh.antennapod.storage.database.PlaylistWriter;
 import de.danoeh.antennapod.ui.common.EmptyViewHandler;
+import de.danoeh.antennapod.ui.common.PlaylistTime;
 import de.danoeh.antennapod.ui.common.ThemeUtils;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Observable;
@@ -255,8 +256,9 @@ public class PlaylistsFragment extends Fragment implements Toolbar.OnMenuItemCli
                 for (PlaylistRule rule : rules) {
                     ruleFeedIds.add(rule.getFeedId());
                 }
-                result.add(new PlaylistSummary(playlist, rules.size(),
-                        PlaylistReader.getEpisodes(playlist.getId()).size()));
+                List<FeedItem> episodes = PlaylistReader.getEpisodes(playlist.getId());
+                result.add(new PlaylistSummary(playlist, rules.size(), episodes.size(),
+                        PlaylistReader.getTimeLeftMillis(episodes)));
             }
             return new Pair<>(result, ruleFeedIds);
         })
@@ -293,11 +295,13 @@ public class PlaylistsFragment extends Fragment implements Toolbar.OnMenuItemCli
         final Playlist playlist;
         final int podcasts;
         final int episodes;
+        final long timeLeftMillis;
 
-        PlaylistSummary(Playlist playlist, int podcasts, int episodes) {
+        PlaylistSummary(Playlist playlist, int podcasts, int episodes, long timeLeftMillis) {
             this.playlist = playlist;
             this.podcasts = podcasts;
             this.episodes = episodes;
+            this.timeLeftMillis = timeLeftMillis;
         }
     }
 
@@ -306,9 +310,14 @@ public class PlaylistsFragment extends Fragment implements Toolbar.OnMenuItemCli
         void bind(@NonNull ViewHolder holder, @NonNull PlaylistSummary item) {
             holder.image.setImageResource(R.drawable.ic_playlist_play);
             holder.title.setText(item.playlist.getName());
-            holder.subtitle.setText(getString(R.string.playlist_summary,
+            String summary = getString(R.string.playlist_summary,
                     getResources().getQuantityString(R.plurals.playlist_num_podcasts, item.podcasts, item.podcasts),
-                    getResources().getQuantityString(R.plurals.playlist_num_episodes, item.episodes, item.episodes)));
+                    getResources().getQuantityString(R.plurals.playlist_num_episodes, item.episodes, item.episodes));
+            if (item.timeLeftMillis > 0) {
+                summary = getString(R.string.playlist_summary, summary, getString(R.string.playlist_time_left,
+                        PlaylistTime.format(requireContext(), item.timeLeftMillis)));
+            }
+            holder.subtitle.setText(summary);
             boolean selected = wide && item.playlist.getId() == selectedId;
             holder.itemView.setForeground(selected ? new ColorDrawable(ColorUtils.setAlphaComponent(
                     ThemeUtils.getColorFromAttr(requireContext(), R.attr.colorPrimary), SELECTED_ALPHA)) : null);

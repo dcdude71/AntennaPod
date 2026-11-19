@@ -41,6 +41,33 @@ public final class PlaylistWriter {
         });
     }
 
+    public static Future<Long> duplicatePlaylist(long playlistId, @NonNull String name) {
+        return dbExec.submit(() -> {
+            PodDBAdapter adapter = PodDBAdapter.getInstance().open();
+            long id;
+            try {
+                PlaylistDbAdapter playlists = adapter.getPlaylistDbAdapter();
+                Playlist original = playlists.getPlaylist(playlistId);
+                if (original == null) {
+                    return PlaylistPlayback.NO_PLAYLIST;
+                }
+                Playlist copy = new Playlist(name);
+                copy.setAutoDownload(original.isAutoDownload());
+                copy.setShowInAndroidAuto(original.isShowInAndroidAuto());
+                copy.setDownloadedOnly(original.isDownloadedOnly());
+                id = playlists.insertPlaylist(copy);
+                for (PlaylistRule rule : playlists.getRules(playlistId)) {
+                    playlists.insertRule(new PlaylistRule(0, id, rule.getFeedId(), rule.getEpisodeCount(),
+                            rule.getPickFrom(), rule.getPlayOrder(), rule.getPriority(), 0));
+                }
+            } finally {
+                adapter.close();
+            }
+            EventBus.getDefault().post(new PlaylistEvent(id));
+            return id;
+        });
+    }
+
     public static Future<?> updatePlaylist(@NonNull Playlist playlist) {
         return dbExec.submit(() -> {
             PodDBAdapter adapter = PodDBAdapter.getInstance().open();

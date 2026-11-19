@@ -12,6 +12,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.greenrobot.eventbus.EventBus;
+
+import de.danoeh.antennapod.event.PlaylistTransitionEvent;
 import de.danoeh.antennapod.model.feed.FeedItem;
 import de.danoeh.antennapod.model.playlist.Playlist;
 import de.danoeh.antennapod.net.download.serviceinterface.AutoDownloadManager;
@@ -72,9 +75,15 @@ public final class PlaylistPlayback {
                 current.getId(), skippedIds);
         if (next == null && PlaylistPreferences.shouldContinueWithNextPlaylist(context)) {
             next = startNextPlaylist(context, playlistId, current.getId());
+            if (next != null) {
+                Playlist nextPlaylist = PlaylistReader.getPlaylist(getActivePlaylist(context));
+                EventBus.getDefault().post(new PlaylistTransitionEvent(
+                        nextPlaylist != null ? nextPlaylist.getName() : ""));
+            }
         }
         if (next == null) {
             stop(context);
+            EventBus.getDefault().post(new PlaylistTransitionEvent(null));
         }
         AutoDownloadManager.getInstance().autodownloadUndownloadedItems(context);
         return next;
