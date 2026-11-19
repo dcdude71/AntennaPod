@@ -46,7 +46,7 @@ Phases:
 2. Screens and rule editor: done
 3. Playback: done
 4. Auto-download and cleanup protection: done
-5. Android Auto: built, not yet tested in a car or the Desktop Head Unit. A "Playlists" folder appears after "Continue listening" when at least one playlist has "Show in Android Auto" ticked (playlist screen ⋮ menu; on by default for new playlists, off for existing ones). Starting an episode from it starts playlist playback. Code: `PlaylistMediaLibrary` plus small hooks in `MediaLibrarySessionCallback`.
+5. Android Auto: done, tested in a car on 2026-11-19 (Playlists folder, playlist playback, Skip ad button). Sideloaded installs (GitHub, Obtainium, F-Droid) need Android Auto's developer setting "Unknown sources" to show the app. A "Playlists" folder appears after "Continue listening" when at least one playlist has "Show in Android Auto" ticked (playlist screen ⋮ menu; on by default for new playlists, off for existing ones). Starting an episode from it starts playlist playback. Code: `PlaylistMediaLibrary` plus small hooks in `MediaLibrarySessionCallback`.
 
 Inspired by Downcast's playlist engine.
 
