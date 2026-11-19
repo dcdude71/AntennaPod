@@ -33,3 +33,7 @@ Through [Obtainium](https://github.com/ImranR98/Obtainium) with `https://github.
 
 ### Where do I report a problem?
 Here, in the [issues](https://github.com/dcdude71/Castlist/issues). Please don't report Castlist problems to the AntennaPod team. Castlist is a personal project, so replies may take a while.
+
+### Why doesn't Castlist appear in Android Auto?
+Android Auto only lists apps installed from the Play Store unless you allow others. Turn on **Unknown sources** in Android Auto's developer settings; the steps are in [Playlists → Android Auto](playlists.md#android-auto).
+

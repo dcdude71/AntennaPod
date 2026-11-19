@@ -85,6 +85,8 @@ A playlist with both **Auto-download episodes** and **Only downloaded episodes**
 
 In a playlist's menu (⋮), **Show in Android Auto** adds it to a **Playlists** folder in Android Auto, right after "Continue listening". It is on for new playlists. Starting an episode from that folder plays the playlist, just like on the phone.
 
+**Castlist doesn't show up in Android Auto?** Android Auto hides apps that were not installed from the Play Store, which includes Castlist from GitHub, Obtainium or F-Droid. To allow it, on the phone open Settings → Connected devices → Connection preferences → Android Auto, scroll down and tap **Version** about 10 times to turn on developer mode, then in the menu (⋮) open **Developer settings** and turn on **Unknown sources**. Reconnect to the car and Castlist appears with the other media apps.
+
 ## On your home screen
 
 Playlists can also be started from a widget, a home screen icon or the app's shortcuts. See [Home screen](home-screen.md).
