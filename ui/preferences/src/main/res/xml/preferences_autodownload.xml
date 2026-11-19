@@ -23,11 +23,4 @@
             android:title="@string/pref_automatic_download_on_battery_title"
             android:summary="@string/pref_automatic_download_on_battery_sum"
             android:defaultValue="true"/>
-    <de.danoeh.antennapod.ui.preferences.preference.MaterialListPreference
-            android:defaultValue="basic"
-            android:entries="@array/episode_filter_style_titles"
-            android:entryValues="@array/episode_filter_style_values"
-            android:key="prefEpisodeFilterStyle"
-            android:summary="%s"
-            android:title="@string/pref_episode_filter_style_title"/>
 </PreferenceScreen>

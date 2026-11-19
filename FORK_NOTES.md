@@ -19,6 +19,9 @@ The fork is rebased on upstream regularly, so:
 - Never bump the database version. Fork tables are created with `CREATE TABLE IF NOT EXISTS` from `PodDBAdapter`'s helper `onOpen` (`PlaylistDbAdapter.createTables`, `FeedAdSkipDbAdapter.createTables`).
 - `git diff upstream/develop...HEAD --stat` lists everything the fork touches.
 
+## Castlist settings screen
+Settings → Castlist features (`preferences_castlist.xml`, `CastlistPreferencesFragment`) holds the app-wide fork settings: player style, playlist end action, episode filter style. The entry is added from `ForkProjectSettings`, just above the Project category; `PreferenceActivity` and the settings search have one-line hooks. Upstream's settings XML files are untouched. Per-podcast ad skip stays in podcast settings and the official-app export in Backup.
+
 ## Rule-based playlists
 Approved design (open to adjustment once used in practice):
 - Playlists exist alongside the untouched queue. No master playlist, no manual "add episode to playlist", no per-podcast default playlist.
@@ -27,7 +30,7 @@ Approved design (open to adjustment once used in practice):
 - "Most recent N" = the N newest episodes, only the unplayed ones among them (does not walk into the back catalog). "Oldest N" = the next N unplayed.
 - The playlist is recalculated live after each episode. Playing from a playlist never adds to the queue; starting any other episode goes back to the normal queue.
 - Playlist mode starts only from a toolbar play button (30dp icon, `ic_play_30dp`): "Play playlist" on a playlist, or "Play playlists from the top" on the Playlists tab (first playlist with episodes). Episode rows in a playlist have no play button (hidden via the hook `EpisodesListFragment.onEpisodeBound`); to play one episode, go to its podcast. Playing from the episode details page does not start playlist mode.
-- At the end of a playlist: setting `prefPlaylistEndAction` (Settings → Playback), "Continue with the next playlist" (default, follows Playlists tab order, skips empty ones, stops after the last) or "Stop". Never falls back to the queue. Read via `PlaylistPreferences`.
+- At the end of a playlist: setting `prefPlaylistEndAction` (Settings → Castlist), "Continue with the next playlist" (default, follows Playlists tab order, skips empty ones, stops after the last) or "Stop". Never falls back to the queue. Read via `PlaylistPreferences`.
 - Playlist auto-downloads follow the normal download settings, never enqueue, and playlist episodes are protected from download cleanup.
 - Playlist downloads do not count toward the global episode limit (`AutomaticDownloadAlgorithm`, `EpisodeCleanupAlgorithm.getNumEpisodesToCleanup`). To keep them bounded, rules in an auto-download playlist need a count of 1-10 (`PlaylistRule.MAX_AUTO_DOWNLOAD_EPISODES`); the rule dialog disables "All" and the auto-download toggle refuses while an "All" rule exists. `PlaylistReader.limitForAutoDownload` caps legacy rules anyway. The same cap applies to cleanup protection in every playlist: only the first 10 episodes per rule are protected and left out of the limit, so a playlist with an "All" rule cannot keep unlimited downloads.
 - Fixed (also an upstream bug): when downloaded episodes exceeded the episode limit, `episodeSpaceLeft` went negative and `subList` threw inside an executor, silently skipping all auto-downloads. Now clamped to 0.
@@ -57,7 +60,7 @@ Per-podcast "Ad skip time" in the podcast's settings (fork table via `FeedAdSkip
 - Per-episode author and categories are not stored by upstream, so they are not filter fields (yet).
 
 ## Player style
-Settings → User interface → Player style: Modern (default) or Classic (upstream layout). Modern aims for an Apple Podcasts-like look: small artwork, bold title, big controls. Fork-only files: `PlayerStyle.java`, `PlayerLayout.java`, `audioplayer_fragment_modern.xml`.
+Settings → Castlist features → Player style: Modern (default) or Classic (upstream layout). Modern aims for an Apple Podcasts-like look: small artwork, bold title, big controls. Fork-only files: `PlayerStyle.java`, `PlayerLayout.java`, `audioplayer_fragment_modern.xml`.
 - Foldables (Modern only, `PlayerLayout`): window ≥ 600dp wide → shownotes in `descriptionPane` beside the controls (pager shows the cover only, Shownotes button hidden). Half-open with a horizontal fold (tabletop, via `androidx.window`) → cover above the fold, controls below; overrides the wide layout. MainActivity handles size changes itself (no recreate), so the layout is re-applied from `AudioPlayerFragment.onConfigurationChanged`.
 - Upstream `NestedScrollableHost` was changed so it works outside a ViewPager2 and no longer cancels its first frame (cancelling froze the unfold animation: `BLASTSyncEngine` sync timeout).
 - Testing needs the real phone: folded, unfolded, half-folded and flat again.

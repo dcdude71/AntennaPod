@@ -1144,6 +1144,9 @@
     <string name="player_sleep_label">Sleep</string>
     <string name="player_next_label">Next</string>
     <string name="pref_player_style_title">Player style</string>
+    <string name="castlist_settings_title">Castlist features</string>
+    <string name="castlist_settings_summary">Player style, playlists, episode filter style</string>
+    <string name="castlist_settings_player">Player</string>
     <string name="player_style_modern">Modern</string>
     <string name="player_style_classic">Classic</string>
     <string name="playlist_show_in_android_auto">Show in Android Auto</string>

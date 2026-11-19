@@ -45,7 +45,7 @@ When an episode ends, the next one comes from the playlist, never from your queu
 
 ## When a playlist runs out
 
-The app moves on to the next playlist, in the order of your Playlists tab, skipping empty ones. You can change this in Settings → Playback → **At the end of a playlist**:
+The app moves on to the next playlist, in the order of your Playlists tab, skipping empty ones. You can change this in Settings → Castlist features → **At the end of a playlist**:
 
 - **Continue with the next playlist** (default)
 - **Stop**

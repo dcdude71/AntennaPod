@@ -79,13 +79,6 @@
                 android:summary="@string/pref_followQueue_sum"
                 android:title="@string/pref_followQueue_title"/>
         <de.danoeh.antennapod.ui.preferences.preference.MaterialListPreference
-                android:defaultValue="next_playlist"
-                android:entries="@array/playlist_end_action_titles"
-                android:entryValues="@array/playlist_end_action_values"
-                android:key="prefPlaylistEndAction"
-                android:summary="%s"
-                android:title="@string/pref_playlist_end_action_title"/>
-        <de.danoeh.antennapod.ui.preferences.preference.MaterialListPreference
                 android:defaultValue="30"
                 android:entries="@array/smart_mark_as_played_values"
                 android:entryValues="@array/smart_mark_as_played_values"

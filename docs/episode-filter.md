@@ -2,7 +2,7 @@
 
 An episode filter decides, for one podcast, which episodes are downloaded automatically and which ones playlists can use. It does not hide anything from the episode list, the Inbox or the queue, and it does not affect downloads you start yourself.
 
-Castlist offers two filters. Choose one in Settings → Downloads → Automatic download → **Episode filter style**:
+Castlist offers two filters. Choose one in Settings → Castlist features → **Episode filter style**:
 
 | | Basic | Advanced |
 |---|---|---|

@@ -10,6 +10,6 @@ The full-screen player has a new look: smaller artwork, a bold episode title, an
 
 ![The modern player](images/player.png)
 
-Prefer the original? Switch back any time in Settings → User interface → **Player style → Classic**.
+Prefer the original? Switch back any time in Settings → Castlist features → **Player style → Classic**.
 
 On big screens and foldables the player rearranges itself; see [Foldables and big screens](foldables.md).

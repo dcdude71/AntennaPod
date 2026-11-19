@@ -19,6 +19,17 @@ final class ForkProjectSettings {
         if (project == null) {
             return;
         }
+        Preference castlist = new Preference(fragment.requireContext());
+        castlist.setIcon(R.drawable.ic_playlist_play);
+        castlist.setTitle(R.string.castlist_settings_title);
+        castlist.setSummary(R.string.castlist_settings_summary);
+        castlist.setOrder(project.getOrder());
+        project.setOrder(project.getOrder() + 1);
+        castlist.setOnPreferenceClickListener(preference -> {
+            ((PreferenceActivity) fragment.requireActivity()).openScreen(R.xml.preferences_castlist);
+            return true;
+        });
+        fragment.getPreferenceScreen().addPreference(castlist);
         Preference notice = new Preference(fragment.requireContext());
         notice.setIcon(R.drawable.ic_info);
         notice.setTitle(R.string.fork_notice_title);

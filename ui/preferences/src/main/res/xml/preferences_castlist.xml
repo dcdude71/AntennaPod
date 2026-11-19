@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory android:title="@string/castlist_settings_player">
+        <de.danoeh.antennapod.ui.preferences.preference.MaterialListPreference
+                android:entryValues="@array/player_style_values"
+                android:entries="@array/player_style_titles"
+                android:key="prefPlayerStyle"
+                android:title="@string/pref_player_style_title"
+                app:useSimpleSummaryProvider="true"
+                android:defaultValue="modern" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/playlists_label">
+        <de.danoeh.antennapod.ui.preferences.preference.MaterialListPreference
+                android:defaultValue="next_playlist"
+                android:entries="@array/playlist_end_action_titles"
+                android:entryValues="@array/playlist_end_action_values"
+                android:key="prefPlaylistEndAction"
+                app:useSimpleSummaryProvider="true"
+                android:title="@string/pref_playlist_end_action_title"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/advanced_filter_title">
+        <de.danoeh.antennapod.ui.preferences.preference.MaterialListPreference
+                android:defaultValue="basic"
+                android:entries="@array/episode_filter_style_titles"
+                android:entryValues="@array/episode_filter_style_values"
+                android:key="prefEpisodeFilterStyle"
+                app:useSimpleSummaryProvider="true"
+                android:title="@string/pref_episode_filter_style_title"/>
+    </PreferenceCategory>
+
+</PreferenceScreen>

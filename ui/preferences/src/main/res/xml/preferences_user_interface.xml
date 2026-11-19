@@ -16,13 +16,6 @@
                 android:key="prefTintedColors"
                 android:summary="@string/pref_tinted_theme_message"
                 android:defaultValue="false" />
-        <de.danoeh.antennapod.ui.preferences.preference.MaterialListPreference
-                android:entryValues="@array/player_style_values"
-                android:entries="@array/player_style_titles"
-                android:key="prefPlayerStyle"
-                android:title="@string/pref_player_style_title"
-                android:summary="%s"
-                android:defaultValue="modern" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/episode_information">
         <SwitchPreferenceCompat

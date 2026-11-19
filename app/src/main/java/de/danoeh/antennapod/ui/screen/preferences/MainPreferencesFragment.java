@@ -164,6 +164,8 @@ public class MainPreferencesFragment extends AnimatedPreferenceFragment {
                 .addBreadcrumb(PreferenceActivity.getTitleOfPage(R.xml.preferences_notifications));
         config.index(R.xml.feed_settings)
                 .addBreadcrumb(PreferenceActivity.getTitleOfPage(R.xml.feed_settings));
+        config.index(R.xml.preferences_castlist)
+                .addBreadcrumb(PreferenceActivity.getTitleOfPage(R.xml.preferences_castlist));
         config.index(R.xml.preferences_swipe)
                 .addBreadcrumb(PreferenceActivity.getTitleOfPage(R.xml.preferences_user_interface))
                 .addBreadcrumb(PreferenceActivity.getTitleOfPage(R.xml.preferences_swipe));
