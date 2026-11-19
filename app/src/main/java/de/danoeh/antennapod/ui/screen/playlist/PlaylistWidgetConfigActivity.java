@@ -122,6 +122,7 @@ public class PlaylistWidgetConfigActivity extends AppCompatActivity {
                     ids.add(all.get(i).getId());
                 }
             }
+            all.add(0, PlaylistWidget.allPlaylists(this));
             List<Playlist> ordered = new ArrayList<>();
             for (long id : ids) {
                 for (Playlist playlist : all) {

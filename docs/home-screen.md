@@ -18,6 +18,7 @@ Using it:
 - The tile of the playlist that is playing turns into a **pause** button. Tap it to pause.
 - Tap another tile to switch playlists.
 - A playlist with nothing to play says so; tapping it opens the Playlists tab.
+- **All playlists** is also in the list of choices. Its tile starts your playlists from the top, like the ▶ button in the Playlists tab: the first playlist with episodes, then the next ones as set in Settings → Playback → At the end of a playlist. It shows pause whenever a playlist is playing. A widget can hold just this one tile.
 
 The widget adapts to its size: four compact tiles on a narrow screen (like the outer screen of a foldable), wider tiles when there is room. You can resize it like any widget. If it is too narrow for all your playlists, it shows the first ones.
 
@@ -30,6 +31,8 @@ The widget's colors follow your wallpaper on Android 12 and later.
 In a playlist, open the menu (⋮) and choose **Add to home screen**. Your launcher asks you to confirm and places an icon with the playlist's name. Tapping it starts the playlist without opening the app.
 
 If you rename the playlist, the icon follows. If you delete the playlist, the icon is greyed out.
+
+For an **All playlists** icon, open the menu (⋮) in the Playlists tab itself and choose **Add to home screen**. It starts your playlists from the top.
 
 ## App shortcuts
 

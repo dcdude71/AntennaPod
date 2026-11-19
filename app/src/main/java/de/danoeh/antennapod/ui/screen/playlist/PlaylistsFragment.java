@@ -186,6 +186,12 @@ public class PlaylistsFragment extends Fragment implements Toolbar.OnMenuItemCli
             playFromTop();
             return true;
         }
+        if (item.getItemId() == R.id.playlists_add_to_home_screen) {
+            if (!PlaylistShortcuts.pinAllPlaylists(requireContext())) {
+                EventBus.getDefault().post(new MessageEvent(getString(R.string.playlist_shortcut_unsupported)));
+            }
+            return true;
+        }
         if (item.getItemId() == R.id.playlist_new) {
             PlaylistNameDialog.show(requireContext(), R.string.playlist_new, "",
                     name -> PlaylistWriter.createPlaylist(new Playlist(name)));

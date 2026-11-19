@@ -7,6 +7,7 @@ import android.content.Intent;
 public final class PlaylistPlayStarter {
     public static final String INTENT = "de.danoeh.antennapod.intents.PLAY_PLAYLIST";
     public static final String EXTRA_PLAYLIST_ID = "playlist_id";
+    public static final long ALL_PLAYLISTS = -1;
 
     private PlaylistPlayStarter() {
     }

@@ -30,6 +30,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 public final class PlaylistShortcuts {
     private static final String TAG = "PlaylistShortcuts";
     private static final String ID_PREFIX = "playlist_";
+    private static final String ID_ALL_PLAYLISTS = "all_playlists";
     private static final int MAX_DYNAMIC_SHORTCUTS = 4;
     private static boolean registered = false;
 
@@ -54,6 +55,20 @@ public final class PlaylistShortcuts {
             return false;
         }
         return ShortcutManagerCompat.requestPinShortcut(context, build(context, playlist, 0), null);
+    }
+
+    static boolean pinAllPlaylists(@NonNull Context context) {
+        if (!ShortcutManagerCompat.isRequestPinShortcutSupported(context)) {
+            return false;
+        }
+        String label = context.getString(R.string.playlists_all);
+        ShortcutInfoCompat shortcut = new ShortcutInfoCompat.Builder(context, ID_ALL_PLAYLISTS)
+                .setShortLabel(label)
+                .setLongLabel(label)
+                .setIcon(IconCompat.createWithResource(context, R.drawable.ic_shortcut_mix_playlist))
+                .setIntent(PlaylistPlayStarter.getIntent(context, PlaylistPlayStarter.ALL_PLAYLISTS))
+                .build();
+        return ShortcutManagerCompat.requestPinShortcut(context, shortcut, null);
     }
 
     @Subscribe(threadMode = ThreadMode.BACKGROUND)

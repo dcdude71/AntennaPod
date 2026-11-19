@@ -19,6 +19,7 @@ import de.danoeh.antennapod.actionbutton.PlayActionButton;
 import de.danoeh.antennapod.actionbutton.StreamActionButton;
 import de.danoeh.antennapod.event.PlayerStatusEvent;
 import de.danoeh.antennapod.model.feed.FeedItem;
+import de.danoeh.antennapod.model.playlist.Playlist;
 import de.danoeh.antennapod.playback.service.PlaybackServiceInterface;
 import de.danoeh.antennapod.storage.database.PlaylistPlayback;
 import de.danoeh.antennapod.storage.database.PlaylistReader;
@@ -34,6 +35,7 @@ public class PlaylistPlayActivity extends Activity {
     private static final int MISSING = 0;
     private static final int EMPTY = 1;
     private static final int READY = 2;
+    private static final int EMPTY_ALL = 3;
 
     private static final long MAX_WAIT_MS = 10000;
 
@@ -44,10 +46,23 @@ public class PlaylistPlayActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        long playlistId = getIntent().getLongExtra(PlaylistPlayStarter.EXTRA_PLAYLIST_ID,
+        long requestedId = getIntent().getLongExtra(PlaylistPlayStarter.EXTRA_PLAYLIST_ID,
                 PlaylistPlayback.NO_PLAYLIST);
         final FeedItem[] first = new FeedItem[1];
+        final long[] target = {requestedId};
         disposable = Single.fromCallable(() -> {
+            if (requestedId == PlaylistPlayStarter.ALL_PLAYLISTS) {
+                for (Playlist playlist : PlaylistReader.getPlaylists()) {
+                    List<FeedItem> episodes = PlaylistReader.getEpisodes(playlist.getId());
+                    if (!episodes.isEmpty() && episodes.get(0).getMedia() != null) {
+                        target[0] = playlist.getId();
+                        first[0] = episodes.get(0);
+                        return READY;
+                    }
+                }
+                return EMPTY_ALL;
+            }
+            long playlistId = requestedId;
             if (PlaylistReader.getPlaylist(playlistId) == null) {
                 return MISSING;
             }
@@ -62,16 +77,20 @@ public class PlaylistPlayActivity extends Activity {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(result -> {
                     if (result == READY) {
-                        PlaylistPlayback.start(this, playlistId);
+                        PlaylistPlayback.start(this, target[0]);
                         ItemActionButton button = first[0].getMedia().isDownloaded()
                                 ? new PlayActionButton(first[0]) : new StreamActionButton(first[0]);
                         button.onClick(this);
                         waitForPlayback(first[0].getMedia().getId());
                         return;
                     } else {
-                        Toast.makeText(getApplicationContext(), result == MISSING
-                                ? R.string.playlist_no_longer_exists : R.string.playlist_episodes_empty_title,
-                                Toast.LENGTH_SHORT).show();
+                        int message = R.string.playlist_episodes_empty_title;
+                        if (result == MISSING) {
+                            message = R.string.playlist_no_longer_exists;
+                        } else if (result == EMPTY_ALL) {
+                            message = R.string.playlists_nothing_to_play;
+                        }
+                        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
                     }
                     finish();
                 }, error -> {

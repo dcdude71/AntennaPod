@@ -14,4 +14,9 @@
         android:title="@string/playlist_new"
         custom:showAsAction="always" />
 
+    <item
+        android:id="@+id/playlists_add_to_home_screen"
+        android:title="@string/playlist_add_to_home_screen"
+        custom:showAsAction="never" />
+
 </menu>

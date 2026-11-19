@@ -1097,6 +1097,7 @@
     <string name="playlist_play">Play playlist</string>
     <string name="playlists_play_from_top">Play playlists from the top</string>
     <string name="playlists_nothing_to_play">Your playlists have no episodes to play</string>
+    <string name="playlists_all">All playlists</string>
     <string name="playlist_empty_title">No playlists yet</string>
     <string name="playlist_empty_message">Create a playlist, then add podcasts to it. For each podcast, you choose which episodes go in and in which order.</string>
     <string name="playlist_episodes_empty_title">Nothing to play</string>

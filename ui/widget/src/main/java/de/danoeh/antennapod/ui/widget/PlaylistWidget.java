@@ -21,13 +21,16 @@ import androidx.media3.common.Player;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import de.danoeh.antennapod.model.feed.FeedItem;
 import de.danoeh.antennapod.model.playlist.Playlist;
 import de.danoeh.antennapod.playback.base.PlayerStatus;
 import de.danoeh.antennapod.storage.database.PlaylistPlayback;
@@ -140,6 +143,7 @@ public class PlaylistWidget extends AppWidgetProvider {
         for (Playlist playlist : playlists) {
             byId.put(playlist.getId(), playlist);
         }
+        byId.put(PlaylistPlayStarter.ALL_PLAYLISTS, allPlaylists(context));
         Boolean knownPlaying = playing;
         boolean isPlaying = knownPlaying != null ? knownPlaying
                 : PlaybackPreferences.getCurrentPlayerStatus() == PlaybackPreferences.PLAYER_STATUS_PLAYING;
@@ -168,7 +172,7 @@ public class PlaylistWidget extends AppWidgetProvider {
                                           boolean isPlaying, long active) {
         for (Playlist playlist : shown) {
             if (!counts.containsKey(playlist.getId())) {
-                counts.put(playlist.getId(), PlaylistReader.getEpisodes(playlist.getId()).size());
+                counts.put(playlist.getId(), countEpisodes(playlist.getId()));
             }
         }
         if (shown.isEmpty()) {
@@ -215,7 +219,9 @@ public class PlaylistWidget extends AppWidgetProvider {
         views.setViewVisibility(R.id.playlistWidgetEmpty, View.GONE);
         for (Playlist playlist : shown) {
             Integer count = counts.get(playlist.getId());
-            boolean tilePlaying = isPlaying && active == playlist.getId();
+            boolean allTile = playlist.getId() == PlaylistPlayStarter.ALL_PLAYLISTS;
+            boolean tilePlaying = isPlaying && (active == playlist.getId()
+                    || (allTile && active != PlaylistPlayback.NO_PLAYLIST));
             views.addView(R.id.playlistWidgetTiles,
                     createTile(context, playlist, count == null ? 0 : count, tilePlaying, compact));
         }
@@ -252,6 +258,25 @@ public class PlaylistWidget extends AppWidgetProvider {
         }
         tile.setOnClickPendingIntent(R.id.playlistWidgetTile, click);
         return tile;
+    }
+
+    @NonNull
+    public static Playlist allPlaylists(@NonNull Context context) {
+        return new Playlist(PlaylistPlayStarter.ALL_PLAYLISTS, context.getString(R.string.playlists_all),
+                false, false, -1);
+    }
+
+    private static int countEpisodes(long playlistId) {
+        if (playlistId != PlaylistPlayStarter.ALL_PLAYLISTS) {
+            return PlaylistReader.getEpisodes(playlistId).size();
+        }
+        Set<Long> ids = new HashSet<>();
+        for (Playlist playlist : PlaylistReader.getPlaylists()) {
+            for (FeedItem item : PlaylistReader.getEpisodes(playlist.getId())) {
+                ids.add(item.getId());
+            }
+        }
+        return ids.size();
     }
 
     @NonNull
