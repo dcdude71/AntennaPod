@@ -17,7 +17,7 @@ Handoff notes for working on this fork (on any machine, with or without Claude C
 The fork is rebased on upstream regularly, so:
 - Put new code in new, fork-only classes and files. Only add small hooks to upstream files.
 - Never bump the database version. Fork tables are created with `CREATE TABLE IF NOT EXISTS` from `PodDBAdapter`'s helper `onOpen` (`PlaylistDbAdapter.createTables`, `FeedAdSkipDbAdapter.createTables`).
-- `git diff 1719c6d37~1 HEAD --stat` lists everything the fork touches.
+- `git diff upstream/develop...HEAD --stat` lists everything the fork touches.
 
 ## Rule-based playlists
 Approved design (open to adjustment once used in practice):

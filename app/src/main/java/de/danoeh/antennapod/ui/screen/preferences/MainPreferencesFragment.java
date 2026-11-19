@@ -56,7 +56,7 @@ public class MainPreferencesFragment extends AnimatedPreferenceFragment {
             debugNotice.getIcon().mutate()
                     .setColorFilter(new PorterDuffColorFilter(0xffcc0000, PorterDuff.Mode.MULTIPLY));
             debugNotice.setOrder(-1);
-            debugNotice.setSummary("This is a development version of AntennaPod and not meant for daily use");
+            debugNotice.setSummary("This is a development version of Castlist and not meant for daily use");
             findPreference(PREF_CATEGORY_PROJECT).getParent().addPreference(debugNotice);
         }
     }

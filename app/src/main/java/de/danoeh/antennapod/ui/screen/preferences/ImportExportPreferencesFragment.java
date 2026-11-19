@@ -72,7 +72,7 @@ public class ImportExportPreferencesFragment extends AnimatedPreferenceFragment 
     private static final String DEFAULT_HTML_OUTPUT_NAME = "antennapod-feeds-%s.html";
     private static final String CONTENT_TYPE_HTML = "text/html";
     private static final String DEFAULT_FAVORITES_OUTPUT_NAME = "antennapod-favorites-%s.html";
-    private static final String DATABASE_EXPORT_FILENAME = "AntennaPodBackup-%s.db";
+    private static final String DATABASE_EXPORT_FILENAME = "CastlistBackup-%s.db";
 
     private final ActivityResultLauncher<Intent> chooseOpmlExportPathLauncher =
             registerForActivityResult(new StartActivityForResult(),
