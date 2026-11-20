@@ -28,6 +28,9 @@ Only from a backup made in Castlist (**Database export**). See [Backups](backups
 ### Can I go back to the official AntennaPod?
 Yes. Use **Export for official AntennaPod** in Settings → Backup & restore, and import that file in the official app. Playlists, skip-ad times and advanced filters stay behind; the unplayed episodes of manual playlists are added to the queue. See [Backups](backups.md#switching-back-to-the-official-antennapod).
 
+### Is there a watch app?
+Yes, for Wear OS watches, as a remote control for the phone: start a playlist, see what's playing, pause and skip. It comes with each GitHub release and is installed over Wi-Fi debugging. See [Watch](watch.md).
+
 ### Can I run Castlist next to the official app?
 Yes. They are separate apps and do not share data. Castlist has its own name and icon so you can tell them apart.
 

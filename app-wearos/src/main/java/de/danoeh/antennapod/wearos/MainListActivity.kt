@@ -117,6 +117,8 @@ fun MainListScreen(
                 )
             }
 
+            item { PlaylistsMenuItem() }
+
             items(menuItems) { path ->
                 ListItem(
                     text = stringResource(NavigationNames.getTitleResForPath(path)),

@@ -14,6 +14,7 @@ Castlist is a personal fork of [AntennaPod](https://github.com/AntennaPod/Antenn
 
 - **[Smart and manual playlists](docs/playlists.md):** next to the regular queue, which stays as it is. *Smart* playlists are built from rules, one per podcast: how many episodes, the most recent or the oldest unplayed, play order and priority. They update themselves as episodes come in and as you listen. *Manual* playlists work like extra queues: add episodes with **Add to playlist…**, drag to reorder, play from any episode. Both can download their episodes automatically and show up in Android Auto.
 - **[Playlists on your home screen](docs/home-screen.md):** a 4×1 widget that starts one of four playlists with one tap, playlist icons, and playlists in the app's long-press shortcuts.
+- **[A Wear OS watch app](docs/watch.md):** start any playlist from your wrist, see what's playing and control it, and browse the queue, downloads and subscriptions on the phone.
 - **[Advanced episode filter](docs/episode-filter.md):** include and skip words together, search titles and descriptions, whole words, a length range, with a live preview that shows which episodes are kept or skipped, and why. Playlists respect the filter.
 - **[Skip ad button and a modern player](docs/player.md):** a per-podcast "Skip ad" button and a redesigned full-screen player (the classic one is one setting away).
 - **[Made for foldables and big screens](docs/foldables.md):** two-pane layouts for playlists and episode details, show notes beside the player, and tabletop mode.
@@ -68,7 +69,7 @@ If you need something dependable, the official AntennaPod is the way to go. Than
 
 ## Privacy
 
-Castlist collects no data and sends nothing to its developer. Like AntennaPod, it only connects to the podcast feeds you subscribe to and to services you choose to use (such as podcast search or synchronization). The fork's added features (playlists, widgets and shortcuts, Android Auto, Skip ad, the advanced episode filter, the foldable layouts) work entirely on your device. For the official app's policy, see [antennapod.org/privacy](https://antennapod.org/privacy/).
+Castlist collects no data and sends nothing to its developer. Like AntennaPod, it only connects to the podcast feeds you subscribe to and to services you choose to use (such as podcast search or synchronization). The fork's added features (playlists, widgets and shortcuts, Android Auto, the watch app, Skip ad, the advanced episode filter, the foldable layouts) work entirely on your devices. For the official app's policy, see [antennapod.org/privacy](https://antennapod.org/privacy/).
 
 ## Credits
 

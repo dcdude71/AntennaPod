@@ -78,3 +78,11 @@ dependencies {
 
     testImplementation libs.junit
 }
+
+def castlistVersion = new Properties()
+file("../app/castlist-version.properties").withInputStream { castlistVersion.load(it) }
+android.defaultConfig.applicationId = "io.github.dcdude71.castlist"
+android.defaultConfig.versionName = castlistVersion.getProperty("versionName")
+android.defaultConfig.versionCode = castlistVersion.getProperty("versionCode").toInteger()
+android.buildTypes.debug.resValue "string", "app_name", "Castlist Debug"
+android.buildTypes.release.resValue "string", "app_name", "Castlist"
