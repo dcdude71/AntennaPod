@@ -1,0 +1,1 @@
+Watch app: a Skip ad button on the now-playing screen, for podcasts with a Skip ad time. Update both the phone and watch apps.
