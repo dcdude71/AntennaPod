@@ -1,0 +1,1 @@
+Episode filter preview: Kept and Skipped buttons with counts show only the episodes on one side. Playlists tab: cleaner rows, the kind is shown by the big icon and the word Smart or Manual.
