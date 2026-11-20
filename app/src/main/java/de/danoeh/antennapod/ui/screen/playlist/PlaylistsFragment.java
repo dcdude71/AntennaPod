@@ -328,8 +328,8 @@ public class PlaylistsFragment extends Fragment implements Toolbar.OnMenuItemCli
                 summary = getString(R.string.playlist_summary, summary, getString(R.string.playlist_time_left,
                         PlaylistTime.format(requireContext(), item.timeLeftMillis)));
             }
-            holder.subtitle.setText(PlaylistKindUi.withKind(requireContext(), item.playlist.isManual(), summary,
-                    holder.subtitle.getTextSize()));
+            holder.subtitle.setText(getString(R.string.playlist_summary, getString(item.playlist.isManual()
+                    ? R.string.playlist_kind_manual : R.string.playlist_kind_smart), summary));
             boolean selected = wide && item.playlist.getId() == selectedId;
             holder.itemView.setForeground(selected ? new ColorDrawable(ColorUtils.setAlphaComponent(
                     ThemeUtils.getColorFromAttr(requireContext(), R.attr.colorPrimary), SELECTED_ALPHA)) : null);

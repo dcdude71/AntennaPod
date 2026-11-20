@@ -45,7 +45,7 @@ Each condition is one line: **what to look at**, **how to match**, and a **value
 
 **Copy from another podcast** (in the ⋮ menu) loads another podcast's filter into the editor, so you can reuse a set of conditions. Nothing changes until you tap **Save**.
 
-The **preview** at the bottom shows the last 50 episodes of the podcast, whether each one matches, and which condition decided it ("Skipped: post contains 'Riou'", "Kept: title contains 'interview'"). It updates as you edit. Tap **Save** to keep your changes, or ✕ to leave without saving.
+The **preview** at the bottom shows the last 50 episodes of the podcast, whether each one matches, and which condition decided it ("Skipped: post contains 'Riou'", "Kept: title contains 'interview'"). It updates as you edit. Above the list, **Kept (N)** and **Skipped (N)** count the episodes on each side; tap one to show only those episodes, tap it again to show them all. Tap **Save** to keep your changes, or ✕ to leave without saving.
 
 ![The live preview](images/filter-preview.png)
 

@@ -178,6 +178,41 @@
                     android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
                     android:textColor="?android:attr/textColorSecondary" />
 
+                <com.google.android.material.button.MaterialButtonToggleGroup
+                    android:id="@+id/previewShowToggle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:paddingHorizontal="16dp"
+                    app:selectionRequired="false"
+                    app:singleSelection="true">
+
+                    <Button
+                        android:id="@+id/previewShowKeptButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        style="?attr/materialButtonOutlinedStyle" />
+
+                    <Button
+                        android:id="@+id/previewShowSkippedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        style="?attr/materialButtonOutlinedStyle" />
+
+                </com.google.android.material.button.MaterialButtonToggleGroup>
+
+                <TextView
+                    android:id="@+id/previewNoneShown"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="8dp"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                    android:textColor="?android:attr/textColorSecondary"
+                    android:visibility="gone" />
+
                 <LinearLayout
                     android:id="@+id/previewList"
                     android:layout_width="match_parent"

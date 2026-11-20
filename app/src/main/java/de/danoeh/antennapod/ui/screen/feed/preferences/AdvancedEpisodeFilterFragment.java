@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
@@ -75,6 +76,8 @@ public class AdvancedEpisodeFilterFragment extends Fragment {
     private Section skipSection;
     private TextView previewSummary;
     private LinearLayout previewList;
+    private MaterialButtonToggleGroup previewShowToggle;
+    private TextView previewNoneShown;
 
     public static AdvancedEpisodeFilterFragment newInstance(long feedId) {
         AdvancedEpisodeFilterFragment fragment = new AdvancedEpisodeFilterFragment();
@@ -112,6 +115,9 @@ public class AdvancedEpisodeFilterFragment extends Fragment {
         root.findViewById(R.id.skipAddButton).setOnClickListener(v -> skipSection.addRow(null, true));
         previewSummary = root.findViewById(R.id.previewSummary);
         previewList = root.findViewById(R.id.previewList);
+        previewShowToggle = root.findViewById(R.id.previewShowToggle);
+        previewNoneShown = root.findViewById(R.id.previewNoneShown);
+        previewShowToggle.addOnButtonCheckedListener((group, checkedId, isChecked) -> updatePreview());
         load();
         return root;
     }
@@ -209,10 +215,13 @@ public class AdvancedEpisodeFilterFragment extends Fragment {
         }
         AdvancedEpisodeFilter filter = currentFilter();
         previewList.removeAllViews();
+        previewNoneShown.setVisibility(View.GONE);
+        previewShowToggle.setVisibility(previewEpisodes.isEmpty() ? View.GONE : View.VISIBLE);
         if (previewEpisodes.isEmpty()) {
             previewSummary.setText(R.string.advanced_filter_preview_empty);
             return;
         }
+        int shown = previewShowToggle.getCheckedButtonId();
         int matching = 0;
         LayoutInflater inflater = LayoutInflater.from(requireContext());
         int accent = ThemeUtils.getColorFromAttr(requireContext(), androidx.appcompat.R.attr.colorPrimary);
@@ -229,6 +238,10 @@ public class AdvancedEpisodeFilterFragment extends Fragment {
             if (result.matches) {
                 matching++;
             }
+            if ((shown == R.id.previewShowKeptButton && !result.matches)
+                    || (shown == R.id.previewShowSkippedButton && result.matches)) {
+                continue;
+            }
             View row = inflater.inflate(R.layout.advanced_episode_filter_preview_item, previewList, false);
             TextView badge = row.findViewById(R.id.badge);
             badge.setText(result.matches ? "✓" : "–");
@@ -242,6 +255,16 @@ public class AdvancedEpisodeFilterFragment extends Fragment {
         }
         previewSummary.setText(getString(R.string.advanced_filter_preview_summary, matching,
                 previewEpisodes.size()));
+        int skipped = previewEpisodes.size() - matching;
+        ((Button) previewShowToggle.findViewById(R.id.previewShowKeptButton))
+                .setText(getString(R.string.advanced_filter_show_kept, matching));
+        ((Button) previewShowToggle.findViewById(R.id.previewShowSkippedButton))
+                .setText(getString(R.string.advanced_filter_show_skipped, skipped));
+        if (previewList.getChildCount() == 0) {
+            previewNoneShown.setText(shown == R.id.previewShowKeptButton
+                    ? R.string.advanced_filter_none_kept : R.string.advanced_filter_none_skipped);
+            previewNoneShown.setVisibility(View.VISIBLE);
+        }
     }
 
     @NonNull

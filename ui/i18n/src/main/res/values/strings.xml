@@ -1233,6 +1233,10 @@
     <string name="advanced_filter_preview">Preview</string>
     <string name="advanced_filter_preview_summary">%1$d of the last %2$d episodes match</string>
     <string name="advanced_filter_preview_empty">This podcast has no episodes yet.</string>
+    <string name="advanced_filter_show_kept">Kept (%1$d)</string>
+    <string name="advanced_filter_show_skipped">Skipped (%1$d)</string>
+    <string name="advanced_filter_none_kept">None of these episodes are kept.</string>
+    <string name="advanced_filter_none_skipped">None of these episodes are skipped.</string>
     <string name="advanced_filter_reason_no_filter">No filter</string>
     <string name="advanced_filter_reason_kept">Kept: %1$s</string>
     <string name="advanced_filter_reason_kept_all">Kept: every \"only\" condition matches</string>
