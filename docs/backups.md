@@ -4,7 +4,7 @@ All in Settings → **Backup & restore**.
 
 ## Regular backup
 
-**Database export** is your regular backup. It includes everything: subscriptions, played episodes, the queue, and the Castlist additions (playlists and their rules, skip-ad times, advanced episode filters). Restore it in Castlist with **Database import**. **Automatic database export** makes the same backup every few days.
+**Database export** is your regular backup. It includes everything: subscriptions, played episodes, the queue, and the Castlist additions (playlists with their rules or hand-picked episodes, skip-ad times, advanced episode filters). Restore it in Castlist with **Database import**. **Automatic database export** makes the same backup every few days.
 
 App-wide settings (like Player style or Episode filter style) are not part of the database backup, as in AntennaPod. Settings of each podcast are.
 

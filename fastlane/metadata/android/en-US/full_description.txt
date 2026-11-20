@@ -1,9 +1,10 @@
 Castlist is a podcast player built on AntennaPod, the open-source podcast manager. It keeps everything AntennaPod does and adds a few features for people who listen a lot.
 
-<b>Rule-based playlists</b>
+<b>Smart and manual playlists</b>
 <ul>
-<li>A playlist is a set of rules, one per podcast: how many episodes, the most recent or the oldest unplayed, and in which order. The playlist fills and updates itself.</li>
-<li>Play a playlist from the top and move on to the next one when it ends.</li>
+<li>A smart playlist is a set of rules, one per podcast: how many episodes, the most recent or the oldest unplayed, and in which order. The playlist fills and updates itself.</li>
+<li>Or fill a playlist by hand, like an extra queue: add episodes from any episode's menu, drag to reorder, play from any episode. The regular queue stays as it is.</li>
+<li>Move on to the next playlist when one ends.</li>
 <li>Keep a playlist's episodes downloaded automatically, or show only downloaded ones.</li>
 <li>See the time left in each playlist, in the app, in the player and on the widget.</li>
 <li>Start playlists from a home screen widget, a home screen icon or Android Auto.</li>
@@ -12,7 +13,7 @@ Castlist is a podcast player built on AntennaPod, the open-source podcast manage
 <b>Episode filters</b>
 <ul>
 <li>Keep or skip episodes with conditions on the title, the description or the length: contains, doesn't contain, starts with, ends with, is exactly.</li>
-<li>Any or all conditions, whole words, accents and case ignored, with a live preview.</li>
+<li>Any or all conditions, whole words, accents and case ignored, with a live preview of what is kept and skipped.</li>
 <li>Filters decide what downloads automatically and what playlists use.</li>
 </ul>
 

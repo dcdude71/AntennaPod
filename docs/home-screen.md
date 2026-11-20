@@ -15,6 +15,7 @@ Start your playlists without opening the app.
 Using it:
 
 - **Tap a tile** to start that playlist from the top.
+- A small icon before each name shows the playlist's kind: ✦ for smart, ≡ for manual. The widget's settings show the same icons.
 - The tile of the playlist that is playing turns into a **pause** button. Tap it to pause.
 - Tap another tile to switch playlists.
 - A playlist with nothing to play says so; tapping it opens the Playlists tab.

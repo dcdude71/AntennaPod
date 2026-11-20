@@ -12,9 +12,9 @@ Castlist is a personal fork of [AntennaPod](https://github.com/AntennaPod/Antenn
 
 ## What's different in this fork
 
-- **[Rule-based playlists](docs/playlists.md):** next to the regular queue, create playlists from rules, one per podcast: how many episodes, the most recent or the oldest unplayed, play order and priority. They update themselves as episodes come in and as you listen, can download their episodes automatically, can stick to downloaded episodes only, and show up in Android Auto.
+- **[Smart and manual playlists](docs/playlists.md):** next to the regular queue, which stays as it is. *Smart* playlists are built from rules, one per podcast: how many episodes, the most recent or the oldest unplayed, play order and priority. They update themselves as episodes come in and as you listen. *Manual* playlists work like extra queues: add episodes with **Add to playlist…**, drag to reorder, play from any episode. Both can download their episodes automatically and show up in Android Auto.
 - **[Playlists on your home screen](docs/home-screen.md):** a 4×1 widget that starts one of four playlists with one tap, playlist icons, and playlists in the app's long-press shortcuts.
-- **[Advanced episode filter](docs/episode-filter.md):** include and skip words together, search titles and descriptions, whole words, a length range, with a live preview. Playlists respect the filter.
+- **[Advanced episode filter](docs/episode-filter.md):** include and skip words together, search titles and descriptions, whole words, a length range, with a live preview that shows which episodes are kept or skipped, and why. Playlists respect the filter.
 - **[Skip ad button and a modern player](docs/player.md):** a per-podcast "Skip ad" button and a redesigned full-screen player (the classic one is one setting away).
 - **[Made for foldables and big screens](docs/foldables.md):** two-pane layouts for playlists and episode details, show notes beside the player, and tabletop mode.
 - **[Backups that work both ways](docs/backups.md):** the regular backup includes everything Castlist adds, and a separate export lets you go back to the official app.

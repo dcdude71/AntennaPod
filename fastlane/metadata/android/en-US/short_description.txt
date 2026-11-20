@@ -1,1 +1,1 @@
-Podcast player with rule-based playlists, based on AntennaPod
+Podcast player with smart and manual playlists, based on AntennaPod

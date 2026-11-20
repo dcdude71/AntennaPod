@@ -1,5 +1,8 @@
 # FAQ
 
+### What's the difference between a smart and a manual playlist?
+A **smart** playlist (✦) picks its episodes from rules and keeps itself up to date. A **manual** playlist (≡) holds the episodes you add yourself, in your order, like an extra queue. The kind is chosen when you create the playlist; a smart playlist can be copied into a manual one. See [Playlists](playlists.md#manual-playlists).
+
 ### Can I have a playlist of all new episodes from a set of podcasts?
 Yes. Add one rule per podcast with **All unplayed episodes**, give them all the same priority, and pick **Newest first** or **Oldest first** as the play order. The playlist updates itself as episodes come in and as you finish them. See [Playlists](playlists.md#rules).
 
@@ -7,10 +10,10 @@ Yes. Add one rule per podcast with **All unplayed episodes**, give them all the 
 Yes. Rules are not a snapshot: "3 oldest unplayed" always means the 3 oldest episodes you have not played yet. Finish one, and the next one moves in.
 
 ### Does playing a playlist change my queue?
-No. Playlists never add to the queue, and the queue never plays after a playlist. Starting an episode from the queue, the inbox or a podcast page switches back to the queue. See [Playing a playlist](playlists.md#playing-a-playlist).
+No. Playlists never add to the queue, and the queue never plays after a playlist. **Add to playlist…** and **Add to queue** are separate: adding an episode to a manual playlist leaves the queue alone. Starting an episode from the queue, the inbox or a podcast page switches back to the queue. See [Playing a playlist](playlists.md#playing-a-playlist).
 
 ### Why doesn't an episode show up in my playlist?
-Check, in order:
+In a manual playlist, played episodes drop off unless **Keep played episodes** is on. In a smart playlist, check, in order:
 - it is unplayed;
 - it is within the rule's number of episodes ("3 most recent" ignores older ones);
 - it passes the podcast's [episode filter](episode-filter.md);
@@ -23,7 +26,7 @@ Yes, with the [advanced filter](episode-filter.md#advanced-filter): Settings →
 Only from a backup made in Castlist (**Database export**). See [Backups](backups.md).
 
 ### Can I go back to the official AntennaPod?
-Yes. Use **Export for official AntennaPod** in Settings → Backup & restore, and import that file in the official app. Playlists, skip-ad times and advanced filters stay behind. See [Backups](backups.md#switching-back-to-the-official-antennapod).
+Yes. Use **Export for official AntennaPod** in Settings → Backup & restore, and import that file in the official app. Playlists, skip-ad times and advanced filters stay behind; the unplayed episodes of manual playlists are added to the queue. See [Backups](backups.md#switching-back-to-the-official-antennapod).
 
 ### Can I run Castlist next to the official app?
 Yes. They are separate apps and do not share data. Castlist has its own name and icon so you can tell them apart.
