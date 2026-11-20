@@ -42,7 +42,7 @@ Castlist is built to follow AntennaPod, not to drift away from it.
 
 ## Installing
 
-Signed APKs are published on the [Releases page](https://github.com/dcdude71/Castlist/releases). The easiest way to install and stay up to date is [Obtainium](https://github.com/ImranR98/Obtainium): add `https://github.com/dcdude71/Castlist` as an app source.
+Signed APKs are published on the [Releases page](https://github.com/dcdude71/Castlist/releases). The easiest way to install and stay up to date is [Obtainium](https://github.com/ImranR98/Obtainium): add `https://github.com/dcdude71/Castlist` as an app source. Each release has two files: `Castlist-<version>.apk` for the phone and `Castlist-Wear-<version>.apk` for the [watch app](docs/watch.md). In Obtainium, set **Filter APKs by regular expression** to `^Castlist-v` so it picks the phone app.
 
 The release APK has been scanned by Google Play Protect, which found no issues. Because it does not come from the Play Store, Android asks you to allow installs from the app you install it with (Obtainium or your browser).
 
