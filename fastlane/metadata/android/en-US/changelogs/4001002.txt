@@ -1,0 +1,1 @@
+Wear OS watch app (GitHub releases): start any playlist from the watch, see what's playing, pause and skip. GitHub releases now include Google Play Services for the watch link and Chromecast.
