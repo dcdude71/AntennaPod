@@ -27,7 +27,7 @@ Settings → Castlist features (`preferences_castlist.xml`, `CastlistPreferences
 
 ## Rule-based playlists
 Approved design (open to adjustment once used in practice):
-- Playlists exist alongside the untouched queue. No master playlist, no manual "add episode to playlist", no per-podcast default playlist.
+- Playlists exist alongside the untouched queue. No master playlist, no per-podcast default playlist. Two kinds since v0.10.0: smart (rules, below) and manual (see "Manual playlists").
 - Playlist = name + rules + auto-download + show in Android Auto.
 - Rule = podcast, count (0 = all), pick from most recent / oldest, play order oldest / newest first, priority 1-10. Same priority: rule order (drag to reorder).
 - "Most recent N" = the N newest episodes, only the unplayed ones among them (does not walk into the back catalog). "Oldest N" = the next N unplayed.
@@ -47,6 +47,18 @@ Phases:
 3. Playback: done
 4. Auto-download and cleanup protection: done
 5. Android Auto: done, tested in a car on 2026-11-19 (Playlists folder, playlist playback, Skip ad button). Sideloaded installs (GitHub, Obtainium, F-Droid) need Android Auto's developer setting "Unknown sources" to show the app. A "Playlists" folder appears after "Continue listening" when at least one playlist has "Show in Android Auto" ticked (playlist screen ⋮ menu; on by default for new playlists, off for existing ones). Starting an episode from it starts playlist playback. Code: `PlaylistMediaLibrary` plus small hooks in `MediaLibrarySessionCallback`.
+
+## Manual playlists
+Added in v0.10.0 (designed 2026-11-20, mockups: https://claude.ai/artifact/DjXtvtMi6k417dMAkU4HsU). The queue stays untouched; manual playlists only add to it.
+- Data: `Playlists.manual` and `Playlists.keep_played` columns, fork table `PlaylistEpisodes (playlist, item, position)`. `PlaylistReader.getEpisodes` returns the hand-picked list for a manual playlist, so the widget, Android Auto and the player line work unchanged. Played episodes drop off unless "Keep played episodes" is on (they stay in the table, filtered on read).
+- Visual cue everywhere: smart = sparkle on a filled tile, manual = list on an outlined tile (`PlaylistKindUi`, `ic_playlist_kind_*`, `bg_playlist_kind_*`). Toolbar and row subtitles start with the kind.
+- "New playlist" asks for the kind and the name (`PlaylistKindDialog`). The kind never changes; "Copy into a manual playlist" freezes a smart playlist's current episodes into a new manual one (`PlaylistWriter.convertToManual`).
+- Adding: "Add to playlist…" in the episode long-press menu, the episode screen menu and multi-select (hooks in `FeedItemMenuHandler` and `EpisodeMultiSelectActionHandler`, items in the upstream menu XML). `AddToPlaylistDialog` lists manual playlists only, with checkboxes (unchecking removes), plus "New manual playlist". New episodes go to the end; the queue's "Enqueue location" is ignored.
+- Manual playlist screen (`PlaylistEpisodesFragment`, manual mode set up after the first load): drag handles, swipe either way removes with undo (`ManualPlaylistSwipeActions`, ignores the screen's swipe settings), Sort submenu, a play button on every row that starts playlist mode at that episode.
+- Playback: the next episode is the one after the current in list order (`PlaylistPlayback.getNextManualEpisode`), skipping played ones unless kept.
+- Auto-download: per-playlist toggle, downloads and protects the next 10 unplayed episodes (same cap as rules).
+- Official-app export appends the unplayed manual-playlist episodes to the queue (playlists in tab order, no duplicates), then drops the fork tables.
+- Not done: Android Auto and home screen shortcuts use the same icon for both kinds; no swipe action "Add to playlist" in other lists.
 
 Inspired by Downcast's playlist engine.
 

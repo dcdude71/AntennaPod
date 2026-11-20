@@ -49,6 +49,14 @@ public final class PlaylistPlayback {
         if (playlistId == NO_PLAYLIST) {
             return false;
         }
+        Playlist playlist = PlaylistReader.getPlaylist(playlistId);
+        if (playlist != null && playlist.isManual()) {
+            if (PlaylistReader.getManualEpisodeIds(playlistId).contains(item.getId())) {
+                return true;
+            }
+            stop(context);
+            return false;
+        }
         for (FeedItem episode : PlaylistReader.getEpisodes(playlistId)) {
             if (episode.getId() == item.getId()) {
                 return true;
@@ -71,8 +79,11 @@ public final class PlaylistPlayback {
         synchronized (skippedItemIds) {
             skippedIds = new HashSet<>(skippedItemIds);
         }
-        FeedItem next = getNextEpisode(PlaylistReader.getEpisodes(playlistId, skippedIds),
-                current.getId(), skippedIds);
+        Playlist playlist = PlaylistReader.getPlaylist(playlistId);
+        FeedItem next = playlist != null && playlist.isManual()
+                ? getNextManualEpisode(PlaylistReader.getManualEpisodes(playlistId, true),
+                        current.getId(), skippedIds, playlist.isKeepPlayed())
+                : getNextEpisode(PlaylistReader.getEpisodes(playlistId, skippedIds), current.getId(), skippedIds);
         if (next == null && PlaylistPreferences.shouldContinueWithNextPlaylist(context)) {
             next = startNextPlaylist(context, playlistId, current.getId());
             if (next != null) {
@@ -119,6 +130,26 @@ public final class PlaylistPlayback {
     static FeedItem getNextEpisode(@NonNull List<FeedItem> episodes, long currentId, @NonNull Set<Long> skippedIds) {
         for (FeedItem episode : episodes) {
             if (episode.getId() != currentId && !skippedIds.contains(episode.getId())) {
+                return episode;
+            }
+        }
+        return null;
+    }
+
+    @Nullable
+    static FeedItem getNextManualEpisode(@NonNull List<FeedItem> episodes, long currentId,
+                                         @NonNull Set<Long> skippedIds, boolean includePlayed) {
+        int start = 0;
+        for (int i = 0; i < episodes.size(); i++) {
+            if (episodes.get(i).getId() == currentId) {
+                start = i + 1;
+                break;
+            }
+        }
+        for (int i = start; i < episodes.size(); i++) {
+            FeedItem episode = episodes.get(i);
+            if (episode.getId() != currentId && !skippedIds.contains(episode.getId())
+                    && (includePlayed || !episode.isPlayed())) {
                 return episode;
             }
         }

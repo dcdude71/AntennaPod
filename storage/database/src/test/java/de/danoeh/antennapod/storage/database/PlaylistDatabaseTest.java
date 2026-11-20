@@ -210,6 +210,75 @@ public class PlaylistDatabaseTest {
     }
 
     @Test
+    public void testManualPlaylistKeepsOrderAndDropsPlayed() throws Exception {
+        Feed feed = createFeed(4);
+        Playlist manual = new Playlist("Road trip");
+        manual.setManual(true);
+        long id = PlaylistWriter.createPlaylist(manual).get();
+        assertTrue(PlaylistReader.getPlaylist(id).isManual());
+
+        PlaylistWriter.addEpisodes(id, List.of(feed.getItems().get(2), feed.getItems().get(0))).get();
+        PlaylistWriter.addEpisodes(id, List.of(feed.getItems().get(0), feed.getItems().get(3))).get();
+        assertEquals(List.of(itemId(feed, 2), itemId(feed, 0), itemId(feed, 3)), ids(PlaylistReader.getEpisodes(id)));
+
+        markPlayed(feed.getItems().get(0));
+        assertEquals(List.of(itemId(feed, 2), itemId(feed, 3)), ids(PlaylistReader.getEpisodes(id)));
+        Playlist stored = PlaylistReader.getPlaylist(id);
+        stored.setKeepPlayed(true);
+        PlaylistWriter.updatePlaylist(stored).get();
+        assertEquals(List.of(itemId(feed, 2), itemId(feed, 0), itemId(feed, 3)), ids(PlaylistReader.getEpisodes(id)));
+
+        int position = PlaylistWriter.removeEpisode(id, feed.getItems().get(0)).get();
+        assertEquals(1, position);
+        PlaylistWriter.addEpisodeAt(id, feed.getItems().get(0), position).get();
+        assertEquals(List.of(itemId(feed, 2), itemId(feed, 0), itemId(feed, 3)), ids(PlaylistReader.getEpisodes(id)));
+
+        PlaylistWriter.setEpisodeOrder(id, List.of(feed.getItems().get(3), feed.getItems().get(2))).get();
+        assertEquals(List.of(itemId(feed, 3), itemId(feed, 2), itemId(feed, 0)), ids(PlaylistReader.getEpisodes(id)));
+        assertEquals(Set.of(id), PlaylistReader.getPlaylistIdsContaining(itemId(feed, 3)));
+    }
+
+    @Test
+    public void testManualPlaylistMembershipAndProtection() throws Exception {
+        Feed feed = createFeed(3);
+        Playlist first = new Playlist("First");
+        first.setManual(true);
+        first.setAutoDownload(true);
+        long firstId = PlaylistWriter.createPlaylist(first).get();
+        Playlist second = new Playlist("Second");
+        second.setManual(true);
+        long secondId = PlaylistWriter.createPlaylist(second).get();
+
+        PlaylistWriter.setMembership(List.of(feed.getItems().get(1)), List.of(firstId, secondId), List.of()).get();
+        assertEquals(Set.of(firstId, secondId), PlaylistReader.getPlaylistIdsContaining(itemId(feed, 1)));
+        assertEquals(List.of(itemId(feed, 1)), ids(PlaylistReader.getAutoDownloadEpisodes()));
+        assertEquals(Set.of(itemId(feed, 1)), PlaylistReader.getEpisodeIdsInPlaylists());
+
+        PlaylistWriter.setMembership(List.of(feed.getItems().get(1)), List.of(), List.of(firstId)).get();
+        assertEquals(Set.of(secondId), PlaylistReader.getPlaylistIdsContaining(itemId(feed, 1)));
+        assertTrue(PlaylistReader.getAutoDownloadEpisodes().isEmpty());
+    }
+
+    @Test
+    public void testConvertSmartPlaylistToManual() throws Exception {
+        Feed feed = createFeed(3);
+        long smartId = PlaylistWriter.createPlaylist(new Playlist("Smart")).get();
+        PlaylistRule rule = new PlaylistRule(smartId, feed.getId());
+        rule.setEpisodeCount(2);
+        rule.setPickFrom(PlaylistRule.PickFrom.OLDEST);
+        PlaylistWriter.addRule(rule).get();
+
+        long manualId = PlaylistWriter.convertToManual(smartId, "Frozen").get();
+        Playlist manual = PlaylistReader.getPlaylist(manualId);
+        assertTrue(manual.isManual());
+        assertTrue(PlaylistReader.getRules(manualId).isEmpty());
+        assertEquals(ids(PlaylistReader.getEpisodes(smartId)), ids(PlaylistReader.getEpisodes(manualId)));
+        long copyId = PlaylistWriter.duplicatePlaylist(manualId, "Copy").get();
+        assertTrue(PlaylistReader.getPlaylist(copyId).isManual());
+        assertEquals(ids(PlaylistReader.getEpisodes(manualId)), ids(PlaylistReader.getEpisodes(copyId)));
+    }
+
+    @Test
     public void testDuplicatePlaylist() throws Exception {
         Feed feed = createFeed(3);
         Playlist original = new Playlist("Original");

@@ -8,8 +8,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -18,7 +20,9 @@ import androidx.annotation.Nullable;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Completable;
+import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -26,6 +30,7 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -51,8 +56,10 @@ import de.danoeh.antennapod.ui.common.ConfirmationDialog;
 import de.danoeh.antennapod.ui.common.PlaylistTime;
 import de.danoeh.antennapod.ui.episodeslist.EpisodeItemViewHolder;
 import de.danoeh.antennapod.ui.episodeslist.EpisodesListFragment;
+import de.danoeh.antennapod.ui.swipeactions.ManualPlaylistSwipeActions;
 
-public class PlaylistEpisodesFragment extends EpisodesListFragment {
+public class PlaylistEpisodesFragment extends EpisodesListFragment
+        implements ManualPlaylistSwipeActions.Listener {
     public static final String TAG = "PlaylistEpisodesFragment";
     private static final String ARG_PLAYLIST_ID = "playlist_id";
     private static final String ARG_PREVIEW = "preview";
@@ -70,6 +77,7 @@ public class PlaylistEpisodesFragment extends EpisodesListFragment {
     private volatile Set<Long> previousEpisodeIds;
     private volatile Set<Long> justAddedIds = Collections.emptySet();
     private final Handler handler = new Handler(Looper.getMainLooper());
+    private ManualPlaylistSwipeActions manualSwipeActions;
 
     public static PlaylistEpisodesFragment newInstance(long playlistId) {
         PlaylistEpisodesFragment fragment = new PlaylistEpisodesFragment();
@@ -181,6 +189,33 @@ public class PlaylistEpisodesFragment extends EpisodesListFragment {
         } else if (itemId == R.id.playlist_delete) {
             confirmDelete();
             return true;
+        } else if (itemId == R.id.playlist_keep_played) {
+            Playlist current = playlist;
+            if (current != null) {
+                current.setKeepPlayed(!current.isKeepPlayed());
+                item.setChecked(current.isKeepPlayed());
+                PlaylistWriter.updatePlaylist(current);
+            }
+            return true;
+        } else if (itemId == R.id.playlist_convert_to_manual) {
+            Playlist current = playlist;
+            if (current != null) {
+                PlaylistNameDialog.show(requireContext(), R.string.playlist_convert_to_manual, current.getName(),
+                        name -> PlaylistWriter.convertToManual(playlistId, name));
+            }
+            return true;
+        } else if (itemId == R.id.playlist_sort_date_old_new) {
+            sortEpisodes((a, b) -> Long.compare(pubDate(a), pubDate(b)));
+            return true;
+        } else if (itemId == R.id.playlist_sort_date_new_old) {
+            sortEpisodes((a, b) -> Long.compare(pubDate(b), pubDate(a)));
+            return true;
+        } else if (itemId == R.id.playlist_sort_duration_short_long) {
+            sortEpisodes((a, b) -> Long.compare(duration(a), duration(b)));
+            return true;
+        } else if (itemId == R.id.playlist_sort_duration_long_short) {
+            sortEpisodes((a, b) -> Long.compare(duration(b), duration(a)));
+            return true;
         }
         return super.onMenuItemClick(item);
     }
@@ -196,6 +231,63 @@ public class PlaylistEpisodesFragment extends EpisodesListFragment {
         button.onClick(requireContext());
     }
 
+    private void playFrom(@NonNull FeedItem item) {
+        if (item.getMedia() == null) {
+            return;
+        }
+        PlaylistPlayback.start(requireContext(), playlistId);
+        ItemActionButton button = item.getMedia().isDownloaded()
+                ? new PlayActionButton(item) : new StreamActionButton(item);
+        button.onClick(requireContext());
+    }
+
+    private void sortEpisodes(@NonNull Comparator<FeedItem> comparator) {
+        List<FeedItem> sorted = new ArrayList<>(episodes);
+        Collections.sort(sorted, comparator);
+        PlaylistWriter.setEpisodeOrder(playlistId, sorted);
+    }
+
+    private static long pubDate(@NonNull FeedItem item) {
+        return item.getPubDate() != null ? item.getPubDate().getTime() : 0;
+    }
+
+    private static long duration(@NonNull FeedItem item) {
+        return item.getMedia() != null ? item.getMedia().getDuration() : 0;
+    }
+
+    private boolean isManual() {
+        Playlist current = playlist;
+        return current != null && current.isManual();
+    }
+
+    @Override
+    public boolean onMove(int from, int to) {
+        if (from >= episodes.size() || to >= episodes.size()) {
+            return false;
+        }
+        episodes.add(to, episodes.remove(from));
+        listAdapter.notifyItemMoved(from, to);
+        return true;
+    }
+
+    @Override
+    public void onMoveFinished() {
+        PlaylistWriter.setEpisodeOrder(playlistId, new ArrayList<>(episodes));
+    }
+
+    @Override
+    public void onRemove(@NonNull FeedItem item) {
+        Context context = requireContext().getApplicationContext();
+        Single.fromFuture(PlaylistWriter.removeEpisode(playlistId, item))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(position -> EventBus.getDefault().post(new MessageEvent(
+                        context.getString(R.string.removed_from_playlist_message),
+                        ctx -> PlaylistWriter.addEpisodeAt(playlistId, item, position),
+                        context.getString(R.string.undo))),
+                        error -> Log.e(TAG, Log.getStackTraceString(error)));
+    }
+
     private void showAutoDownloadNeedsLimitDialog() {
         new MaterialAlertDialogBuilder(requireContext())
                 .setTitle(R.string.playlist_auto_download_needs_limit_title)
@@ -209,10 +301,40 @@ public class PlaylistEpisodesFragment extends EpisodesListFragment {
 
     @Override
     protected void onEpisodeBound(EpisodeItemViewHolder holder) {
-        holder.secondaryActionButton.setVisibility(View.GONE);
         FeedItem item = holder.getFeedItem();
+        if (isManual() && !preview && item != null) {
+            bindManualRow(holder, item);
+        } else {
+            holder.secondaryActionButton.setVisibility(View.GONE);
+        }
         boolean justAdded = item != null && justAddedIds.contains(item.getId());
         holder.itemView.setForeground(justAdded ? new ColorDrawable(JUST_ADDED_COLOR) : null);
+    }
+
+    private void bindManualRow(@NonNull EpisodeItemViewHolder holder, @NonNull FeedItem item) {
+        holder.dragHandle.setVisibility(View.VISIBLE);
+        holder.dragHandle.setOnTouchListener((v, event) -> {
+            if (event.getActionMasked() == MotionEvent.ACTION_DOWN && manualSwipeActions != null) {
+                manualSwipeActions.startDrag(holder);
+            }
+            return false;
+        });
+        if (!holder.isPlayingItem() && item.getMedia() != null) {
+            holder.secondaryActionIcon.setImageResource(R.drawable.ic_play_24dp);
+            holder.secondaryActionButton.setContentDescription(getString(R.string.playlist_play_from_here));
+            holder.secondaryActionButton.setOnClickListener(v -> playFrom(item));
+        }
+    }
+
+    private void setUpManualMode() {
+        if (manualSwipeActions != null || preview || !isManual()) {
+            return;
+        }
+        swipeActions.detach();
+        manualSwipeActions = new ManualPlaylistSwipeActions(this, getFragmentTag(), this);
+        manualSwipeActions.attachTo(recyclerView);
+        swipeActions = manualSwipeActions;
+        listAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -277,18 +399,31 @@ public class PlaylistEpisodesFragment extends EpisodesListFragment {
         }
         Playlist current = playlist;
         if (current != null) {
+            setUpManualMode();
             toolbar.setTitle(current.getName());
             String count = getResources().getQuantityString(R.plurals.playlist_num_episodes,
                     episodeCount, episodeCount);
-            toolbar.setSubtitle(timeLeftMillis > 0 ? getString(R.string.playlist_summary, count,
+            String subtitle = timeLeftMillis > 0 ? getString(R.string.playlist_summary, count,
                     getString(R.string.playlist_time_left,
-                            PlaylistTime.format(requireContext(), timeLeftMillis))) : count);
+                            PlaylistTime.format(requireContext(), timeLeftMillis))) : count;
+            toolbar.setSubtitle(PlaylistKindUi.withKind(requireContext(), current.isManual(), subtitle,
+                    TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 14, getResources().getDisplayMetrics())));
+            boolean manual = current.isManual();
+            toolbar.getMenu().findItem(R.id.playlist_edit_rules).setVisible(!manual);
+            toolbar.getMenu().findItem(R.id.playlist_downloaded_only).setVisible(!manual);
+            toolbar.getMenu().findItem(R.id.playlist_convert_to_manual).setVisible(!manual);
+            toolbar.getMenu().findItem(R.id.playlist_sort).setVisible(manual);
+            toolbar.getMenu().findItem(R.id.playlist_keep_played).setVisible(manual);
+            toolbar.getMenu().findItem(R.id.playlist_keep_played).setChecked(current.isKeepPlayed());
             toolbar.getMenu().findItem(R.id.playlist_auto_download).setChecked(current.isAutoDownload());
             toolbar.getMenu().findItem(R.id.playlist_android_auto).setChecked(current.isShowInAndroidAuto());
             toolbar.getMenu().findItem(R.id.playlist_downloaded_only).setChecked(current.isDownloadedOnly());
             emptyView.setMessage(current.isDownloadedOnly()
                     ? R.string.playlist_episodes_empty_downloaded_message
                     : R.string.playlist_episodes_empty_message);
+            if (manual) {
+                emptyView.setMessage(R.string.playlist_manual_empty_message);
+            }
             if (hiddenByFilters > 0) {
                 emptyView.setMessage(getResources().getQuantityString(R.plurals.playlist_hidden_by_filters,
                         hiddenByFilters, hiddenByFilters));
@@ -337,8 +472,13 @@ public class PlaylistEpisodesFragment extends EpisodesListFragment {
             feedIds.add(rule.getFeedId());
         }
         hasUnlimitedRule = unlimited;
-        ruleFeedIds = feedIds;
         List<FeedItem> items = PlaylistReader.getEpisodes(playlistId);
+        for (FeedItem item : items) {
+            if (playlist != null && playlist.isManual()) {
+                feedIds.add(item.getFeedId());
+            }
+        }
+        ruleFeedIds = feedIds;
         episodeCount = items.size();
         timeLeftMillis = PlaylistReader.getTimeLeftMillis(items);
         hiddenByFilters = items.isEmpty() ? PlaylistReader.countEpisodesHiddenByFilters(playlistId) : 0;

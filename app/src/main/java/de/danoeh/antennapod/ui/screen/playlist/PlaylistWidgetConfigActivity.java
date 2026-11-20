@@ -10,6 +10,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -30,6 +31,7 @@ import java.util.Set;
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.model.playlist.Playlist;
 import de.danoeh.antennapod.storage.database.PlaylistReader;
+import de.danoeh.antennapod.ui.appstartintent.PlaylistPlayStarter;
 import de.danoeh.antennapod.ui.common.ThemeSwitcher;
 import de.danoeh.antennapod.ui.widget.PlaylistWidget;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
@@ -220,6 +222,12 @@ public class PlaylistWidgetConfigActivity extends AppCompatActivity {
             boolean checked = selected.contains(playlist.getId());
             final boolean enabled = checked || selected.size() < PlaylistWidget.MAX_PLAYLISTS;
             holder.title.setText(playlist.getName());
+            if (playlist.getId() == PlaylistPlayStarter.ALL_PLAYLISTS) {
+                holder.kind.setVisibility(View.INVISIBLE);
+            } else {
+                holder.kind.setVisibility(View.VISIBLE);
+                PlaylistKindUi.bindTile(holder.kind, playlist.isManual());
+            }
             holder.subtitle.setText(checked
                     ? getString(R.string.playlist_widget_position, getPosition(playlist))
                     : getString(R.string.playlist_widget_not_on_widget));
@@ -247,6 +255,7 @@ public class PlaylistWidgetConfigActivity extends AppCompatActivity {
         final TextView title;
         final TextView subtitle;
         final View dragHandle;
+        final ImageView kind;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -254,6 +263,7 @@ public class PlaylistWidgetConfigActivity extends AppCompatActivity {
             title = itemView.findViewById(R.id.title);
             subtitle = itemView.findViewById(R.id.subtitle);
             dragHandle = itemView.findViewById(R.id.dragHandle);
+            kind = itemView.findViewById(R.id.kind);
         }
     }
 }

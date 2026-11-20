@@ -17,10 +17,12 @@ import de.danoeh.antennapod.model.feed.FeedItemFilter;
 import de.danoeh.antennapod.model.feed.SortOrder;
 import de.danoeh.antennapod.model.playlist.Playlist;
 import de.danoeh.antennapod.model.playlist.PlaylistRule;
+import de.danoeh.antennapod.storage.database.mapper.FeedItemCursor;
 
 public final class PlaylistReader {
     private static final int MIN_PAGE_SIZE = 50;
     private static final int MAX_SCANNED_EPISODES = 2000;
+    private static final int ID_CHUNK_SIZE = 500;
 
 
     private PlaylistReader() {
@@ -71,8 +73,7 @@ public final class PlaylistReader {
         Map<Long, Feed> feeds = loadFeeds();
         for (Playlist playlist : getPlaylists()) {
             if (playlist.isAutoDownload()) {
-                for (FeedItem item : getEpisodes(limitForAutoDownload(getRules(playlist.getId())),
-                        Collections.emptySet(), feeds, false)) {
+                for (FeedItem item : getProtectedEpisodes(playlist, feeds)) {
                     if (ids.add(item.getId())) {
                         episodes.add(item);
                     }
@@ -137,8 +138,7 @@ public final class PlaylistReader {
         Map<Long, FeedItem> episodes = new HashMap<>();
         Map<Long, Feed> feeds = loadFeeds();
         for (Playlist playlist : getPlaylists()) {
-            for (FeedItem item : getEpisodes(limitForAutoDownload(getRules(playlist.getId())),
-                    Collections.emptySet(), feeds, false)) {
+            for (FeedItem item : getProtectedEpisodes(playlist, feeds)) {
                 episodes.put(item.getId(), item);
             }
         }
@@ -146,7 +146,77 @@ public final class PlaylistReader {
     }
 
     @NonNull
+    private static List<FeedItem> getProtectedEpisodes(@NonNull Playlist playlist, @NonNull Map<Long, Feed> feeds) {
+        if (playlist.isManual()) {
+            List<FeedItem> unplayed = getManualEpisodes(playlist.getId(), false);
+            return new ArrayList<>(unplayed.subList(0,
+                    Math.min(unplayed.size(), PlaylistRule.MAX_AUTO_DOWNLOAD_EPISODES)));
+        }
+        return getEpisodes(limitForAutoDownload(getRules(playlist.getId())), Collections.emptySet(), feeds, false);
+    }
+
+    @NonNull
+    public static synchronized List<Long> getManualEpisodeIds(long playlistId) {
+        PodDBAdapter adapter = PodDBAdapter.getInstance();
+        adapter.open();
+        try {
+            return adapter.getPlaylistDbAdapter().getEpisodeIds(playlistId);
+        } finally {
+            adapter.close();
+        }
+    }
+
+    @NonNull
+    public static synchronized Set<Long> getPlaylistIdsContaining(long itemId) {
+        PodDBAdapter adapter = PodDBAdapter.getInstance();
+        adapter.open();
+        try {
+            return adapter.getPlaylistDbAdapter().getPlaylistIdsContaining(itemId);
+        } finally {
+            adapter.close();
+        }
+    }
+
+    @NonNull
+    public static List<FeedItem> getManualEpisodes(long playlistId, boolean includePlayed) {
+        List<Long> ids = getManualEpisodeIds(playlistId);
+        Map<Long, FeedItem> loaded = new HashMap<>();
+        PodDBAdapter adapter = PodDBAdapter.getInstance();
+        adapter.open();
+        try {
+            for (int start = 0; start < ids.size(); start += ID_CHUNK_SIZE) {
+                List<Long> chunk = ids.subList(start, Math.min(ids.size(), start + ID_CHUNK_SIZE));
+                String[] args = new String[chunk.size()];
+                for (int i = 0; i < chunk.size(); i++) {
+                    args[i] = String.valueOf(chunk.get(i));
+                }
+                try (FeedItemCursor cursor = new FeedItemCursor(adapter.getFeedItemCursor(args))) {
+                    while (cursor.moveToNext()) {
+                        FeedItem item = cursor.getFeedItem();
+                        loaded.put(item.getId(), item);
+                    }
+                }
+            }
+        } finally {
+            adapter.close();
+        }
+        List<FeedItem> result = new ArrayList<>();
+        for (long id : ids) {
+            FeedItem item = loaded.get(id);
+            if (item != null && (includePlayed || !item.isPlayed())) {
+                result.add(item);
+            }
+        }
+        DBReader.loadFeedDataOfFeedItemList(result);
+        return result;
+    }
+
+    @NonNull
     public static List<FeedItem> getEpisodes(long playlistId, @NonNull final Set<Long> excludedOldestIds) {
+        Playlist manualPlaylist = getPlaylist(playlistId);
+        if (manualPlaylist != null && manualPlaylist.isManual()) {
+            return getManualEpisodes(playlistId, manualPlaylist.isKeepPlayed());
+        }
         List<PlaylistRule> rules = getRules(playlistId);
         if (rules.isEmpty()) {
             return new ArrayList<>();

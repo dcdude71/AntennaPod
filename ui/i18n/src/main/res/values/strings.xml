@@ -1248,4 +1248,33 @@
     <string name="advanced_filter_summary_skip_all">Skip if all: %1$s</string>
     <string name="playlist_downloaded_only">Only downloaded episodes</string>
     <string name="playlist_episodes_empty_downloaded_message">None of this playlist\'s downloaded episodes are left to play. Turn off \"Only downloaded episodes\" in the menu to see all of them.</string>
+    <string name="playlist_kind_smart">Smart</string>
+    <string name="playlist_kind_manual">Manual</string>
+    <string name="playlist_kind_smart_title">Smart playlist</string>
+    <string name="playlist_kind_smart_description">Rules pick episodes from your podcasts. It refills itself as new episodes come out.</string>
+    <string name="playlist_kind_manual_title">Manual playlist</string>
+    <string name="playlist_kind_manual_description">You add episodes one by one and put them in order. Works like the queue, and you can have as many as you like.</string>
+    <string name="playlist_kind_hint">You can\'t switch later, but a smart playlist can be copied into a manual one.</string>
+    <string name="playlist_name_label">Name</string>
+    <string name="playlist_create">Create</string>
+    <string name="add_to_playlist_label">Add to playlist…</string>
+    <string name="add_to_playlist_title">Add to playlist</string>
+    <string name="add_to_playlist_only_manual">Only manual playlists are listed. Smart playlists fill themselves from their rules.</string>
+    <string name="add_to_playlist_new">New manual playlist</string>
+    <string name="add_to_playlist_done">Done</string>
+    <plurals name="added_to_playlist_message">
+        <item quantity="one">Added to %1$d playlist</item>
+        <item quantity="other">Added to %1$d playlists</item>
+    </plurals>
+    <string name="removed_from_playlist_message">Removed from playlist</string>
+    <string name="remove_from_playlist_label">Remove from playlist</string>
+    <string name="playlist_manual_empty_message">Add episodes from any episode\'s menu: Add to playlist.</string>
+    <string name="playlist_keep_played">Keep played episodes</string>
+    <string name="playlist_play_from_here">Play from here</string>
+    <string name="playlist_convert_to_manual">Copy into a manual playlist</string>
+    <string name="playlist_sort">Sort</string>
+    <string name="playlist_sort_date_old_new">Date, oldest first</string>
+    <string name="playlist_sort_date_new_old">Date, newest first</string>
+    <string name="playlist_sort_duration_short_long">Duration, shortest first</string>
+    <string name="playlist_sort_duration_long_short">Duration, longest first</string>
 </resources>

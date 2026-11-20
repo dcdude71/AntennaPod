@@ -4,7 +4,7 @@ How to use the features that Castlist adds on top of [AntennaPod](https://antenn
 
 | Guide | What it covers |
 |---|---|
-| [Playlists](playlists.md) | Rule-based playlists: rules, playing, what happens at the end, automatic downloads, downloaded-only playlists, Android Auto |
+| [Playlists](playlists.md) | Smart (rule-based) and manual playlists: rules, adding episodes, playing, what happens at the end, automatic downloads, downloaded-only playlists, Android Auto |
 | [Home screen](home-screen.md) | The playlists widget, playlist icons and app shortcuts |
 | [Episode filter](episode-filter.md) | Basic and Advanced filters: which episodes download, and which ones playlists use |
 | [Skip ad and the player](player.md) | The Skip ad button and the modern player |

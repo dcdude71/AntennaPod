@@ -250,6 +250,17 @@ public class PlaylistWidget extends AppWidgetProvider {
             summary = context.getString(R.string.playlist_widget_playing, summary);
         }
         tile.setTextViewText(R.id.playlistWidgetName, playlist.getName());
+        if (playlist.getId() != PlaylistPlayStarter.ALL_PLAYLISTS) {
+            int kindIcon;
+            if (playlist.isManual()) {
+                kindIcon = tilePlaying ? R.drawable.ic_playlist_widget_kind_manual_on_accent
+                        : R.drawable.ic_playlist_widget_kind_manual_on_tile;
+            } else {
+                kindIcon = tilePlaying ? R.drawable.ic_playlist_widget_kind_smart_on_accent
+                        : R.drawable.ic_playlist_widget_kind_smart_on_tile;
+            }
+            tile.setTextViewCompoundDrawablesRelative(R.id.playlistWidgetName, kindIcon, 0, 0, 0);
+        }
         tile.setTextViewText(R.id.playlistWidgetSummary, summary);
         tile.setContentDescription(R.id.playlistWidgetTile, context.getString(tilePlaying
                 ? R.string.playlist_widget_pause : R.string.playlist_widget_play, playlist.getName()));

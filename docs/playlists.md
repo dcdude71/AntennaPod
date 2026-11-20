@@ -1,12 +1,17 @@
 # Playlists
 
-Next to the regular queue, you can create any number of playlists. A playlist is not a list of episodes you pick by hand: it is a set of **rules**, one per podcast, and the app works out the episodes for you. The playlist updates itself as new episodes come in and as you listen.
+Next to the regular queue, you can create any number of playlists. There are two kinds:
+
+- **Smart playlists** (✦ sparkle icon on a filled tile) are a set of **rules**, one per podcast, and the app works out the episodes for you. They update themselves as new episodes come in and as you listen.
+- **Manual playlists** (≡ list icon on an outlined tile) work like the queue: you add episodes one by one and put them in order. You can have as many as you like, and the queue stays exactly as it is. See [Manual playlists](#manual-playlists).
+
+The icon shows the kind everywhere a playlist appears: the Playlists tab, the top of a playlist, the widget and its settings.
 
 ![A playlist and its episodes](images/playlist.png)
 
 ## Creating a playlist
 
-1. Open the **Playlists** tab and tap **+**. Give the playlist a name.
+1. Open the **Playlists** tab and tap **+**. Choose **Smart playlist** and give it a name. (The kind can't be changed later.)
 2. Open the playlist and tap the **pencil** (Edit rules).
 3. Tap **Add podcast**, choose a podcast and set its rule (below).
 4. Add more podcasts the same way. Drag a rule to reorder it, swipe it away to remove it.
@@ -45,7 +50,7 @@ On a big screen the rules editor shows a live preview of the playlist next to th
 - In a playlist, the **play** button at the top plays it from the start.
 - At the top of the Playlists tab, **play** starts with your first playlist that has episodes.
 
-Playlists always play from the top. To hear one particular episode, open its podcast and play it from there; that uses the normal queue.
+Smart playlists always play from the top. To hear one particular episode, open its podcast and play it from there; that uses the normal queue. Manual playlists can also start from any episode (see below).
 
 While a playlist plays, the player shows its name and the time left under the podcast name, for example *Morning · 1 h 20 min left*.
 
@@ -86,6 +91,34 @@ A playlist with both **Auto-download episodes** and **Only downloaded episodes**
 In a playlist's menu (⋮), **Show in Android Auto** adds it to a **Playlists** folder in Android Auto, right after "Continue listening". It is on for new playlists. Starting an episode from that folder plays the playlist, just like on the phone.
 
 **Castlist doesn't show up in Android Auto?** Android Auto hides apps that were not installed from the Play Store, which includes Castlist from GitHub, Obtainium or F-Droid. To allow it, on the phone open Settings → Connected devices → Connection preferences → Android Auto, scroll down and tap **Version** about 10 times to turn on developer mode, then in the menu (⋮) open **Developer settings** and turn on **Unknown sources**. Reconnect to the car and Castlist appears with the other media apps.
+
+## Manual playlists
+
+A manual playlist holds the episodes you put in it, in the order you choose. Use it for a road trip, a "saved for later" list, or episodes to share with someone.
+
+**Creating one:** tap **+** in the Playlists tab and choose **Manual playlist**, or create it on the spot when adding an episode (below).
+
+**Adding episodes:** next to **Add to queue**, episodes now have **Add to playlist…**:
+
+- in an episode's long-press menu,
+- in the menu (⋮) of the episode screen,
+- with several episodes selected (multi-select).
+
+A short list of your manual playlists opens, with a check mark on the ones that already hold the episode. Tick or untick playlists, then tap **Done**, or tap **New playlist** to create one with the episode in it. Smart playlists are not in that list: their rules choose their episodes. New episodes go at the end of the playlist. The same episode can be in several playlists.
+
+**In the playlist:**
+
+- Drag an episode by its handle to move it, or use the menu (⋮) → **Sort** (date or duration).
+- Swipe an episode either way to remove it from the playlist. Tap **Undo** to bring it back.
+- Each episode has a **play** button: the playlist plays from that episode on, down the list. The play button at the top starts from the first episode.
+
+**Played episodes** drop off the playlist, like in the queue. To keep them instead, turn on **Keep played episodes** in the playlist's menu (⋮); the playlist then plays them again in order, like a music playlist.
+
+**Automatic downloads** work as for smart playlists: turn on **Auto-download episodes** in the menu (⋮) and the next 10 unplayed episodes stay downloaded and are kept when the app cleans up.
+
+**From smart to manual:** in a smart playlist's menu (⋮), **Copy into a manual playlist** creates a manual playlist with the episodes the smart one holds right now. The smart playlist stays as it is. There is no way back from manual to smart.
+
+When you [export for the official app](backups.md#switching-back-to-the-official-antennapod), manual playlists don't exist there, so their unplayed episodes are added to the end of the queue in the exported file.
 
 ## On your home screen
 

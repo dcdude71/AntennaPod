@@ -26,6 +26,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
         android:ellipsize="end"
+        android:drawablePadding="4dp"
         android:singleLine="true"
         android:textColor="@color/playlist_widget_on_accent"
         android:textSize="13sp"

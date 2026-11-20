@@ -61,6 +61,28 @@ public class PlaylistPlaybackTest {
     }
 
     @Test
+    public void testManualNextFollowsListOrderFromCurrent() {
+        List<FeedItem> episodes = episodes(1, 2, 3, 4);
+        assertEquals(4, PlaylistPlayback.getNextManualEpisode(episodes, 3, new HashSet<>(), false).getId());
+        assertNull(PlaylistPlayback.getNextManualEpisode(episodes, 4, new HashSet<>(), false));
+    }
+
+    @Test
+    public void testManualNextSkipsPlayedUnlessKept() {
+        List<FeedItem> episodes = episodes(1, 2, 3);
+        episodes.get(1).setPlayed(true);
+        assertEquals(3, PlaylistPlayback.getNextManualEpisode(episodes, 1, new HashSet<>(), false).getId());
+        assertEquals(2, PlaylistPlayback.getNextManualEpisode(episodes, 1, new HashSet<>(), true).getId());
+    }
+
+    @Test
+    public void testManualNextStartsAtTopWhenCurrentIsNotInList() {
+        Set<Long> skipped = new HashSet<>();
+        skipped.add(2L);
+        assertEquals(3, PlaylistPlayback.getNextManualEpisode(episodes(2, 3), 9, skipped, false).getId());
+    }
+
+    @Test
     public void testAutoDownloadLimitsAllAndLargeCounts() {
         List<PlaylistRule> rules = Arrays.asList(rule(PlaylistRule.ALL_EPISODES), rule(25), rule(4));
         List<PlaylistRule> limited = PlaylistReader.limitForAutoDownload(rules);

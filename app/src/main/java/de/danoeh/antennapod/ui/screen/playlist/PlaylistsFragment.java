@@ -194,8 +194,11 @@ public class PlaylistsFragment extends Fragment implements Toolbar.OnMenuItemCli
             return true;
         }
         if (item.getItemId() == R.id.playlist_new) {
-            PlaylistNameDialog.show(requireContext(), R.string.playlist_new, "",
-                    name -> PlaylistWriter.createPlaylist(new Playlist(name)));
+            PlaylistKindDialog.show(requireContext(), (name, manual) -> {
+                Playlist playlist = new Playlist(name);
+                playlist.setManual(manual);
+                PlaylistWriter.createPlaylist(playlist);
+            });
             return true;
         }
         return false;
@@ -257,6 +260,11 @@ public class PlaylistsFragment extends Fragment implements Toolbar.OnMenuItemCli
                     ruleFeedIds.add(rule.getFeedId());
                 }
                 List<FeedItem> episodes = PlaylistReader.getEpisodes(playlist.getId());
+                if (playlist.isManual()) {
+                    for (FeedItem episode : episodes) {
+                        ruleFeedIds.add(episode.getFeedId());
+                    }
+                }
                 result.add(new PlaylistSummary(playlist, rules.size(), episodes.size(),
                         PlaylistReader.getTimeLeftMillis(episodes)));
             }
@@ -308,16 +316,20 @@ public class PlaylistsFragment extends Fragment implements Toolbar.OnMenuItemCli
     private class PlaylistAdapter extends ReorderableListAdapter<PlaylistSummary> {
         @Override
         void bind(@NonNull ViewHolder holder, @NonNull PlaylistSummary item) {
-            holder.image.setImageResource(R.drawable.ic_playlist_play);
+            PlaylistKindUi.bindTile(holder.image, item.playlist.isManual());
             holder.title.setText(item.playlist.getName());
-            String summary = getString(R.string.playlist_summary,
-                    getResources().getQuantityString(R.plurals.playlist_num_podcasts, item.podcasts, item.podcasts),
-                    getResources().getQuantityString(R.plurals.playlist_num_episodes, item.episodes, item.episodes));
+            String summary = getResources().getQuantityString(R.plurals.playlist_num_episodes,
+                    item.episodes, item.episodes);
+            if (!item.playlist.isManual()) {
+                summary = getString(R.string.playlist_summary, getResources().getQuantityString(
+                        R.plurals.playlist_num_podcasts, item.podcasts, item.podcasts), summary);
+            }
             if (item.timeLeftMillis > 0) {
                 summary = getString(R.string.playlist_summary, summary, getString(R.string.playlist_time_left,
                         PlaylistTime.format(requireContext(), item.timeLeftMillis)));
             }
-            holder.subtitle.setText(summary);
+            holder.subtitle.setText(PlaylistKindUi.withKind(requireContext(), item.playlist.isManual(), summary,
+                    holder.subtitle.getTextSize()));
             boolean selected = wide && item.playlist.getId() == selectedId;
             holder.itemView.setForeground(selected ? new ColorDrawable(ColorUtils.setAlphaComponent(
                     ThemeUtils.getColorFromAttr(requireContext(), R.attr.colorPrimary), SELECTED_ALPHA)) : null);

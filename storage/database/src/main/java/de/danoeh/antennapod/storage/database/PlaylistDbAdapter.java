@@ -19,6 +19,7 @@ public class PlaylistDbAdapter {
     public static final String TABLE_NAME_PLAYLISTS = "Playlists";
     public static final String TABLE_NAME_PLAYLIST_RULES = "PlaylistRules";
     public static final String TABLE_NAME_PLAYLIST_DISMISSED = "PlaylistDismissedEpisodes";
+    public static final String TABLE_NAME_PLAYLIST_EPISODES = "PlaylistEpisodes";
 
     private static final String KEY_ID = "id";
     private static final String KEY_NAME = "name";
@@ -33,6 +34,8 @@ public class PlaylistDbAdapter {
     private static final String KEY_PLAY_ORDER = "play_order";
     private static final String KEY_PRIORITY = "priority";
     private static final String KEY_ITEM = "item";
+    private static final String KEY_MANUAL = "manual";
+    private static final String KEY_KEEP_PLAYED = "keep_played";
 
     private static final String CREATE_TABLE_PLAYLISTS = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME_PLAYLISTS + " ("
             + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -73,6 +76,13 @@ public class PlaylistDbAdapter {
         db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_NAME_PLAYLIST_DISMISSED + " ("
                 + KEY_ITEM + " INTEGER PRIMARY KEY)");
         addColumnIfMissing(db, TABLE_NAME_PLAYLISTS, KEY_DOWNLOADED_ONLY, "INTEGER NOT NULL DEFAULT 0");
+        addColumnIfMissing(db, TABLE_NAME_PLAYLISTS, KEY_MANUAL, "INTEGER NOT NULL DEFAULT 0");
+        addColumnIfMissing(db, TABLE_NAME_PLAYLISTS, KEY_KEEP_PLAYED, "INTEGER NOT NULL DEFAULT 0");
+        db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_NAME_PLAYLIST_EPISODES + " ("
+                + KEY_PLAYLIST + " INTEGER NOT NULL, "
+                + KEY_ITEM + " INTEGER NOT NULL, "
+                + KEY_POSITION + " INTEGER NOT NULL DEFAULT 0, "
+                + "PRIMARY KEY (" + KEY_PLAYLIST + ", " + KEY_ITEM + "))");
     }
 
     private static void addColumnIfMissing(SQLiteDatabase db, String table, String column, String definition) {
@@ -123,6 +133,7 @@ public class PlaylistDbAdapter {
         try {
             db.beginTransactionNonExclusive();
             db.delete(TABLE_NAME_PLAYLIST_RULES, KEY_PLAYLIST + "=?", new String[]{String.valueOf(playlistId)});
+            db.delete(TABLE_NAME_PLAYLIST_EPISODES, KEY_PLAYLIST + "=?", new String[]{String.valueOf(playlistId)});
             db.delete(TABLE_NAME_PLAYLISTS, KEY_ID + "=?", new String[]{String.valueOf(playlistId)});
             db.setTransactionSuccessful();
         } finally {
@@ -168,12 +179,79 @@ public class PlaylistDbAdapter {
 
     void deleteRulesOfFeed(long feedId) {
         db.delete(TABLE_NAME_PLAYLIST_RULES, KEY_FEED + "=?", new String[]{String.valueOf(feedId)});
+        db.delete(TABLE_NAME_PLAYLIST_EPISODES, KEY_ITEM + " NOT IN (SELECT " + PodDBAdapter.KEY_ID + " FROM "
+                + PodDBAdapter.TABLE_NAME_FEED_ITEMS + ")", null);
+    }
+
+    @NonNull
+    List<Long> getEpisodeIds(long playlistId) {
+        List<Long> ids = new ArrayList<>();
+        try (Cursor cursor = db.query(TABLE_NAME_PLAYLIST_EPISODES, new String[]{KEY_ITEM}, KEY_PLAYLIST + "=?",
+                new String[]{String.valueOf(playlistId)}, null, null, KEY_POSITION + " ASC")) {
+            while (cursor.moveToNext()) {
+                ids.add(cursor.getLong(0));
+            }
+        }
+        return ids;
+    }
+
+    @NonNull
+    Set<Long> getPlaylistIdsContaining(long itemId) {
+        Set<Long> ids = new HashSet<>();
+        try (Cursor cursor = db.query(TABLE_NAME_PLAYLIST_EPISODES, new String[]{KEY_PLAYLIST}, KEY_ITEM + "=?",
+                new String[]{String.valueOf(itemId)}, null, null, null)) {
+            while (cursor.moveToNext()) {
+                ids.add(cursor.getLong(0));
+            }
+        }
+        return ids;
+    }
+
+    void addEpisodes(long playlistId, List<Long> itemIds) {
+        List<Long> existing = getEpisodeIds(playlistId);
+        List<Long> order = new ArrayList<>(existing);
+        for (long itemId : itemIds) {
+            if (!order.contains(itemId)) {
+                order.add(itemId);
+            }
+        }
+        setEpisodes(playlistId, order);
+    }
+
+    void addEpisodeAt(long playlistId, long itemId, int position) {
+        List<Long> order = getEpisodeIds(playlistId);
+        order.remove(Long.valueOf(itemId));
+        order.add(Math.max(0, Math.min(position, order.size())), itemId);
+        setEpisodes(playlistId, order);
+    }
+
+    void removeEpisode(long playlistId, long itemId) {
+        db.delete(TABLE_NAME_PLAYLIST_EPISODES, KEY_PLAYLIST + "=? AND " + KEY_ITEM + "=?",
+                new String[]{String.valueOf(playlistId), String.valueOf(itemId)});
+    }
+
+    void setEpisodes(long playlistId, List<Long> itemIds) {
+        try {
+            db.beginTransactionNonExclusive();
+            db.delete(TABLE_NAME_PLAYLIST_EPISODES, KEY_PLAYLIST + "=?", new String[]{String.valueOf(playlistId)});
+            ContentValues values = new ContentValues();
+            for (int i = 0; i < itemIds.size(); i++) {
+                values.put(KEY_PLAYLIST, playlistId);
+                values.put(KEY_ITEM, itemIds.get(i));
+                values.put(KEY_POSITION, i);
+                db.insertWithOnConflict(TABLE_NAME_PLAYLIST_EPISODES, null, values, SQLiteDatabase.CONFLICT_IGNORE);
+            }
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
     }
 
     void deleteAll() {
         db.delete(TABLE_NAME_PLAYLIST_RULES, null, null);
         db.delete(TABLE_NAME_PLAYLISTS, null, null);
         db.delete(TABLE_NAME_PLAYLIST_DISMISSED, null, null);
+        db.delete(TABLE_NAME_PLAYLIST_EPISODES, null, null);
     }
 
     void addDismissedEpisode(long itemId) {
@@ -225,6 +303,8 @@ public class PlaylistDbAdapter {
         values.put(KEY_ANDROID_AUTO, playlist.isShowInAndroidAuto() ? 1 : 0);
         values.put(KEY_POSITION, playlist.getPosition());
         values.put(KEY_DOWNLOADED_ONLY, playlist.isDownloadedOnly() ? 1 : 0);
+        values.put(KEY_MANUAL, playlist.isManual() ? 1 : 0);
+        values.put(KEY_KEEP_PLAYED, playlist.isKeepPlayed() ? 1 : 0);
         return values;
     }
 
@@ -236,6 +316,8 @@ public class PlaylistDbAdapter {
                 cursor.getInt(cursor.getColumnIndexOrThrow(KEY_ANDROID_AUTO)) != 0,
                 cursor.getInt(cursor.getColumnIndexOrThrow(KEY_POSITION)));
         playlist.setDownloadedOnly(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_DOWNLOADED_ONLY)) != 0);
+        playlist.setManual(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_MANUAL)) != 0);
+        playlist.setKeepPlayed(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_KEEP_PLAYED)) != 0);
         return playlist;
     }
 

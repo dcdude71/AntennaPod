@@ -10,7 +10,7 @@ App-wide settings (like Player style or Episode filter style) are not part of th
 
 ## Switching back to the official AntennaPod
 
-**Export for official AntennaPod** makes the same backup without the fork's additions (playlists, playlist rules, skip-ad times, advanced episode filters), so the official app can read it. Import it there with **Database import**. Your subscriptions, played episodes, queue and basic episode filters carry over.
+**Export for official AntennaPod** makes the same backup without the fork's additions (playlists, playlist rules, skip-ad times, advanced episode filters), so the official app can read it. Import it there with **Database import**. Your subscriptions, played episodes, queue and basic episode filters carry over. Unplayed episodes from your manual playlists are added to the end of the queue, so you don't lose them.
 
 One caveat: Castlist follows AntennaPod's development version. If AntennaPod changes its database format there, Castlist can get ahead of the official release for a while, and the official app refuses to import a backup from a newer version until it is updated too.
 
